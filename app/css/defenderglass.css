@@ -1,0 +1,28 @@
+.pieza {
+
+    position: absolute;
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+    color: #333;
+    text-align: center;
+    vertical-align: middle;
+    overflow: hidden;
+    background: #fff;
+}
+
+.waste {
+    position: absolute;
+    border: 1px solid black;
+    color: #333;
+    text-align: center;
+    vertical-align: middle;
+    overflow: hidden;
+    background: lightgray;
+}
+
+.rollo{
+    position: relative;
+    //background: url(../img/fondo_pieza.jpg) repeat center center;
+    color: #333;
+}

@@ -34,7 +34,9 @@ var ignored_files = '!' + hidden_files;
 // MAIN PATHS
 var paths = {
     app: '../app/',
-    markup: 'jade/',
+    //markup: 'jade/',
+    markup: '../app/views/',
+    index: '../',
     styles: 'less/',
     scripts: 'js/'
 }
@@ -73,8 +75,8 @@ var source = {
         paths.scripts + 'custom/**/*.js'
     ],
     templates: {
-        index: [paths.markup + 'index.*'],
-        views: [paths.markup + '**/*.*', '!' + paths.markup + 'index.*']
+        index: [paths.index + 'index.html'], //[paths.markup + 'index.*'],
+        views: paths.markup + '**/*.html' //[paths.markup + '**/*.*', '!' + paths.markup + 'index.*']
     },
     styles: {
         app: [paths.styles + '*.*'],
@@ -123,13 +125,15 @@ var compassOptsThemes = {
 };
 
 var tplCacheOptions = {
-    root: 'app',
+    root: 'app/views/',
     filename: 'templates.js',
     //standalone: true,
     module: 'app.core',
     base: function (file) {
-        return file.path.split('jade')[1];
+        //log(file.path);
+        return file.path.split('views')[1];
     }
+  
 };
 
 var injectOptions = {
@@ -285,12 +289,9 @@ gulp.task('templates:index', ['templates:views'], function () {
         read: false
     });
     return gulp.src(source.templates.index)
-            .pipe($.if(useCache, $.inject(tplscript, injectOptions))) // inject the templates.js into index
-            .pipe($.jade())
-            .on('error', handleError)
             .pipe($.htmlPrettify(prettifyOpts))
             .pipe(gulp.dest(build.templates.index))
-            .pipe(gulp.dest('C:/xampp/htdocs/defenderglass/app/js/'))
+            .pipe(gulp.dest('C:/xampp/htdocs/defenderglass/'))
             .pipe(reload({
                 stream: true
             }));
@@ -303,8 +304,6 @@ gulp.task('templates:views', function () {
     if (useCache) {
 
         return gulp.src(source.templates.views)
-                .pipe($.jade())
-                .on('error', handleError)
                 .pipe($.angularTemplatecache(tplCacheOptions))
                 .pipe($.if(isProduction, $.uglify({
                     preserveComments: 'some'

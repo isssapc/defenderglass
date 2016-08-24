@@ -1,31 +1,112 @@
 [
-  {
-    "text": "Menu Heading",
-    "heading": "true",
-    "translate": "sidebar.heading.HEADER"
-  },
-   {
-    "text": "Cotizar",
-    "sref": "app.cotizar",
-    "icon": "fa fa-file-o"
-    
-  },
-  {
-    "text": "Single View",
-    "sref": "app.singleview",
-    "icon": "fa fa-file-o",
-    "translate": "sidebar.nav.SINGLEVIEW"
-  },
-  {
-    "text": "Menu",
-    "sref": "#",
-    "icon": "icon-folder",
-    "submenu": [
-      { "text": "Sub Menu", 
-        "sref": "app.submenu", 
-        "translate": "sidebar.nav.menu.SUBMENU" 
-      }    
-    ],
-    "translate": "sidebar.nav.menu.MENU"
-  }
+    {
+        "text": "Menu Heading",
+        "heading": "true",
+        "translate": "sidebar.heading.HEADER"
+    },
+    {
+        "text": "Cotizar",
+        "sref": "#",
+        "icon": "fa fa-file-o",
+        "submenu": [
+            {
+                "text": "Arquitectónico",
+                "sref": "app.cotizar"
+
+            },
+            {
+                "text": "Automotriz",
+                "sref": "#"
+
+            }
+        ]
+    },
+    {
+        "text": "Configuración",
+        "sref": "#",
+        "icon": "fa fa-file-o",
+        "submenu": [
+            {
+                "text": "Alta Producto",
+                "sref": "app.submenu"
+
+            },
+            {
+                "text": "Gastos Extras",
+                "sref": "app.submenu"
+
+            },
+            {
+                "text": "Parámetros",
+                "sref": "app.submenu"
+
+            },
+            {
+                "text": "Alta Clientes",
+                "sref": "app.submenu"
+
+            },
+            {
+                "text": "Usuarios",
+                "sref": "app.usuarios"
+
+            }
+        ]
+
+    },
+    {
+        "text": "Productos",
+        "sref": "#",
+        "icon": "fa fa-file-o",
+        "submenu": [
+            {
+                "text": "Catálogo",
+                "sref": "app.submenu"
+
+            },
+            {
+                "text": "Nuevo Producto",
+                "sref": "app.submenu"
+
+            }
+
+        ]
+
+    },
+    {
+        "text": "Clientes",
+        "sref": "#",
+        "icon": "icon-folder",
+        "submenu": [
+            {
+                "text": "Nuevo Cliente",
+                "sref": "app.submenu"
+
+            },
+            {
+                "text": "Buscar Cliente",
+                "sref": "app.submenu"
+
+            }
+        ]
+
+    },
+    {
+        "text": "Ayuda",
+        "sref": "#",
+        "icon": "icon-folder",
+        "submenu": [
+            {
+                "text": "FAQ",
+                "sref": "app.submenu"
+
+            }
+        ]
+
+    },
+    {
+        "text": "Login",
+        "sref": "page.login",
+        "icon": "icon-folder"
+    }
 ]

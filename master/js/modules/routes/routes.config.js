@@ -19,7 +19,7 @@
         $locationProvider.html5Mode(false);
 
         // defaults to dashboard
-        $urlRouterProvider.otherwise('/app/singleview');
+        $urlRouterProvider.otherwise('/app/cotizar');
 
         // 
         // Application Routes
@@ -41,10 +41,35 @@
                     title: 'Submenu',
                     templateUrl: helper.basepath('submenu.html')
                 })
+                .state('app.usuarios', {
+                    url: '/usuarios',
+                    title: 'Usuarios',
+                    controller: 'UsuariosCtrl as ctrl',
+                    templateUrl: helper.basepath('usuarios.html'),
+                    resolve: {
+                        usuarios: ['UsuarioSrv', function (UsuarioSrv) {
+                                return UsuarioSrv.get_usuarios();
+                            }]
+                    }
+                })
                 .state('app.cotizar', {
                     url: '/cotizar',
                     title: 'Cotizar',
+                    controller: 'CotizarCtrl as ctrl',
                     templateUrl: helper.basepath('cotizar.html')
+                })
+                .state('page', {
+                    url: '/page',
+                    templateUrl: 'app/pages/page.html',
+                    resolve: helper.resolveFor('modernizr', 'icons'),
+                    controller: ['$rootScope', function ($rootScope) {
+                            $rootScope.app.layout.isBoxed = false;
+                        }]
+                })
+                .state('page.login', {
+                    url: '/login',
+                    title: 'Login',
+                    templateUrl: 'app/pages/login.html'
                 })
                 // 
                 // CUSTOM RESOLVES

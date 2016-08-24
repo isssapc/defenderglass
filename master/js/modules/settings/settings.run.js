@@ -26,8 +26,8 @@
       // Global Settings
       // -----------------------------------
       $rootScope.app = {
-        name: 'Angle',
-        description: 'Angular Bootstrap Admin Template',
+        name: 'Defender Glass',
+        description: 'Cotizador',
         year: ((new Date()).getFullYear()),
         layout: {
           isFixed: true,
