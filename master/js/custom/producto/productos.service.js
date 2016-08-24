@@ -8,17 +8,17 @@
 
     angular
             .module('app.logic')
-            .service('UsuarioSrv', Usuarios);
+            .service('ProductoSrv', Productos);
 
-    Usuarios.$inject = ['$http', 'URL_API'];
-    function Usuarios($http, URL_API) {
+    Productos.$inject = ['$http', 'URL_API'];
+    function Productos($http, URL_API) {
         var url = URL_API;
         return {
-            get_usuarios: function () {
-                return $http.get(url + 'usuarios');
+            get_productos: function () {
+                return $http.get(url + 'productos');
             },
-            add_usuario: function (usuario) {
-                return $http.post(url + 'usuarios', {usuario: usuario});
+            add_producto: function (producto) {
+                return $http.post(url + 'productos', {producto: producto});
             }
         };
     }

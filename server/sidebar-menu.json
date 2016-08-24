@@ -28,7 +28,7 @@
         "submenu": [
             {
                 "text": "Alta Producto",
-                "sref": "app.submenu"
+                "sref": "app.nuevo_producto"
 
             },
             {
@@ -50,7 +50,13 @@
                 "text": "Usuarios",
                 "sref": "app.usuarios"
 
+            },
+            {
+                "text": "Nuevo Usuario",
+                "sref": "app.nuevo_usuario"
+
             }
+
         ]
 
     },
@@ -61,12 +67,12 @@
         "submenu": [
             {
                 "text": "Catálogo",
-                "sref": "app.submenu"
+                "sref": "app.productos"
 
             },
             {
                 "text": "Nuevo Producto",
-                "sref": "app.submenu"
+                "sref": "app.nuevo_producto"
 
             }
 

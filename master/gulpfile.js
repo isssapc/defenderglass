@@ -92,7 +92,7 @@ var build = {
     templates: {
         index: '../',
         views: paths.app,
-        cache: paths.app + 'js/' + 'templates.js',
+        cache: paths.app + 'js/' + 'templates.js'
     }
 };
 
@@ -133,7 +133,7 @@ var tplCacheOptions = {
         //log(file.path);
         return file.path.split('views')[1];
     }
-  
+
 };
 
 var injectOptions = {
@@ -301,32 +301,17 @@ gulp.task('templates:index', ['templates:views'], function () {
 gulp.task('templates:views', function () {
     log('Building views.. ' + (useCache ? 'using cache' : ''));
 
-    if (useCache) {
+    return gulp.src(source.templates.views)
+            .pipe($.angularTemplatecache(tplCacheOptions))
+            .pipe($.if(isProduction, $.uglify({
+                preserveComments: 'some'
+            })))
+            .pipe(gulp.dest(build.scripts))
+            .pipe(gulp.dest('C:/xampp/htdocs/defenderglass/app/js/'))
+            .pipe(reload({
+                stream: true
+            }));
 
-        return gulp.src(source.templates.views)
-                .pipe($.angularTemplatecache(tplCacheOptions))
-                .pipe($.if(isProduction, $.uglify({
-                    preserveComments: 'some'
-                })))
-                .pipe(gulp.dest(build.scripts))
-                .pipe(gulp.dest('C:/xampp/htdocs/defenderglass/app/js/'))
-                .pipe(reload({
-                    stream: true
-                }));
-    } else {
-
-        return gulp.src(source.templates.views)
-                .pipe($.if(!isProduction, $.changed(build.templates.views, {
-                    extension: '.html'
-                })))
-                .pipe($.jade())
-                .on('error', handleError)
-                .pipe($.htmlPrettify(prettifyOpts))
-                .pipe(gulp.dest(build.templates.views))
-                .pipe(reload({
-                    stream: true
-                }));
-    }
 });
 
 //---------------
@@ -338,7 +323,7 @@ gulp.task('watch', function () {
     log('Watching source files..');
 
     gulp.watch(source.scripts, ['scripts:app']);
-    gulp.watch(source.styles.watch, ['styles:app', 'styles:app:rtl']);
+    gulp.watch(source.styles.watch, ['styles:app']);
     gulp.watch(source.styles.themes, ['styles:themes']);
     gulp.watch(source.templates.views, ['templates:views']);
     gulp.watch(source.templates.index, ['templates:index']);
@@ -432,7 +417,6 @@ gulp.task('default', gulpsync.sync([
 gulp.task('assets', [
     'scripts:app',
     'styles:app',
-    'styles:app:rtl',
     'styles:themes',
     'templates:index',
     'templates:views'

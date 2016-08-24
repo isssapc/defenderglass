@@ -868,6 +868,35 @@
                             }]
                     }
                 })
+                .state('app.nuevo_usuario', {
+                    url: '/nuevo_usuario',
+                    title: 'Nuevo Usuario',
+                    controller: 'NuevoUsuarioCtrl as ctrl',
+                    templateUrl: helper.basepath('usuario_nuevo.html'),
+                    resolve: {
+                        roles: ['RolUsuarioSrv', function (RolUsuarioSrv) {
+                                return RolUsuarioSrv.get_roles();
+                            }]
+                    }
+                })
+
+                .state('app.productos', {
+                    url: '/productos',
+                    title: 'Productos',
+                    controller: 'ProductosCtrl as ctrl',
+                    templateUrl: helper.basepath('productos.html'),
+                    resolve: {
+                        productos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_productos();
+                            }]
+                    }
+                })
+                .state('app.nuevo_producto', {
+                    url: '/nuevo_producto',
+                    title: 'Nuevo Producto',
+                    controller: 'NuevoProductoCtrl as ctrl',
+                    templateUrl: helper.basepath('producto_nuevo.html'),
+                })
                 .state('app.cotizar', {
                     url: '/cotizar',
                     title: 'Cotizar',
@@ -1839,10 +1868,6 @@
 })();
 
 
-// To run this code, edit file index.html or index.jade and change
-// html data-ng-app attribute from angle to myAppName
-// ----------------------------------------------------------------------
-
 (function () {
     'use strict';
 
@@ -2177,6 +2202,63 @@
 
     angular
             .module('app.logic')
+            .controller('ProductosCtrl', Controller);
+
+    Controller.$inject = ['$log', 'ProductoSrv', 'productos'];
+    function Controller($log, ProductoSrv, productos) {
+
+        var self = this;
+
+        self.productos = productos.data;
+
+//        UsuarioSrv.get_usuarios().then(function (response) {
+//            console.log("usuarios", JSON.stringify(response.data));
+//            self.usuarios = response.data;
+//        });
+
+
+
+
+    }
+})();
+
+/**=========================================================
+ * Module: browser.js
+ * Browser detection
+ =========================================================*/
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .service('ProductoSrv', Productos);
+
+    Productos.$inject = ['$http', 'URL_API'];
+    function Productos($http, URL_API) {
+        var url = URL_API;
+        return {
+            get_productos: function () {
+                return $http.get(url + 'productos');
+            },
+            add_producto: function (producto) {
+                return $http.post(url + 'productos', {producto: producto});
+            }
+        };
+    }
+
+})();
+
+
+// To run this code, edit file index.html or index.jade and change
+// html data-ng-app attribute from angle to myAppName
+// ----------------------------------------------------------------------
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
             .controller('UsuariosCtrl', Controller);
 
     Controller.$inject = ['$log', 'UsuarioSrv', 'usuarios'];
@@ -2215,8 +2297,71 @@
         return {
             get_usuarios: function () {
                 return $http.get(url + 'usuarios');
+            },
+            add_usuario: function (usuario) {
+                return $http.post(url + 'usuarios', {usuario: usuario});
             }
         };
     }
 
+})();
+
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .service('RolUsuarioSrv', RolUsuario);
+
+    RolUsuario.$inject = ['$http', 'URL_API'];
+    function RolUsuario($http, URL_API) {
+        var url = URL_API;
+        return {
+            get_roles: function () {
+                return $http.get(url + 'rolesusuarios');
+            }
+        };
+    }
+
+})();
+
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .controller('NuevoUsuarioCtrl', Controller);
+
+    Controller.$inject = ['$log', 'UsuarioSrv', 'roles', '$scope'];
+    function Controller($log, UsuarioSrv, roles, $scope) {
+
+        var self = this;
+
+        self.roles = roles.data;
+
+        self.usuario = {};
+
+
+
+        self.add_usuario = function () {
+            UsuarioSrv.add_usuario(self.usuario).then(function (response) {
+                console.log("nuevo usuario", JSON.stringify(response.data));
+                self.usuario = {};
+                $scope.formNuevoUsuario.$setPristine();
+                $scope.formNuevoUsuario.$setUntouched();
+
+
+            }).catch(function (response) {
+                console.log("error");
+            }).finally(function (response) {
+
+            });
+        };
+
+
+
+
+    }
 })();

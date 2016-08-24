@@ -52,6 +52,35 @@
                             }]
                     }
                 })
+                .state('app.nuevo_usuario', {
+                    url: '/nuevo_usuario',
+                    title: 'Nuevo Usuario',
+                    controller: 'NuevoUsuarioCtrl as ctrl',
+                    templateUrl: helper.basepath('usuario_nuevo.html'),
+                    resolve: {
+                        roles: ['RolUsuarioSrv', function (RolUsuarioSrv) {
+                                return RolUsuarioSrv.get_roles();
+                            }]
+                    }
+                })
+
+                .state('app.productos', {
+                    url: '/productos',
+                    title: 'Productos',
+                    controller: 'ProductosCtrl as ctrl',
+                    templateUrl: helper.basepath('productos.html'),
+                    resolve: {
+                        productos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_productos();
+                            }]
+                    }
+                })
+                .state('app.nuevo_producto', {
+                    url: '/nuevo_producto',
+                    title: 'Nuevo Producto',
+                    controller: 'NuevoProductoCtrl as ctrl',
+                    templateUrl: helper.basepath('producto_nuevo.html'),
+                })
                 .state('app.cotizar', {
                     url: '/cotizar',
                     title: 'Cotizar',
