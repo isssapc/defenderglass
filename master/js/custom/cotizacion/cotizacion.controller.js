@@ -4,7 +4,7 @@
 
     angular
             .module('app.logic')
-            .controller('CotizarCtrl', Controller);
+            .controller('CotizacionCtrl', Controller);
 
     Controller.$inject = ['$log'];
     function Controller($log) {

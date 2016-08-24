@@ -82,10 +82,10 @@
                     templateUrl: helper.basepath('producto_nuevo.html'),
                 })
                 .state('app.cotizar', {
-                    url: '/cotizar',
-                    title: 'Cotizar',
-                    controller: 'CotizarCtrl as ctrl',
-                    templateUrl: helper.basepath('cotizar.html')
+                    url: '/cotizacion',
+                    title: 'Cotización',
+                    controller: 'CotizacionCtrl as ctrl',
+                    templateUrl: helper.basepath('cotizacion.html')
                 })
                 .state('page', {
                     url: '/page',
