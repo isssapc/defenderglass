@@ -44,7 +44,9 @@
     "simple-line-icons": "2.2.3",
     "angular-touch": "1.5.0",
     "jquery.browser": "master",
-     "satellizer": "^0.15.4"
+    "satellizer": "^0.15.4",
+    "bootstrap": "^3.3.7",
+    "whirl": "^1.0.0"
   },
   "resolutions": {
     "angular": "1.5.0",

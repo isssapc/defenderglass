@@ -32,7 +32,7 @@
 
                     $auth.login(vm.account).then(function (response) {
                         console.log("response", JSON.stringify(response.data));
-                        $state.go('app.cotizar');
+                        $state.go('app.cotizar_arquitectonico');
                     });
 
 //              $http

@@ -36,8 +36,8 @@
                     <button class="btn btn-default" ng-click="ctrl.addPieza()">Agregar</button>
                     <!--<button class="btn btn-default" ng-click="ctrl.analisis()">Analizar</button>-->
                 </div>
-<!--                <div>{{ctrl.piezas|json}}</div>
-                <div>{{ctrl.rollo|json}}</div>-->
+                <!--                <div>{{ctrl.piezas|json}}</div>
+                                <div>{{ctrl.rollo|json}}</div>-->
             </div>
             <div class="panel-footer">
                 <button class="btn btn-primary" ng-click="ctrl.analisis()">Analizar</button>
@@ -55,24 +55,22 @@
                                 <th>Largo(m)</th>
                                 <th>Ancho(m)</th>
                                 <th>m<sup>2</sup> Efectivos</th>
-                                <th>m<sup>2</sup> Merma</th>
+                                <th>m<sup>2</sup> Merma (1.52)</th>
+                                <th>m<sup>2</sup> Merma (1.82)</th>
+                                <th>m<sup>2</sup> Merma (óptimo)</th>
                                 <th style="width: 61px;"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="pieza in ctrl.procesadas">
-                                <!--                            <td><input type="number" class="form-control" ng-model="pieza.cantidad" min="1"></td>                       
-                                                            <td><input type="number" class="form-control" ng-model="pieza.largo"></td>                       
-                                                            <td><input type="number" class="form-control" ng-model="pieza.ancho"></td>
-                                                            <td><input type="number" class="form-control" ng-model="pieza.efectivo"></td>  
-                                                            <td><input type="number" class="form-control" ng-model="pieza.merma"></td>  
-                                                            <td><button class="btn btn-default" ng-click="ctrl.delPieza(pieza)"><span class="fa fa-remove"></span></button></td>-->
                                 <td>{{pieza.cantidad}}</td>                       
                                 <td>{{pieza.largo}}</td>                       
                                 <td>{{pieza.ancho}}</td>
                                 <td>{{pieza.efectivo}}</td>  
-                                <td>{{pieza.merma}}</td>  
-                                <td><button class="btn btn-default" ng-click="ctrl.draw(pieza)"><span class="fa fa-th-large"></span></button></td>
+                                <td ng-class="{info:pieza.optimo === 152}">{{pieza._152.merma}}</td>
+                                <td ng-class="{info:pieza.optimo === 182}">{{pieza._182.merma}}</td> 
+                                <td>{{pieza.optimo===152?pieza._152.merma:pieza._182.merma}}</td> 
+                                <td><button class="btn btn-default" ng-click="ctrl.draw(pieza,182)"><span class="fa fa-th-large"></span></button></td>
                             </tr>                       
                         </tbody>
                         <tfoot>
@@ -81,17 +79,19 @@
                                 <td></td>                       
                                 <td></td>
                                 <th>{{ctrl.sum_efectivo(ctrl.procesadas)}}</th>  
-                                <th>{{ctrl.sum_merma(ctrl.procesadas)}}</th>  
+                                <th>{{ctrl.sum_merma(ctrl.procesadas, 1)}}</th>
+                                <th>{{ctrl.sum_merma(ctrl.procesadas, 2)}}</th> 
+                                <th>{{ctrl.sum_merma(ctrl.procesadas, 3)}}</th> 
                                 <td></td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
-<!--                <div id="dibujo" class="rollo" style="height: 320px;"></div>-->
+                <!--                <div id="dibujo" class="rollo" style="height: 320px;"></div>-->
                 <uib-tabset>
                     <uib-tab heading="Patrón 1">
                         <div id="cociente" class="rollo" style="height: 320px;">
-                            
+
                         </div>
                     </uib-tab>
                     <uib-tab heading="Patrón 2" ng-show="ctrl.show_resto">

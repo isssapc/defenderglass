@@ -551,7 +551,7 @@
 
                     $auth.login(vm.account).then(function (response) {
                         console.log("response", JSON.stringify(response.data));
-                        $state.go('app.cotizar');
+                        $state.go('app.cotizar_arquitectonico');
                     });
 
 //              $http
@@ -835,11 +835,11 @@
         $locationProvider.html5Mode(false);
 
         // defaults to dashboard
-        $urlRouterProvider.otherwise('/app/cotizar');
+        $urlRouterProvider.otherwise('/page/login');
 
         // 
         // Application Routes
-        // -----------------------------------   
+        // --------------------------------   
         $stateProvider
                 .state('app', {
                     url: '/app',
@@ -879,7 +879,31 @@
                             }]
                     }
                 })
-
+                .state('app.gastos_extras', {
+                    url: '/gastos_extras',
+                    title: 'Gastos Extras',
+                    controller: 'GastosCtrl as ctrl',
+                    templateUrl: helper.basepath('gastos.html'),
+                    resolve: {
+                        gastos: ['GastoSrv', function (GastoSrv) {
+                                return GastoSrv.get_gastos();
+                            }],
+                        nuevogasto_tpl: function () {
+                            return  helper.basepath('modal_nuevo_gasto.html');
+                        }
+                    }
+                })
+                .state('app.clientes', {
+                    url: '/clientes',
+                    title: 'Clientes',
+                    controller: 'ClientesCtrl as ctrl',
+                    templateUrl: helper.basepath('clientes.html'),
+                    resolve: {
+                        clientes: ['ClienteSrv', function (ClienteSrv) {
+                                return ClienteSrv.get_clientes();
+                            }]
+                    }
+                })
                 .state('app.productos', {
                     url: '/productos',
                     title: 'Productos',
@@ -897,11 +921,17 @@
                     controller: 'NuevoProductoCtrl as ctrl',
                     templateUrl: helper.basepath('producto_nuevo.html'),
                 })
-                .state('app.cotizar', {
-                    url: '/cotizacion',
+                .state('app.cotizar_arquitectonico', {
+                    url: '/cotizacion/arquitectonico',
+                    title: 'Cotización',
+                    controller: 'CotizacionArqCtrl as ctrl',
+                    templateUrl: helper.basepath('cotizacion_arquitectonico.html')
+                })
+                .state('app.cotizar_automotriz', {
+                    url: '/cotizacion/automotriz',
                     title: 'Cotización',
                     controller: 'CotizacionCtrl as ctrl',
-                    templateUrl: helper.basepath('cotizacion.html')
+                    templateUrl: helper.basepath('cotizacion_automotriz.html')
                 })
                 .state('page', {
                     url: '/page',
@@ -1867,6 +1897,63 @@
     }
 })();
 
+/**=========================================================
+ * Refresh modals
+ * [modal-refresh] * [data-spinner="standard"]
+ =========================================================*/
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .directive('modalRefresh', modalRefresh);
+
+    function modalRefresh() {
+        var directive = {
+            controller: Controller,
+            restrict: 'A',
+            scope: false
+        };
+        return directive;
+
+    }
+
+    Controller.$inject = ['$scope', '$element'];
+    function Controller($scope, $element) {
+        var refreshEvent = 'modal-refresh',
+                whirlClass = 'whirl',
+                defaultSpinner = 'standard';
+
+        // catch clicks to toggle panel refresh
+        $element.on('click', function (e) {
+            e.preventDefault();
+
+            var $this = $(this),
+                    panel = $this.parents('.modal-content').eq(0),
+                    spinner = $this.data('spinner') || defaultSpinner;
+
+            // start showing the spinner
+            panel.addClass(whirlClass + ' ' + spinner);
+
+            // Emit event when refresh clicked
+            //$scope.$emit(refreshEvent, panel.attr('id'));
+            $scope.$emit(refreshEvent, panel);
+
+        });
+
+        // listen to remove spinner
+        $scope.$on('removeModalSpinner', removeSpinner);
+
+        // method to clear the spinner when done
+        function removeSpinner(ev, element) {
+            element.removeClass(whirlClass);
+        }
+    }
+})();
+
+
+
 
 // To run this code, edit file index.html or index.jade and change
 // html data-ng-app attribute from angle to myAppName
@@ -1877,14 +1964,14 @@
 
     angular
             .module('app.logic')
-            .controller('ProductosCtrl', Controller);
+            .controller('ClientesCtrl', Controller);
 
-    Controller.$inject = ['$log', 'ProductoSrv', 'productos'];
-    function Controller($log, ProductoSrv, productos) {
+    Controller.$inject = ['$log', 'ClienteSrv', 'clientes'];
+    function Controller($log, ClienteSrv, clientes) {
 
         var self = this;
 
-        self.productos = productos.data;
+        self.clientes = clientes.data;
 
 //        UsuarioSrv.get_usuarios().then(function (response) {
 //            console.log("usuarios", JSON.stringify(response.data));
@@ -1907,17 +1994,17 @@
 
     angular
             .module('app.logic')
-            .service('ProductoSrv', Productos);
+            .service('ClienteSrv', Cliente);
 
-    Productos.$inject = ['$http', 'URL_API'];
-    function Productos($http, URL_API) {
+    Cliente.$inject = ['$http', 'URL_API'];
+    function Cliente($http, URL_API) {
         var url = URL_API;
         return {
-            get_productos: function () {
-                return $http.get(url + 'productos');
+            get_clientes: function () {
+                return $http.get(url + 'clientes');
             },
-            add_producto: function (producto) {
-                return $http.post(url + 'productos', {producto: producto});
+            add_cliente: function (cliente) {
+                return $http.post(url + 'clientes', {cliente: cliente});
             }
         };
     }
@@ -1930,14 +2017,14 @@
 
     angular
             .module('app.logic')
-            .controller('CotizacionCtrl', Controller);
+            .controller('CotizacionArqCtrl', Controller);
 
     Controller.$inject = ['$log'];
     function Controller($log) {
 
         var self = this;
         //self.pieza_selected={};
-        self.show_resto=false;
+        self.show_resto = false;
         self.piezas = [
             {
                 cantidad: 2,
@@ -1994,11 +2081,106 @@
                 console.log("rollo", A);
             }
 
-            for (var k = 0; k < self.procesadas.length; k++) {
+            analizar(self.procesadas, 1.52);
 
-                var l = self.procesadas[k].largo;
-                var a = self.procesadas[k].ancho;
-                var n = self.procesadas[k].cantidad;
+            analizar(self.procesadas, 1.82);
+
+            calcular_optimo(self.procesadas);
+
+//            for (var k = 0; k < self.procesadas.length; k++) {
+//
+//                var l = self.procesadas[k].largo;
+//                var a = self.procesadas[k].ancho;
+//                var n = self.procesadas[k].cantidad;
+//
+//                var mc = 0, mr = 0;
+//
+//                // 1. Cuantos caben a lo ancho
+//                var na = Math.floor(A / a);
+//                console.log("cuantos caben a lo ancho", na);
+//
+//                if (na > 0) {
+//                    // 2 cociente
+//                    var c = Math.floor(n / na);
+//                    console.log("cociente", c);
+//                    //3 resto
+//                    var r = n - (na * c);
+//                    console.log("resto", r);
+//
+//                    //4 calcular merma cociente
+//                    var Hc = {h1: 0, h2: 0, h3: l, h4: A};
+//                    //console.log("Hc", JSON.stringify(Hc));
+//                    var Bc = [];
+//                    var aux = 0;
+//                    // ancho en mm
+//                    var am = a * 1000;
+//
+//                    if (c > 0) {
+//
+//                        for (var i = 0; i < na; i++) {
+//                            // (i+1)*a
+//                            aux = Math.floor((i * am) + am) / 1000;
+//                            Bc.push({b1: 0, b2: Math.floor(i * am) / 1000, b3: l, b4: aux});
+//                            Hc.h2 = aux;
+//                        }
+//                        mc = Math.round(Hc.h3 * (Hc.h4 - Hc.h2) * c * 10000) / 10000;
+//                    }
+//
+//
+//                    //5 calcular merma resto
+//                    var Hr = {h1: 0, h2: 0, h3: l, h4: A};
+//                    var Br = [];
+//                    for (var i = 0; i < r; i++) {
+//                        aux = Math.floor((i * am) + am) / 1000;
+//                        Br.push({b1: 0, b2: Math.floor(i * am) / 1000, b3: l, b4: aux});
+//                        Hr.h2 = aux;
+//                    }
+//                    if (r === 0) {
+//                        mr = 0;
+//                    } else {
+//                        mr = Math.round(Hr.h3 * (Hr.h4 - Hr.h2) * 10000) / 10000;
+//                    }
+//
+//                    console.log("------------------");
+//
+//                    self.procesadas[k].c = c;
+//                    self.procesadas[k].mc = mc;
+//                    self.procesadas[k].mr = mr;
+//                    self.procesadas[k].merma = Math.round(mc * 10000 + mr * 10000) / 10000;
+//                    self.procesadas[k].efectivo = Math.round(n * l * a * 10000) / 10000;
+//                    self.procesadas[k].bc = Bc;
+//                    self.procesadas[k].br = Br;
+//                    self.procesadas[k].hc = Hc;
+//                    self.procesadas[k].hr = Hr;
+//
+//                }
+//
+//            }
+
+
+        };
+
+        function calcular_optimo(piezas) {
+            for (var k = 0; k < piezas.length; k++) {
+                if (piezas[k]._152.merma <= piezas[k]._182.merma) {
+                    piezas[k].optimo = 152;
+                } else {
+                    piezas[k].optimo = 182;
+                }
+
+            }
+        }
+
+        function analizar(piezas, A) {
+            console.log("ini----------------");
+            console.log("analizando " + piezas.length + " piezas");
+            console.log("rollo de ancho " + A + " m");
+            console.log("----------------");
+            for (var k = 0; k < piezas.length; k++) {
+
+                var l = piezas[k].largo;
+                var a = piezas[k].ancho;
+                var n = piezas[k].cantidad;
 
                 var mc = 0, mr = 0;
 
@@ -2048,29 +2230,38 @@
                         mr = Math.round(Hr.h3 * (Hr.h4 - Hr.h2) * 10000) / 10000;
                     }
 
-                    console.log("------------------");
+                    console.log("fin------------------");
 
-                    self.procesadas[k].c = c;
-                    self.procesadas[k].mc = mc;
-                    self.procesadas[k].mr = mr;
-                    self.procesadas[k].merma = Math.round(mc * 10000 + mr * 10000) / 10000;
-                    self.procesadas[k].efectivo = Math.round(n * l * a * 10000) / 10000;
-                    self.procesadas[k].bc = Bc;
-                    self.procesadas[k].br = Br;
-                    self.procesadas[k].hc = Hc;
-                    self.procesadas[k].hr = Hr;
-//                    console.log("merma cociente", mc);
-//                    console.log("merma resto", mr);
-//                    console.log("piezas cociente", JSON.stringify(Bc));
-//                    console.log("piezas resto", JSON.stringify(Br));
-//                    console.log("piezas merma cociente", JSON.stringify(Hc));
-//                    console.log("piezas merma residuo", JSON.stringify(Hr));
+
+                    piezas[k].efectivo = Math.round(n * l * a * 10000) / 10000;
+                    if (A == 1.52) {
+                        piezas[k]._152 = {};
+                        piezas[k]._152.c = c;
+                        piezas[k]._152.mc = mc;
+                        piezas[k]._152.mr = mr;
+                        piezas[k]._152.merma = Math.round(mc * 10000 + mr * 10000) / 10000;
+                        //piezas[k]._152.efectivo = Math.round(n * l * a * 10000) / 10000;
+                        piezas[k]._152.bc = Bc;
+                        piezas[k]._152.br = Br;
+                        piezas[k]._152.hc = Hc;
+                        piezas[k]._152.hr = Hr;
+                    } else {
+                        piezas[k]._182 = {};
+                        piezas[k]._182.c = c;
+                        piezas[k]._182.mc = mc;
+                        piezas[k]._182.mr = mr;
+                        piezas[k]._182.merma = Math.round(mc * 10000 + mr * 10000) / 10000;
+                        //piezas[k]._182.efectivo = Math.round(n * l * a * 10000) / 10000;
+                        piezas[k]._182.bc = Bc;
+                        piezas[k]._182.br = Br;
+                        piezas[k]._182.hc = Hc;
+                        piezas[k]._182.hr = Hr;
+                    }
+
                 }
 
             }
-
-
-        };
+        }
 
         self.analisis2 = function () {
             self.procesadas = angular.copy(self.piezas);
@@ -2146,9 +2337,9 @@
 
         };
 
-        self.draw = function (pieza) {
+        self.draw = function (p, A) {
             //self.pieza_selected=pieza;
-            self.show_resto=false;
+            self.show_resto = false;
             var cociente = $("#cociente");
             var resto = $("#resto");
             cociente.empty();
@@ -2157,14 +2348,29 @@
             var B = null;
             var H = null;
             var es_resto = false;
+
+            //elegimos el ancho del rollo
+            var pieza = null;
+            if (A === 152) {
+                pieza = p._152;
+            } else {
+                pieza = p._182;
+            }
+
+            console.log("pieza", JSON.stringify(pieza));
+
+            //tiene piezas en el cociente?
             if (pieza.bc.length > 0) {
+
                 B = pieza.bc;
                 H = pieza.hc;
+
             } else {
+                //solo tiene piezas en el resto
                 B = pieza.br;
                 H = pieza.hr;
                 es_resto = true;
-                
+
             }
             // dibujar cociente
             for (var i = 0; i < B.length; i++) {
@@ -2196,7 +2402,7 @@
 
             //dibujar resto
             if (pieza.br.length > 0 && !es_resto) {
-                 self.show_resto=true;
+                self.show_resto = true;
                 B = pieza.br;
                 H = pieza.hr;
 
@@ -2238,15 +2444,311 @@
             return Math.floor(sum * 10000) / 10000;
         };
 
-        self.sum_merma = function (procesadas) {
+        self.sum_merma = function (procesadas, op) {
             var sum = 0;
             for (var i = 0; i < procesadas.length; i++) {
-                sum += procesadas[i].merma;
+                if (op === 1) {
+                    sum += procesadas[i]._152.merma;
+                } else if (op === 2) {
+                    sum += procesadas[i]._182.merma;
+                } else if (op === 3) {
+                    //sumar el minimo
+                    if (procesadas[i].optimo == 152) {
+                        sum += procesadas[i]._152.merma;
+                    } else if (procesadas[i].optimo == 182) {
+                        sum += procesadas[i]._182.merma;
+                    } else {
+                        console.log("no se ha calculado el optimo");
+                    }
+                }
+
             }
             return Math.floor(sum * 10000) / 10000;
         };
 
     }
+})();
+
+
+// To run this code, edit file index.html or index.jade and change
+// html data-ng-app attribute from angle to myAppName
+// ----------------------------------------------------------------------
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .controller('GastosCtrl', Controller);
+
+    Controller.$inject = ['$log', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevogasto_tpl'];
+    function Controller($log, GastoSrv, gastos, $scope, $uibModal, nuevogasto_tpl) {
+
+        var self = this;
+
+        self.nuevo_gasto = {};
+        self.gastos = gastos.data;
+
+        self.pre_add_gasto = function () {
+            var modalInstance = $uibModal.open({
+                templateUrl: nuevogasto_tpl,
+                controller: 'ModalNuevoGastoCtrl',
+                controllerAs: 'ctrl'
+//                controller: function($scope){
+//                  $scope.ok=function(){
+//                      $scope.$close("hola");
+//                  };
+//                  
+//                  $scope.cancel=function(){
+//                      $scope.$dismiss("adios");
+//                  };
+//                }
+
+            });
+
+
+            modalInstance.result.then(function (nuevo_gasto) {
+                console.log("response", nuevo_gasto);
+                self.gastos.push(nuevo_gasto);
+            }, function (response) {
+                console.log("response", response);
+            });
+        };
+
+        self.pre_del_gasto = function (gasto_selected) {
+
+            console.log("delete");
+            var modalInstance = $uibModal.open({
+                templateUrl: 'confirmar.html',
+                controller: function ($scope, gasto) {
+                    $scope.gasto = gasto;
+
+                    $scope.ok = function () {
+                        $scope.$close(true);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    gasto: function () {
+                        return gasto_selected;
+                    }
+                }
+
+            });
+
+
+            modalInstance.result.then(function (response) {
+                console.log("response", response);
+
+                var i = self.gastos.indexOf(gasto_selected);
+                self.gastos.splice(i, 1);
+
+//                GastoSrv.del_gasto(gasto_selected.id_gasto).then(function (response) {
+//
+//                    var i = self.gastos.indexOf(gasto_selected);
+//                    self.gastos.splice(i, 1);
+//
+//                }).catch(function (response) {
+//                    console.log("error");
+//                }).finally(function (response) {
+//                    $("#modalNuevoGasto").modal("hide");
+//                    $scope.formNuevoGasto.$setPristine();
+//                    $scope.formNuevoGasto.$setUntouched();
+//                    self.nuevo_gasto = {};
+//                });
+            }, function (response) {
+                console.log("response", response);
+            });
+        };
+
+
+
+
+
+
+        self.pre_add_gasto2 = function () {
+            $("#modalNuevoGasto").modal("show");
+        };
+
+
+//        ModalInstanceCtrl.$inject = ['$scope', '$uibModalInstance'];
+//        function ModalInstanceCtrl($scope, $uibModalInstance) {
+//
+//            $scope.ok = function () {
+//                $uibModalInstance.close('closed');
+//            };
+//
+//            $scope.cancel = function () {
+//                $uibModalInstance.dismiss('cancel');
+//            };
+//        }
+
+
+
+        self.add_gasto = function () {
+            GastoSrv.add_gasto(self.nuevo_gasto).then(function (response) {
+
+                self.gastos.push(response.data);
+
+            }).catch(function (response) {
+                console.log("error");
+            }).finally(function (response) {
+                $("#modalNuevoGasto").modal("hide");
+                $scope.formNuevoGasto.$setPristine();
+                $scope.formNuevoGasto.$setUntouched();
+                self.nuevo_gasto = {};
+            });
+        };
+
+
+
+
+
+    }
+})();
+
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .service('GastoSrv', Gasto);
+
+    Gasto.$inject = ['$http', 'URL_API'];
+    function Gasto($http, URL_API) {
+        var url = URL_API;
+        return {
+            get_gastos: function () {
+                return $http.get(url + 'gastosextras');
+            },
+            add_gasto: function (gasto) {
+                return $http.post(url + 'gastosextras', {gasto: gasto});
+            }
+        };
+    }
+
+})();
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .controller('ModalNuevoGastoCtrl', Controller);
+
+    Controller.$inject = ['GastoSrv', '$scope', '$uibModalInstance'];
+    function Controller(GastoSrv, $scope, $uibModalInstance) {
+
+        var self = this;
+        self.gasto = {};
+
+        self.cancelar = function () {
+            $uibModalInstance.dismiss('close');
+        };
+
+        self.show_loading = function () {
+            var el = $(".modal-content")[0];            
+            $(el).addClass("whirl");
+        };
+
+        self.hide_loading = function () {
+            var el = $(".modal-content")[0];         
+            $(el).removeClass("whirl");
+        };
+
+//        $scope.$on('modal-refresh', function (event, element) {
+//
+//            GastoSrv.add_gasto(self.gasto).then(function (response) {
+//                self.gasto = {};
+//                //$scope.formNuevoGasto.$setPristine();
+//                //$scope.formNuevoGasto.$setUntouched();
+//                $scope.$broadcast('removeModalSpinner', element);
+//                $uibModalInstance.close(response.data);
+//
+//
+//            }).catch(function (response) {
+//                console.log("error");
+//            }).finally(function (response) {
+//
+//            });
+//        });
+
+        self.add_gasto = function () {
+            self.show_loading();
+            GastoSrv.add_gasto(self.gasto).then(function (response) {
+                self.gasto = {};
+                $scope.form.$setPristine();
+                $scope.form.$setUntouched();
+                $uibModalInstance.close(response.data);
+            }).catch(function (response) {
+                $uibModalInstance.dismiss('error');
+            }).finally(function (response) {
+                self.hide_loading();
+            });
+        };
+
+    }
+})();
+
+
+// To run this code, edit file index.html or index.jade and change
+// html data-ng-app attribute from angle to myAppName
+// ----------------------------------------------------------------------
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .controller('ProductosCtrl', Controller);
+
+    Controller.$inject = ['$log', 'ProductoSrv', 'productos'];
+    function Controller($log, ProductoSrv, productos) {
+
+        var self = this;
+
+        self.productos = productos.data;
+
+//        UsuarioSrv.get_usuarios().then(function (response) {
+//            console.log("usuarios", JSON.stringify(response.data));
+//            self.usuarios = response.data;
+//        });
+
+
+
+
+    }
+})();
+
+/**=========================================================
+ * Module: browser.js
+ * Browser detection
+ =========================================================*/
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .service('ProductoSrv', Productos);
+
+    Productos.$inject = ['$http', 'URL_API'];
+    function Productos($http, URL_API) {
+        var url = URL_API;
+        return {
+            get_productos: function () {
+                return $http.get(url + 'productos');
+            },
+            add_producto: function (producto) {
+                return $http.post(url + 'productos', {producto: producto});
+            }
+        };
+    }
+
 })();
 
 

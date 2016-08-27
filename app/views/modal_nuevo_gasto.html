@@ -1,0 +1,29 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="ctrl.cancelar()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="modal-title">Nuevo Gasto</h3>
+</div>
+<div class="modal-body" id="modal-body">
+    <form name="form" id="form" ng-submit="form.$valid && ctrl.add_gasto()" novalidate>    
+        <div class="row">                   
+            <div class="col-xs-12 col-sm-12">
+                <div class="form-group" ng-class="{'has-error':(form.$submitted || form.nombre.$touched) && form.nombre.$error.required}">
+                    <label class="control-label">Concepto</label>
+                    <input type="text" name="nombre" class="form-control" ng-model="ctrl.gasto.nombre" required>
+                </div>
+            </div>
+        </div>
+        <div class="row">                   
+            <div class="col-xs-12 col-sm-12">
+                <div class="form-group" ng-class="{'has-error':(form.$submitted || form.precio.$touched) && form.precio.$error.required}">
+                    <label class="control-label">Precio m2</label>
+                    <input type="text" name="precio" class="form-control" ng-model="ctrl.gasto.precio" required>
+                </div>
+            </div>
+        </div>
+    </form>   
+</div>
+<div class="modal-footer">   
+    <!--<button class="btn btn-warning" type="button" modal-refresh data-spinner="traditional">Show</button>-->    
+    <button class="btn btn-warning" type="button" ng-click="ctrl.cancelar()">Cancelar</button>
+    <button class="btn btn-primary" type="submit" form="form">Guardar</button>
+</div>

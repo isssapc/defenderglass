@@ -11,12 +11,12 @@
         "submenu": [
             {
                 "text": "Arquitectónico",
-                "sref": "app.cotizar"
+                "sref": "app.cotizar_arquitectonico"
 
             },
             {
                 "text": "Automotriz",
-                "sref": "#"
+                "sref": "app.cotizar_automotriz"
 
             }
         ]
@@ -26,26 +26,17 @@
         "sref": "#",
         "icon": "fa fa-file-o",
         "submenu": [
-            {
-                "text": "Alta Producto",
-                "sref": "app.nuevo_producto"
-
-            },
+           
             {
                 "text": "Gastos Extras",
-                "sref": "app.submenu"
+                "sref": "app.gastos_extras"
 
             },
             {
                 "text": "Parámetros",
                 "sref": "app.submenu"
 
-            },
-            {
-                "text": "Alta Clientes",
-                "sref": "app.submenu"
-
-            },
+            },           
             {
                 "text": "Usuarios",
                 "sref": "app.usuarios"
@@ -85,8 +76,13 @@
         "icon": "icon-folder",
         "submenu": [
             {
+                "text": "Catálogo",
+                "sref": "app.clientes"
+
+            },
+            {
                 "text": "Nuevo Cliente",
-                "sref": "app.submenu"
+                "sref": "app.nuevo_cliente"
 
             },
             {

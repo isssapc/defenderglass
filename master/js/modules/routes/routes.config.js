@@ -19,11 +19,11 @@
         $locationProvider.html5Mode(false);
 
         // defaults to dashboard
-        $urlRouterProvider.otherwise('/app/cotizar');
+        $urlRouterProvider.otherwise('/page/login');
 
         // 
         // Application Routes
-        // -----------------------------------   
+        // --------------------------------   
         $stateProvider
                 .state('app', {
                     url: '/app',
@@ -63,7 +63,31 @@
                             }]
                     }
                 })
-
+                .state('app.gastos_extras', {
+                    url: '/gastos_extras',
+                    title: 'Gastos Extras',
+                    controller: 'GastosCtrl as ctrl',
+                    templateUrl: helper.basepath('gastos.html'),
+                    resolve: {
+                        gastos: ['GastoSrv', function (GastoSrv) {
+                                return GastoSrv.get_gastos();
+                            }],
+                        nuevogasto_tpl: function () {
+                            return  helper.basepath('modal_nuevo_gasto.html');
+                        }
+                    }
+                })
+                .state('app.clientes', {
+                    url: '/clientes',
+                    title: 'Clientes',
+                    controller: 'ClientesCtrl as ctrl',
+                    templateUrl: helper.basepath('clientes.html'),
+                    resolve: {
+                        clientes: ['ClienteSrv', function (ClienteSrv) {
+                                return ClienteSrv.get_clientes();
+                            }]
+                    }
+                })
                 .state('app.productos', {
                     url: '/productos',
                     title: 'Productos',
@@ -81,11 +105,17 @@
                     controller: 'NuevoProductoCtrl as ctrl',
                     templateUrl: helper.basepath('producto_nuevo.html'),
                 })
-                .state('app.cotizar', {
-                    url: '/cotizacion',
+                .state('app.cotizar_arquitectonico', {
+                    url: '/cotizacion/arquitectonico',
+                    title: 'Cotización',
+                    controller: 'CotizacionArqCtrl as ctrl',
+                    templateUrl: helper.basepath('cotizacion_arquitectonico.html')
+                })
+                .state('app.cotizar_automotriz', {
+                    url: '/cotizacion/automotriz',
                     title: 'Cotización',
                     controller: 'CotizacionCtrl as ctrl',
-                    templateUrl: helper.basepath('cotizacion.html')
+                    templateUrl: helper.basepath('cotizacion_automotriz.html')
                 })
                 .state('page', {
                     url: '/page',

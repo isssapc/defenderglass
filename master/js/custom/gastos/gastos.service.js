@@ -1,7 +1,3 @@
-/**=========================================================
- * Module: browser.js
- * Browser detection
- =========================================================*/
 
 (function () {
     'use strict';
@@ -15,10 +11,10 @@
         var url = URL_API;
         return {
             get_gastos: function () {
-                return $http.get(url + 'gastos');
+                return $http.get(url + 'gastosextras');
             },
             add_gasto: function (gasto) {
-                return $http.post(url + 'gastos', {gasto: gasto});
+                return $http.post(url + 'gastosextras', {gasto: gasto});
             }
         };
     }
