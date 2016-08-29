@@ -822,21 +822,17 @@
 
 (function () {
     'use strict';
-
     angular
             .module('app.routes')
             .config(routesConfig);
-
     routesConfig.$inject = ['$stateProvider', '$locationProvider', '$urlRouterProvider', 'RouteHelpersProvider'];
     function routesConfig($stateProvider, $locationProvider, $urlRouterProvider, helper) {
 
         // Set the following to true to enable the HTML5 Mode
         // You may have to set <base> tag in index and a routing configuration in your server
         $locationProvider.html5Mode(false);
-
         // defaults to dashboard
         $urlRouterProvider.otherwise('/page/login');
-
         // 
         // Application Routes
         // --------------------------------   
@@ -904,6 +900,17 @@
                             }]
                     }
                 })
+                .state('app.parametros', {
+                    url: '/parametros',
+                    title: 'Parámetros',
+                    controller: 'ParametrosCtrl as ctrl',
+                    templateUrl: helper.basepath('parametros.html'),
+                    resolve: {
+                        parametros: ['ParametroSrv', function (ParametroSrv) {
+                                return ParametroSrv.get_parametros();
+                            }]
+                    }
+                })
                 .state('app.productos', {
                     url: '/productos',
                     title: 'Productos',
@@ -920,6 +927,20 @@
                     title: 'Nuevo Producto',
                     controller: 'NuevoProductoCtrl as ctrl',
                     templateUrl: helper.basepath('producto_nuevo.html'),
+                    resolve: {
+                        niveles_seguridad: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_niveles_seguridad();
+                            }],
+                        segmentos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_segmentos();
+                            }],
+                        categorias: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_categorias();
+                            }],
+                        anchos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_anchos();
+                            }]
+                    }
                 })
                 .state('app.cotizar_arquitectonico', {
                     url: '/cotizacion/arquitectonico',
@@ -963,7 +984,6 @@
                 //   )
                 // })
                 ;
-
     } // routesConfig
 
 })();
@@ -2025,6 +2045,17 @@
         var self = this;
         //self.pieza_selected={};
         self.show_resto = false;
+        self.procesadas = [];
+        self.rollo = null;
+        
+        self.cot={
+          precio:175.80,
+          flete:20.00,
+          instalacion:75.00,
+          dolar:19.00,
+          
+        };
+        
         self.piezas = [
             {
                 cantidad: 2,
@@ -2057,8 +2088,7 @@
                 ancho: .95
             }
         ];
-        self.procesadas = [];
-        self.rollo = null;
+        
 
         self.addPieza = function () {
             self.piezas.push({cantidad: 1});
@@ -2704,6 +2734,117 @@
 
     angular
             .module('app.logic')
+            .controller('ParametrosCtrl', Controller);
+
+    Controller.$inject = ['$log', 'ParametroSrv', 'parametros'];
+    function Controller($log, ParametroSrv, parametros) {
+
+        var self = this;
+
+        self.parametros = parametros.data;
+
+//        UsuarioSrv.get_usuarios().then(function (response) {
+//            console.log("usuarios", JSON.stringify(response.data));
+//            self.usuarios = response.data;
+//        });
+
+
+
+
+    }
+})();
+
+/**=========================================================
+ * Module: browser.js
+ * Browser detection
+ =========================================================*/
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .service('ParametroSrv', Parametro);
+
+    Parametro.$inject = ['$http', 'URL_API'];
+    function Parametro($http, URL_API) {
+        var url = URL_API;
+        return {
+            get_parametros: function () {
+                return $http.get(url + 'parametros');
+            },
+            add_parametro: function (parametro) {
+                return $http.post(url + 'parametros', {parametro: parametro});
+            }
+        };
+    }
+
+})();
+
+
+// To run this code, edit file index.html or index.jade and change
+// html data-ng-app attribute from angle to myAppName
+// ----------------------------------------------------------------------
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .controller('NuevoProductoCtrl', Controller);
+
+    Controller.$inject = ['$scope', 'ProductoSrv', 'niveles_seguridad', 'segmentos', 'categorias', 'anchos'];
+    function Controller($scope, ProductoSrv, niveles_seguridad, segmentos, categorias, anchos) {
+
+        var self = this;
+
+        self.niveles_seguridad = niveles_seguridad.data;
+        self.segmentos = segmentos.data;
+        self.categorias = categorias.data;
+        self.anchos = anchos.data;
+
+        self.default_options =
+                {
+                    marca: "DefenderGlass",
+                    proteccion_uv: 99
+                };
+
+        self.producto = angular.copy(self.default_options);
+
+        self.add_producto = function () {
+            ProductoSrv.add_producto(self.producto).then(function (response) {
+                console.log("nuevo producto :)", JSON.stringify(response.data));
+                self.producto = angular.copy(self.default_options);
+                $scope.formNuevoProducto.$setPristine();
+                $scope.formNuevoProducto.$setUntouched();
+
+
+            }).catch(function (response) {
+
+            }).finally(function (response) {
+
+            });
+
+
+        };
+
+
+
+
+
+    }
+})();
+
+
+// To run this code, edit file index.html or index.jade and change
+// html data-ng-app attribute from angle to myAppName
+// ----------------------------------------------------------------------
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
             .controller('ProductosCtrl', Controller);
 
     Controller.$inject = ['$log', 'ProductoSrv', 'productos'];
@@ -2740,6 +2881,18 @@
     function Productos($http, URL_API) {
         var url = URL_API;
         return {
+            get_categorias: function () {
+                return $http.get(url + 'productos/categorias');
+            },
+            get_anchos: function () {
+                return $http.get(url + 'productos/anchos');
+            },
+            get_segmentos: function () {
+                return $http.get(url + 'productos/segmentos');
+            },
+            get_niveles_seguridad: function () {
+                return $http.get(url + 'productos/niveles_seguridad');
+            },
             get_productos: function () {
                 return $http.get(url + 'productos');
             },

@@ -12,6 +12,17 @@
         var self = this;
         //self.pieza_selected={};
         self.show_resto = false;
+        self.procesadas = [];
+        self.rollo = null;
+        
+        self.cot={
+          precio:175.80,
+          flete:20.00,
+          instalacion:75.00,
+          dolar:19.00,
+          
+        };
+        
         self.piezas = [
             {
                 cantidad: 2,
@@ -44,8 +55,7 @@
                 ancho: .95
             }
         ];
-        self.procesadas = [];
-        self.rollo = null;
+        
 
         self.addPieza = function () {
             self.piezas.push({cantidad: 1});

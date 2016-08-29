@@ -6,21 +6,17 @@
 
 (function () {
     'use strict';
-
     angular
             .module('app.routes')
             .config(routesConfig);
-
     routesConfig.$inject = ['$stateProvider', '$locationProvider', '$urlRouterProvider', 'RouteHelpersProvider'];
     function routesConfig($stateProvider, $locationProvider, $urlRouterProvider, helper) {
 
         // Set the following to true to enable the HTML5 Mode
         // You may have to set <base> tag in index and a routing configuration in your server
         $locationProvider.html5Mode(false);
-
         // defaults to dashboard
         $urlRouterProvider.otherwise('/page/login');
-
         // 
         // Application Routes
         // --------------------------------   
@@ -88,6 +84,17 @@
                             }]
                     }
                 })
+                .state('app.parametros', {
+                    url: '/parametros',
+                    title: 'Parámetros',
+                    controller: 'ParametrosCtrl as ctrl',
+                    templateUrl: helper.basepath('parametros.html'),
+                    resolve: {
+                        parametros: ['ParametroSrv', function (ParametroSrv) {
+                                return ParametroSrv.get_parametros();
+                            }]
+                    }
+                })
                 .state('app.productos', {
                     url: '/productos',
                     title: 'Productos',
@@ -104,6 +111,20 @@
                     title: 'Nuevo Producto',
                     controller: 'NuevoProductoCtrl as ctrl',
                     templateUrl: helper.basepath('producto_nuevo.html'),
+                    resolve: {
+                        niveles_seguridad: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_niveles_seguridad();
+                            }],
+                        segmentos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_segmentos();
+                            }],
+                        categorias: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_categorias();
+                            }],
+                        anchos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_anchos();
+                            }]
+                    }
                 })
                 .state('app.cotizar_arquitectonico', {
                     url: '/cotizacion/arquitectonico',
@@ -147,7 +168,6 @@
                 //   )
                 // })
                 ;
-
     } // routesConfig
 
 })();

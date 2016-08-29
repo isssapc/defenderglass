@@ -22,11 +22,15 @@
         ]
     },
     {
+        "text": "Cotizaciones",
+        "sref": "app.cotizaciones",
+        "icon": "fa fa-file-o"
+    },
+    {
         "text": "Configuración",
         "sref": "#",
         "icon": "fa fa-file-o",
         "submenu": [
-           
             {
                 "text": "Gastos Extras",
                 "sref": "app.gastos_extras"
@@ -34,9 +38,9 @@
             },
             {
                 "text": "Parámetros",
-                "sref": "app.submenu"
+                "sref": "app.parametros"
 
-            },           
+            },
             {
                 "text": "Usuarios",
                 "sref": "app.usuarios"

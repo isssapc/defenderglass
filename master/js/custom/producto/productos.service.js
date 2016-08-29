@@ -14,6 +14,18 @@
     function Productos($http, URL_API) {
         var url = URL_API;
         return {
+            get_categorias: function () {
+                return $http.get(url + 'productos/categorias');
+            },
+            get_anchos: function () {
+                return $http.get(url + 'productos/anchos');
+            },
+            get_segmentos: function () {
+                return $http.get(url + 'productos/segmentos');
+            },
+            get_niveles_seguridad: function () {
+                return $http.get(url + 'productos/niveles_seguridad');
+            },
             get_productos: function () {
                 return $http.get(url + 'productos');
             },

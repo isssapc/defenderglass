@@ -1,70 +1,100 @@
 <h3>Nuevo Producto</h3>
 
 <div class="row">
-    <div class="col-xs-12">
-        <div class="col-xs-12 col-md-8 col-md-offset-2">
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">Datos Generales</h4>
-                </div>
-                <form name="formNuevoProducto" ng-submit="formNuevoProducto.$valid && ctrl.add_producto()" novalidate>
-
-                    <div class="panel-body">
-                        <div class="row">                   
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="form-group" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.nombre.$touched) && formNuevoProducto.nombre.$error.required}">
-                                    <label class="control-label">Nombre</label>
-                                    <input type="text" name="nombre" class="form-control" ng-model="ctrl.usuario.nombre" required>
-                                </div>
-                            </div>
+    <div class="col-xs-12"> 
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Propiedades</h4>
+            </div>
+            <div class="panel-body">
+                <form name="formNuevoProducto" id="formNuevoProducto" class="form-horizontal" ng-submit="formNuevoProducto.$valid && ctrl.add_producto()" novalidate>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Clave</label>
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" ng-model="ctrl.producto.clave" />
                         </div>
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="form-group" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.rol.$touched) && formNuevoProducto.rol.$error.required}">
-                                    <label class="control-label">Rol</label>
-                                    <select class="form-control" name="rol" ng-options="r.id_rol as r.rol for r in ctrl.roles" ng-model="ctrl.usuario.id_rol" required>
-                                        <option value="">Seleccionar</option>                                           
-                                    </select>
-                                </div>
-                            </div>		
+                    </div>
+                    <div class="form-group" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.modelo.$touched) && formNuevoProducto.modelo.$error.required}">
+                        <label class="col-lg-2 control-label">Modelo</label>
+                        <div class="col-lg-10">
+                            <input type="text" name="modelo" class="form-control" ng-model="ctrl.producto.modelo" required />
                         </div>
-
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="form-group" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.email.$touched) && formNuevoProducto.email.$error.required}">
-                                    <label class="control-label">Email</label>
-                                    <input type="email" name="email" class="form-control" ng-model="ctrl.usuario.email" required>
-                                </div>
-                            </div>		
+                    </div>
+                    <div class="form-group" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.categoria.$touched) && formNuevoProducto.categoria.$error.required}">
+                        <label class="col-lg-2 control-label">Categoría</label>
+                        <div class="col-lg-10">
+                            <select class="form-control" name="categoria" ng-options="c.id_categoria as c.nombre for c in ctrl.categorias" ng-model="ctrl.producto.id_categoria" required>
+                                <option value="">Seleccionar...</option>                                           
+                            </select>
                         </div>
-
-                        <div class="row">			
-                            <div class="col-xs-12 col-sm-6">
-                                <div class="form-group" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.password.$touched) && formNuevoProducto.password.$error.required}">
-                                    <label class="control-label">Contraseña</label>
-                                    <input type="password" name="password" class="form-control" ng-model=" ctrl.usuario.password" required>
-                                </div>
-                            </div>
-
-                            <div class="col-xs-12 col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">Confirmar</label>
-                                    <input type="password" class="form-control" ng-model="ctrl.confirmar">
-                                </div>
-                            </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.segmento.$touched) && formNuevoProducto.segmento.$error.required}">
+                        <label class="col-lg-2 control-label">Segmento</label>
+                        <div class="col-lg-10">
+                            <select class="form-control" name="segmento" ng-options="s.id_segmento as s.nombre for s in ctrl.segmentos" ng-model="ctrl.producto.id_segmento" required>
+                                <option value="">Seleccionar...</option>                                           
+                            </select>
                         </div>
-                        <div>{{ctrl.usuario|json}}</div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.ancho.$touched) && formNuevoProducto.ancho.$error.required}">
+                        <label class="col-lg-2 control-label">Ancho</label>
+                        <div class="col-lg-10">
+                            <select class="form-control" name="ancho" ng-options="a.id_ancho as a.ancho for a in ctrl.anchos" ng-model="ctrl.producto.id_ancho" required>
+                                <option value="">Seleccionar...</option>                                           
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Precio</label>
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" ng-model="ctrl.producto.precio" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Ficha Técnica</label>
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" ng-model="ctrl.producto.ficha_tecnica" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Transmisión Luz</label>
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" ng-model="ctrl.producto.transmision_luz" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Protección Rayos UV</label>
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" ng-model="ctrl.producto.proteccion_uv" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Rechazo Solar</label>
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" ng-model="ctrl.producto.rechazo_solar" />
+                        </div>
                     </div>
 
-                    <div class="panel-footer">                        
-                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Marca</label>
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" ng-model="ctrl.producto.marca" />
+                        </div>
                     </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Seguridad</label>
+                        <div class="col-lg-10">
+                            <select class="form-control" name="seguridad" ng-options="s.id_seguridad as s.nombre for s in ctrl.niveles_seguridad" ng-model="ctrl.producto.id_seguridad">
+                                <option value="">Seleccionar...</option>                                           
+                            </select>
+                        </div>
+                    </div> 
+                    <div>{{ctrl.producto|json}}</div>
                 </form>
             </div>
-        </div>  
-
-
-
+            <div class="panel-footer">                        
+                <button type="submit" form="formNuevoProducto" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>       
     </div>
 </div>

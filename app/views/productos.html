@@ -1,4 +1,4 @@
-<h3>Usuarios</h3>
+<h3>Productos</h3>
 <div class="row">
     <div class="col-lg-12">
 
@@ -9,10 +9,13 @@
                         <thead>
                             <tr>
                                 <th>Id</th>
-                                <th>tipo</th>
+                                <th>Segmento</th>
                                 <th>categoria</th>
                                 <th>modelo</th>
                                 <th>marca</th>
+                                <th>seguridad</th>
+                                <th>precio USD</th>
+                                <th>ancho</th>
                                 <th>% solar</th>
                                 <th>% luz</th>
                                 <th>% uv</th>
@@ -21,10 +24,13 @@
                         <tbody>
                             <tr ng-repeat="p in ctrl.productos">
                                 <td>{{p.id_producto}}</td>
-                                <td>{{p.tipo}}</td>
+                                <td>{{p.segmento}}</td>
                                 <td>{{p.categoria}}</td>
                                 <td>{{p.modelo}}</td>
                                 <td>{{p.marca}}</td>
+                                <td>{{p.seguridad}}</td>
+                                <td>{{p.precio|currency}}</td>
+                                <td>{{p.ancho}}</td>
                                 <td>{{p.rechazo_solar}}</td>
                                 <td>{{p.transmision_luz}}</td>
                                 <td>{{p.proteccion_uv}}</td>
