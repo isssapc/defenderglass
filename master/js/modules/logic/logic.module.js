@@ -2,5 +2,5 @@
     'use strict';
 
     angular
-        .module('app.logic',['satellizer']);
+        .module('app.logic',['satellizer','underscore','cfp.loadingBar']);
 })();

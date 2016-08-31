@@ -14,16 +14,7 @@
         self.cancelar = function () {
             $uibModalInstance.dismiss('close');
         };
-
-        self.show_loading = function () {
-            var el = $(".modal-content")[0];            
-            $(el).addClass("whirl");
-        };
-
-        self.hide_loading = function () {
-            var el = $(".modal-content")[0];         
-            $(el).removeClass("whirl");
-        };
+   
 
 //        $scope.$on('modal-refresh', function (event, element) {
 //
@@ -43,7 +34,7 @@
 //        });
 
         self.add_gasto = function () {
-            self.show_loading();
+         
             GastoSrv.add_gasto(self.gasto).then(function (response) {
                 self.gasto = {};
                 $scope.form.$setPristine();
@@ -52,7 +43,7 @@
             }).catch(function (response) {
                 $uibModalInstance.dismiss('error');
             }).finally(function (response) {
-                self.hide_loading();
+              
             });
         };
 

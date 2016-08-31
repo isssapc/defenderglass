@@ -1,0 +1,163 @@
+
+
+<div class="form-group">
+    <label class="col-lg-2 control-label">Clave</label>
+    <div class="col-lg-10">
+        <input type="text" class="form-control" ng-model="ctrl.producto.clave" />
+    </div>
+</div>
+<div class="form-group" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.modelo.$touched) && formNuevoProducto.modelo.$error.required}">
+    <label class="col-lg-2 control-label">Modelo</label>
+    <div class="col-lg-10">
+        <input type="text" name="modelo" class="form-control" ng-model="ctrl.producto.modelo" required />
+    </div>
+</div>
+
+<!--                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Segmento</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline c-radio">
+                                <input id="inlineradio10" type="radio" name="i-radio" value="option1" checked="checked" />
+                                <span class="fa fa-check"></span>Automotriz</label>
+                            <label class="radio-inline c-radio">
+                                <input id="inlineradio20" type="radio" name="i-radio" value="option2" checked="checked" />
+                                <span class="fa fa-user"></span>Arquitectónico</label>
+                        </div>
+                    </div>-->
+<!--                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Categoría</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline c-radio">
+                                <input id="inlineradio10" type="radio" name="i-radio" value="option1" checked="checked" />
+                                <span class="fa fa-check"></span>Control Solar</label>
+                            <label class="radio-inline c-radio">
+                                <input id="inlineradio20" type="radio" name="i-radio" value="option2" checked="checked" />
+                                <span class="fa fa-user"></span>Seguridad</label>
+                        </div>
+                    </div>-->
+<!--                    <fieldset> 
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Segmento</label>
+                            <div class="col-sm-5 ">
+                                <label class="radio-inline c-radio">
+                                    <input id="inlineradio10" type="radio" name="rb_segmento" value="0" checked="checked" />
+                                    <span class="fa fa-check"></span>Automotriz</label>                         
+                            </div>
+                            <div class="col-sm-5">                         
+                                <label class="radio-inline c-radio">
+                                    <input id="inlineradio20" type="radio" name="rb_segmento" value="1"  />
+                                    <span class="fa fa-check"></span>Arquitectónico</label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset> 
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Categoría</label>
+                            <div class="col-sm-5 ">
+                                <label class="radio-inline c-radio">
+                                    <input id="inlineradio10" type="radio" name="rb_seguridad" value="0" checked="checked" />
+                                    <span class="fa fa-check"></span>Control Solar</label>                         
+                            </div>
+                            <div class="col-sm-5">                         
+                                <label class="radio-inline c-radio">
+                                    <input id="inlineradio20" type="radio" name="rb_seguridad" value="1" />
+                                    <span class="fa fa-check"></span>Seguridad</label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset> 
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Ancho</label>
+                            <div class="col-sm-5 ">
+                                <label class="radio-inline c-radio">
+                                    <input id="inlineradio10" type="radio" name="rb_ancho" value="0" checked="checked" />
+                                    <span class="fa fa-check"></span>1.52 m</label>                         
+                            </div>
+                            <div class="col-sm-5">                         
+                                <label class="radio-inline c-radio">
+                                    <input id="inlineradio20" type="radio" name="rb_ancho" value="1" />
+                                    <span class="fa fa-check"></span>1.82 m</label>
+                            </div>
+                        </div>
+                    </fieldset>-->
+
+<div class="form-group" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.categoria.$touched) && formNuevoProducto.categoria.$error.required}">
+    <label class="col-lg-2 control-label">Categoría</label>
+    <div class="col-lg-10">
+        <select class="form-control" name="categoria" ng-options="c.id_categoria as c.nombre for c in ctrl.categorias" ng-model="ctrl.producto.id_categoria" required>
+            <option value="">Seleccionar...</option>                                           
+        </select>
+    </div>
+</div>
+<div class="form-group" ng-model="ctrl.producto.id_seguridad" ng-if="ctrl.producto.id_categoria == 1" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.seguridad.$touched) && formNuevoProducto.seguridad.$error.required}">
+    <label class="col-lg-2 control-label">Seguridad</label>
+    <div class="col-lg-10">
+        <select class="form-control" name="seguridad" ng-options="s.id_seguridad as s.nombre for s in ctrl.niveles_seguridad" ng-model="ctrl.producto.id_seguridad" ng-required="ctrl.producto.id_categoria==1">
+            <option value="">Seleccionar...</option>                                           
+        </select>
+    </div>
+</div> 
+<div class="form-group" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.segmento.$touched) && formNuevoProducto.segmento.$error.required}">
+    <label class="col-lg-2 control-label">Segmento</label>
+    <div class="col-lg-10">
+        <select class="form-control" name="segmento" ng-options="s.id_segmento as s.nombre for s in ctrl.segmentos" ng-model="ctrl.producto.id_segmento" required>
+            <option value="">Seleccionar...</option>                                           
+        </select>
+    </div>
+</div>
+<div class="form-group" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.ancho.$touched) && formNuevoProducto.ancho.$error.required}">
+    <label class="col-lg-2 control-label">Ancho</label>
+    <div class="col-lg-10">
+        <select class="form-control" name="ancho" ng-options="a.id_ancho as a.ancho for a in ctrl.anchos" ng-model="ctrl.producto.id_ancho" required>
+            <option value="">Seleccionar...</option>                                           
+        </select>
+    </div>
+</div>
+<div class="form-group" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.precio.$touched) && formNuevoProducto.precio.$error.required}">
+    <label class="col-lg-2 control-label">Precio</label>
+    <div class="col-lg-10">
+        <input type="text" name="precio" class="form-control" ng-model="ctrl.producto.precio" required />
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-lg-2 control-label">Ficha Técnica</label>
+    <div class="col-lg-10">
+        <input type="text" class="form-control" ng-model="ctrl.producto.ficha_tecnica" />
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-lg-2 control-label">Transmisión Luz</label>
+    <div class="col-lg-10">
+        <div class="input-group">
+            <input type="text" class="form-control" ng-model="ctrl.producto.transmision_luz" />
+            <span class="input-group-addon">%</span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-lg-2 control-label">Protección Rayos UV</label>
+    <div class="col-lg-10">
+        <div class="input-group">
+            <input type="text" class="form-control" ng-model="ctrl.producto.proteccion_uv" />
+            <span class="input-group-addon">%</span>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-lg-2 control-label">Rechazo Solar</label>
+    <div class="col-lg-10">
+        <div class="input-group">
+            <input type="text" class="form-control" ng-model="ctrl.producto.rechazo_solar" />
+            <span class="input-group-addon">%</span>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-lg-2 control-label">Marca</label>
+    <div class="col-lg-10">
+        <input type="text" class="form-control" ng-model="ctrl.producto.marca" />
+    </div>
+</div>
+<div>{{ctrl.producto|json}}</div>
+

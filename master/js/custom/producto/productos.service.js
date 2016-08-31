@@ -14,6 +14,9 @@
     function Productos($http, URL_API) {
         var url = URL_API;
         return {
+            get_garantias: function () {
+                return $http.get(url + 'productos/garantias');
+            },
             get_categorias: function () {
                 return $http.get(url + 'productos/categorias');
             },
@@ -31,6 +34,9 @@
             },
             add_producto: function (producto) {
                 return $http.post(url + 'productos', {producto: producto});
+            },
+            del_producto: function (id_producto) {
+                return $http.delete(url + 'productos/' + id_producto);
             }
         };
     }

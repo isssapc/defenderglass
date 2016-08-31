@@ -103,7 +103,10 @@
                     resolve: {
                         productos: ['ProductoSrv', function (ProductoSrv) {
                                 return ProductoSrv.get_productos();
-                            }]
+                            }],
+                        nuevoproducto_tpl: function () {
+                            return  helper.basepath('producto_nuevo_modal.html');
+                        }
                     }
                 })
                 .state('app.nuevo_producto', {
@@ -130,7 +133,15 @@
                     url: '/cotizacion/arquitectonico',
                     title: 'Cotización',
                     controller: 'CotizacionArqCtrl as ctrl',
-                    templateUrl: helper.basepath('cotizacion_arquitectonico.html')
+                    templateUrl: helper.basepath('cotizacion_arquitectonico.html'),
+                    resolve: {
+                        productos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_productos();
+                            }],
+                        garantias: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_garantias();
+                            }]
+                    }
                 })
                 .state('app.cotizar_automotriz', {
                     url: '/cotizacion/automotriz',

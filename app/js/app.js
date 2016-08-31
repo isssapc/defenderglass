@@ -22,7 +22,8 @@
             'app.sidebar',
             'app.navsearch',
             'app.preloader',
-            'app.loadingbar',
+            'angular-loading-bar',
+            //'app.loadingbar',
             'app.translate',
             'app.settings',
             'app.utils',
@@ -73,7 +74,15 @@
     'use strict';
 
     angular
-        .module('app.logic',['satellizer']);
+        .module('app.logic',['satellizer','underscore','cfp.loadingBar']);
+})();
+(function () {
+    'use strict';
+
+    angular.module('underscore', []);
+    angular.module('underscore').factory('_', ['$window', function ($window) {
+            return $window._;
+        }]);
 })();
 (function() {
     'use strict';
@@ -337,19 +346,20 @@
 
 })();
 
-(function() {
+(function () {
     'use strict';
 
     angular
-        .module('app.loadingbar')
-        .config(loadingbarConfig)
-        ;
+            .module('app.loadingbar')
+            .config(loadingbarConfig)
+            ;
     loadingbarConfig.$inject = ['cfpLoadingBarProvider'];
-    function loadingbarConfig(cfpLoadingBarProvider){
-      cfpLoadingBarProvider.includeBar = true;
-      cfpLoadingBarProvider.includeSpinner = false;
-      cfpLoadingBarProvider.latencyThreshold = 500;
-      cfpLoadingBarProvider.parentSelector = '.wrapper > section';
+    function loadingbarConfig(cfpLoadingBarProvider) {
+        cfpLoadingBarProvider.includeBar = false;
+        cfpLoadingBarProvider.includeSpinner = true;
+        cfpLoadingBarProvider.latencyThreshold = 500;
+        //cfpLoadingBarProvider.parentSelector = '.wrapper > section';
+        cfpLoadingBarProvider.spinnerTemplate = '<div style="position:fixed; top:0px; right:0px; left:0px; bottom:0px; z-index:90002;"><div style="position:absolute; top:50%; left:50%;" class="whirl traditional"></div></div>';
     }
 })();
 (function() {
@@ -380,6 +390,22 @@
 
     }
 
+})();
+(function () {
+    'use strict';
+
+    angular
+            .module('angle')
+            .config(loadingbarConfig);
+    loadingbarConfig.$inject = ['cfpLoadingBarProvider'];
+    function loadingbarConfig(cfpLoadingBarProvider) {
+        cfpLoadingBarProvider.includeBar = false;
+        cfpLoadingBarProvider.includeSpinner = true;
+        cfpLoadingBarProvider.latencyThreshold = 500;
+        //cfpLoadingBarProvider.parentSelector = '.wrapper > section';
+        //detras del preloader que esta a z-index=9999
+        cfpLoadingBarProvider.spinnerTemplate = '<div style="position:fixed; top:0px; right:0px; left:0px; bottom:0px; z-index:9000;"><div style="position:absolute; top:50%; left:50%;" class="whirl traditional"></div></div>';
+    }
 })();
 (function () {
     'use strict';
@@ -919,7 +945,10 @@
                     resolve: {
                         productos: ['ProductoSrv', function (ProductoSrv) {
                                 return ProductoSrv.get_productos();
-                            }]
+                            }],
+                        nuevoproducto_tpl: function () {
+                            return  helper.basepath('producto_nuevo_modal.html');
+                        }
                     }
                 })
                 .state('app.nuevo_producto', {
@@ -946,7 +975,15 @@
                     url: '/cotizacion/arquitectonico',
                     title: 'Cotización',
                     controller: 'CotizacionArqCtrl as ctrl',
-                    templateUrl: helper.basepath('cotizacion_arquitectonico.html')
+                    templateUrl: helper.basepath('cotizacion_arquitectonico.html'),
+                    resolve: {
+                        productos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_productos();
+                            }],
+                        garantias: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_garantias();
+                            }]
+                    }
                 })
                 .state('app.cotizar_automotriz', {
                     url: '/cotizacion/automotriz',
@@ -2039,20 +2076,25 @@
             .module('app.logic')
             .controller('CotizacionArqCtrl', Controller);
 
-    Controller.$inject = ['$log'];
-    function Controller($log) {
+    Controller.$inject = ['$log','productos','garantias'];
+    function Controller($log,productos,garantias) {
 
         var self = this;
         //self.pieza_selected={};
         self.show_resto = false;
         self.procesadas = [];
+        self.productos=productos.data;
+         self.garantias=garantias.data;
         self.rollo = null;
+        self.toggleFormulaPrecio182=true;
+        self.toggleFormulaPrecio152=true;
+        
         
         self.cot={
           precio:175.80,
           flete:20.00,
           instalacion:75.00,
-          dolar:19.00,
+          dolar:19.00
           
         };
         
@@ -2511,35 +2553,44 @@
             .module('app.logic')
             .controller('GastosCtrl', Controller);
 
-    Controller.$inject = ['$log', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevogasto_tpl'];
-    function Controller($log, GastoSrv, gastos, $scope, $uibModal, nuevogasto_tpl) {
+    Controller.$inject = ['$log', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevogasto_tpl', 'cfpLoadingBar'];
+    function Controller($log, GastoSrv, gastos, $scope, $uibModal, nuevogasto_tpl, cfpLoadingBar) {
 
         var self = this;
 
         self.nuevo_gasto = {};
         self.gastos = gastos.data;
 
+        self.loading_show = function () {
+            cfpLoadingBar.start();
+        };
+
+        self.loading_hide = function () {
+            cfpLoadingBar.complete();
+        };
+
+
         self.pre_add_gasto = function () {
             var modalInstance = $uibModal.open({
                 templateUrl: nuevogasto_tpl,
-                controller: 'ModalNuevoGastoCtrl',
-                controllerAs: 'ctrl'
-//                controller: function($scope){
-//                  $scope.ok=function(){
-//                      $scope.$close("hola");
-//                  };
-//                  
-//                  $scope.cancel=function(){
-//                      $scope.$dismiss("adios");
-//                  };
-//                }
+                //controller: 'ModalNuevoGastoCtrl',
+                //controllerAs: 'ctrl'
+                controller: function ($scope) {
+                    $scope.gasto = {};
+                    $scope.ok = function () {
+                        $scope.$close($scope.gasto);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                }
 
             });
 
 
-            modalInstance.result.then(function (nuevo_gasto) {
-                console.log("response", nuevo_gasto);
-                self.gastos.push(nuevo_gasto);
+            modalInstance.result.then(function (gasto) {
+                self.add_gasto(gasto);
             }, function (response) {
                 console.log("response", response);
             });
@@ -2573,22 +2624,17 @@
             modalInstance.result.then(function (response) {
                 console.log("response", response);
 
-                var i = self.gastos.indexOf(gasto_selected);
-                self.gastos.splice(i, 1);
+//                var i = self.gastos.indexOf(gasto_selected);
+//                self.gastos.splice(i, 1);
 
-//                GastoSrv.del_gasto(gasto_selected.id_gasto).then(function (response) {
-//
-//                    var i = self.gastos.indexOf(gasto_selected);
-//                    self.gastos.splice(i, 1);
-//
-//                }).catch(function (response) {
-//                    console.log("error");
-//                }).finally(function (response) {
-//                    $("#modalNuevoGasto").modal("hide");
-//                    $scope.formNuevoGasto.$setPristine();
-//                    $scope.formNuevoGasto.$setUntouched();
-//                    self.nuevo_gasto = {};
-//                });
+                GastoSrv.del_gasto(gasto_selected.id_gasto).then(function (response) {
+                    var i = self.gastos.indexOf(gasto_selected);
+                    self.gastos.splice(i, 1);
+
+                }).catch(function (response) {
+                    console.log("error");
+                }).finally(function (response) {                   
+                });
             }, function (response) {
                 console.log("response", response);
             });
@@ -2596,12 +2642,6 @@
 
 
 
-
-
-
-        self.pre_add_gasto2 = function () {
-            $("#modalNuevoGasto").modal("show");
-        };
 
 
 //        ModalInstanceCtrl.$inject = ['$scope', '$uibModalInstance'];
@@ -2618,18 +2658,16 @@
 
 
 
-        self.add_gasto = function () {
-            GastoSrv.add_gasto(self.nuevo_gasto).then(function (response) {
-
+        self.add_gasto = function (gasto) {
+            GastoSrv.add_gasto(gasto).then(function (response) {
                 self.gastos.push(response.data);
-
             }).catch(function (response) {
                 console.log("error");
             }).finally(function (response) {
-                $("#modalNuevoGasto").modal("hide");
-                $scope.formNuevoGasto.$setPristine();
-                $scope.formNuevoGasto.$setUntouched();
-                self.nuevo_gasto = {};
+
+                //$scope.formNuevoGasto.$setPristine();
+                //$scope.formNuevoGasto.$setUntouched();
+                //self.nuevo_gasto = {};
             });
         };
 
@@ -2657,6 +2695,9 @@
             },
             add_gasto: function (gasto) {
                 return $http.post(url + 'gastosextras', {gasto: gasto});
+            },
+            del_gasto: function (id_gasto) {
+                return $http.delete(url + 'gastosextras/' + id_gasto);
             }
         };
     }
@@ -2679,16 +2720,7 @@
         self.cancelar = function () {
             $uibModalInstance.dismiss('close');
         };
-
-        self.show_loading = function () {
-            var el = $(".modal-content")[0];            
-            $(el).addClass("whirl");
-        };
-
-        self.hide_loading = function () {
-            var el = $(".modal-content")[0];         
-            $(el).removeClass("whirl");
-        };
+   
 
 //        $scope.$on('modal-refresh', function (event, element) {
 //
@@ -2708,7 +2740,7 @@
 //        });
 
         self.add_gasto = function () {
-            self.show_loading();
+         
             GastoSrv.add_gasto(self.gasto).then(function (response) {
                 self.gasto = {};
                 $scope.form.$setPristine();
@@ -2717,7 +2749,7 @@
             }).catch(function (response) {
                 $uibModalInstance.dismiss('error');
             }).finally(function (response) {
-                self.hide_loading();
+              
             });
         };
 
@@ -2779,6 +2811,40 @@
         };
     }
 
+})();
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .controller('ModalNuevoProductoCtrl', Controller);
+
+    Controller.$inject = ['GastoSrv', '$scope', '$uibModalInstance', 'producto'];
+    function Controller(GastoSrv, $scope, $uibModalInstance, producto) {
+
+        var self = this;
+        self.producto = producto;
+
+        self.cancelar = function () {
+            $uibModalInstance.dismiss('close');
+        };        
+
+        self.add_producto = function () {
+            
+            GastoSrv.add_gasto(self.gasto).then(function (response) {
+                self.gasto = {};
+                $scope.form.$setPristine();
+                $scope.form.$setUntouched();
+                $uibModalInstance.close(response.data);
+            }).catch(function (response) {
+                $uibModalInstance.dismiss('error');
+            }).finally(function (response) {
+               
+            });
+        };
+
+    }
 })();
 
 
@@ -2847,18 +2913,74 @@
             .module('app.logic')
             .controller('ProductosCtrl', Controller);
 
-    Controller.$inject = ['$log', 'ProductoSrv', 'productos'];
-    function Controller($log, ProductoSrv, productos) {
+    Controller.$inject = ['$log', 'ProductoSrv', 'productos', '$uibModal', 'nuevoproducto_tpl'];
+    function Controller($log, ProductoSrv, productos, $uibModal, nuevoproducto_tpl) {
 
         var self = this;
 
         self.productos = productos.data;
+       
 
-//        UsuarioSrv.get_usuarios().then(function (response) {
-//            console.log("usuarios", JSON.stringify(response.data));
-//            self.usuarios = response.data;
-//        });
+        self.pre_edit_producto = function (p) {
+            var modalInstance = $uibModal.open({
+                templateUrl: nuevoproducto_tpl,
+                controller: 'ModalNuevoProductoCtrl',
+                controllerAs: 'ctrl',
+                resolve: {
+                    producto: function () {
+                        return p;
+                    }
+                }
+            });
 
+
+            modalInstance.result.then(function (nuevo_gasto) {
+                console.log("response", nuevo_gasto);
+                self.gastos.push(nuevo_gasto);
+            }, function (response) {
+                console.log("response", response);
+            });
+        };
+
+        self.pre_del_producto = function (p) {
+            var modalInstance = $uibModal.open({
+                templateUrl: "confirmar.html",
+                controller: function ($scope, producto) {
+                    $scope.producto = producto;
+
+                    $scope.ok = function () {
+                        $scope.$close(true);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    producto: function () {
+                        return p;
+                    }
+                }
+            });
+
+
+            modalInstance.result.then(function (result) {
+                console.log("response", result);
+         
+                ProductoSrv.del_producto(p.id_producto).then(function (response) {
+
+                    var i = self.productos.indexOf(p);
+                    self.productos.splice(i, 1);
+
+                }).catch(function (response) {
+                    console.log("error");
+                }).finally(function (response) {
+                   
+                });
+            }, function (response) {
+                console.log("response", response);
+            });
+        };
 
 
 
@@ -2881,6 +3003,9 @@
     function Productos($http, URL_API) {
         var url = URL_API;
         return {
+            get_garantias: function () {
+                return $http.get(url + 'productos/garantias');
+            },
             get_categorias: function () {
                 return $http.get(url + 'productos/categorias');
             },
@@ -2898,6 +3023,9 @@
             },
             add_producto: function (producto) {
                 return $http.post(url + 'productos', {producto: producto});
+            },
+            del_producto: function (id_producto) {
+                return $http.delete(url + 'productos/' + id_producto);
             }
         };
     }

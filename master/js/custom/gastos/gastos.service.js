@@ -15,6 +15,9 @@
             },
             add_gasto: function (gasto) {
                 return $http.post(url + 'gastosextras', {gasto: gasto});
+            },
+            del_gasto: function (id_gasto) {
+                return $http.delete(url + 'gastosextras/' + id_gasto);
             }
         };
     }

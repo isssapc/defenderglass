@@ -6,20 +6,25 @@
             .module('app.logic')
             .controller('CotizacionArqCtrl', Controller);
 
-    Controller.$inject = ['$log'];
-    function Controller($log) {
+    Controller.$inject = ['$log','productos','garantias'];
+    function Controller($log,productos,garantias) {
 
         var self = this;
         //self.pieza_selected={};
         self.show_resto = false;
         self.procesadas = [];
+        self.productos=productos.data;
+         self.garantias=garantias.data;
         self.rollo = null;
+        self.toggleFormulaPrecio182=true;
+        self.toggleFormulaPrecio152=true;
+        
         
         self.cot={
           precio:175.80,
           flete:20.00,
           instalacion:75.00,
-          dolar:19.00,
+          dolar:19.00
           
         };
         

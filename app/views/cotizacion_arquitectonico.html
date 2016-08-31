@@ -6,12 +6,12 @@
         <div class="panel panel-default">
             <div class="panel-heading">Medidas</div>
             <div class="panel-body">
-                <label>Rollo</label>
-                <select class="form-control" ng-model="ctrl.rollo">
-                    <option value="">Seleccionar...</option>
-                    <option value="1.52">1.52</option>
-                    <option value="1.82">1.82</option>
-                </select>
+                <!--                <label>Rollo</label>
+                                <select class="form-control" ng-model="ctrl.rollo">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="1.52">1.52</option>
+                                    <option value="1.82">1.82</option>
+                                </select>-->
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -111,29 +111,57 @@
             <div class="panel-heading">Parámetros Cotización</div>
             <div class="panel-body">
                 <form class="form-horizontal">
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">Rollo de 60"</label>
-                        <div class="col-lg-6">
-                            <select class="form-control" ng-model="ctrl.cot.id_rollo_60" >
-                                <option value="">Seleccionar...</option>
-                            </select>
-                        </div>
-                        <label class="col-lg-2 control-label">Precio</label>
-                        <div class="col-lg-2">
-                            <div class="input-group"> 
-                                <span class="input-group-addon">USD</span>
-                                <input type="text" class="form-control" ng-model="ctrl.cot.precio" />
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Rollo de 1.52m</label>
+                            <div class="col-lg-6">
+                                <select class="form-control" ng-model="ctrl.cot.rollo_60" ng-options="p.modelo for p in ctrl.productos|filter:{ancho:1.52}" >
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <label class="col-lg-2 control-label">Precio</label>
+                            <div class="col-lg-2">
+                                <div class="input-group"> 
+                                    <span class="input-group-addon">USD</span>
+                                    <input type="text" class="form-control" ng-model="ctrl.cot.rollo_60.precio" />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">Rollo de 80"</label>
-                        <div class="col-lg-10">
-                            <select class="form-control" ng-model="ctrl.cot.id_rollo_80">
-                                <option value="">Seleccionar...</option>
-                            </select>
+                    </fieldset>
+                    <fieldset> 
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Rollo de 1.82m</label>
+                            <div class="col-lg-6">
+                                <select class="form-control" ng-model="ctrl.cot.rollo_80" ng-options="p.modelo for p in ctrl.productos|filter:{ancho:1.82}">
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <label class="col-lg-2 control-label">Precio</label>
+                            <div class="col-lg-2">
+                                <div class="input-group"> 
+                                    <span class="input-group-addon">USD</span>
+                                    <input type="text" class="form-control" ng-model="ctrl.cot.rollo_80.precio" />
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Garantía</label>
+                            <div class="col-lg-6">
+                                <select class="form-control" ng-model="ctrl.cot.garantia" ng-options="g.nombre for g in ctrl.garantias" >
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <label class="col-lg-2 control-label">Utilidad</label>
+                            <div class="col-lg-2">
+                                <div class="input-group"> 
+                                    <input type="text" class="form-control" ng-model="ctrl.cot.garantia.utilidad" />
+                                    <span class="input-group-addon">%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
                     <div class="form-group">
                         <label class="col-lg-2 control-label">Dólar</label>
                         <div class="col-lg-10">
@@ -144,11 +172,38 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-lg-2 control-label">Precio m<sup>2</sup></label>
+                        <label class="col-lg-2 control-label">Precio m<sup>2</sup> (1.52m)</label>
                         <div class="col-lg-10">
                             <div class="input-group"> 
                                 <span class="input-group-addon">MXN</span>
                                 <input type="text" class="form-control" ng-model="ctrl.cot.precio" />
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" ng-click="ctrl.toggleFormulaPrecio152 = !ctrl.toggleFormulaPrecio152">?</button>
+                                </span> 
+                            </div>
+                            <div uib-collapse="ctrl.toggleFormulaPrecio152">
+                                <!--                                <div class="well bg-gray-lighter">Some content</div>-->
+                                <blockquote style="margin-top: 10px;">
+                                    <p>( {{ctrl.cot.rollo_60.precio}} * {{ctrl.cot.dolar}} ) / 46.45</p>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Precio m<sup>2</sup> (1.82m)</label>
+                        <div class="col-lg-10">
+                            <div class="input-group"> 
+                                <span class="input-group-addon">MXN</span>
+                                <input type="text" class="form-control" ng-model="ctrl.cot.precio" />
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" ng-click="ctrl.toggleFormulaPrecio182 = !ctrl.toggleFormulaPrecio182">?</button>
+                                </span>                               
+                            </div>
+                            <div uib-collapse="ctrl.toggleFormulaPrecio182">
+                                <!--                                <div class="well bg-gray-lighter">Some content</div>-->
+                                <blockquote style="margin-top: 10px;">
+                                    <p>( {{ctrl.cot.rollo_80.precio}} * {{ctrl.cot.dolar}} ) / 46.45</p>
+                                </blockquote>
                             </div>
                         </div>
                     </div>
@@ -171,35 +226,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">Garantía</label>
-                        <div class="col-lg-6">
-                            <select class="form-control" ng-model="ctrl.cot.id_garantia" >
-                                <option value="">Seleccionar...</option>
-                            </select>
-                        </div>
-                        <label class="col-lg-2 control-label">Utilidad</label>
-                        <div class="col-lg-2">
-                            <div class="input-group"> 
-                                <input type="text" class="form-control" ng-model="ctrl.cot.precio" />
-                                <span class="input-group-addon">%</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-lg-offset-2 col-lg-10">
-                            <div class="checkbox c-checkbox">
-                                <label>
-                                    <input type="checkbox" checked="" />
-                                    <span class="fa fa-check"></span>Remember me</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-lg-offset-2 col-lg-10">
-                            <button type="submit" class="btn btn-sm btn-default">Sign in</button>
-                        </div>
-                    </div>
+
                 </form>
             </div>
         </div>

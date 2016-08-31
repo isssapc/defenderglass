@@ -10,18 +10,74 @@
             .module('app.logic')
             .controller('ProductosCtrl', Controller);
 
-    Controller.$inject = ['$log', 'ProductoSrv', 'productos'];
-    function Controller($log, ProductoSrv, productos) {
+    Controller.$inject = ['$log', 'ProductoSrv', 'productos', '$uibModal', 'nuevoproducto_tpl'];
+    function Controller($log, ProductoSrv, productos, $uibModal, nuevoproducto_tpl) {
 
         var self = this;
 
         self.productos = productos.data;
+       
 
-//        UsuarioSrv.get_usuarios().then(function (response) {
-//            console.log("usuarios", JSON.stringify(response.data));
-//            self.usuarios = response.data;
-//        });
+        self.pre_edit_producto = function (p) {
+            var modalInstance = $uibModal.open({
+                templateUrl: nuevoproducto_tpl,
+                controller: 'ModalNuevoProductoCtrl',
+                controllerAs: 'ctrl',
+                resolve: {
+                    producto: function () {
+                        return p;
+                    }
+                }
+            });
 
+
+            modalInstance.result.then(function (nuevo_gasto) {
+                console.log("response", nuevo_gasto);
+                self.gastos.push(nuevo_gasto);
+            }, function (response) {
+                console.log("response", response);
+            });
+        };
+
+        self.pre_del_producto = function (p) {
+            var modalInstance = $uibModal.open({
+                templateUrl: "confirmar.html",
+                controller: function ($scope, producto) {
+                    $scope.producto = producto;
+
+                    $scope.ok = function () {
+                        $scope.$close(true);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    producto: function () {
+                        return p;
+                    }
+                }
+            });
+
+
+            modalInstance.result.then(function (result) {
+                console.log("response", result);
+         
+                ProductoSrv.del_producto(p.id_producto).then(function (response) {
+
+                    var i = self.productos.indexOf(p);
+                    self.productos.splice(i, 1);
+
+                }).catch(function (response) {
+                    console.log("error");
+                }).finally(function (response) {
+                   
+                });
+            }, function (response) {
+                console.log("response", response);
+            });
+        };
 
 
 

@@ -28,6 +28,7 @@
     "bower_components/jquery.browser/dist/jquery.browser.js",
     "bower_components/satellizer/dist/satellizer.js",
     "bower_components/whirl/dist/whirl.css",
-    "bower_components/bootstrap/js/modal.js"
+     "bower_components/underscore/underscore.js"
+    
 
 ]

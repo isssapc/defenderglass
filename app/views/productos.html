@@ -19,6 +19,7 @@
                                 <th>% solar</th>
                                 <th>% luz</th>
                                 <th>% uv</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -34,6 +35,10 @@
                                 <td>{{p.rechazo_solar}}</td>
                                 <td>{{p.transmision_luz}}</td>
                                 <td>{{p.proteccion_uv}}</td>
+                                <td>
+                                    <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_edit_producto(p)"><i class="fa fa-edit"></i></button>
+                                    <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_del_producto(p)"><i class="fa fa-remove"></i></button>
+                                </td>
 
                             </tr>
                         </tbody>
@@ -43,3 +48,17 @@
         </div>
     </div>
 </div>
+
+<script type="text/ng-template" id="confirmar.html">
+<div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="modal-title">Eliminar Producto</h3>
+</div>
+<div class="modal-body" id="modal-body">
+<p>¿Desea eliminar el producto <strong>{{producto.modelo}}</strong>?</p>   
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default" type="button" ng-click="cancel()">Cancelar</button>
+    <button class="btn btn-danger" type="button" ng-click="ok()" >Eliminar</button>
+</div>
+</script>
