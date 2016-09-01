@@ -2076,28 +2076,71 @@
             .module('app.logic')
             .controller('CotizacionArqCtrl', Controller);
 
-    Controller.$inject = ['$log','productos','garantias'];
-    function Controller($log,productos,garantias) {
+    Controller.$inject = ['$log', 'productos', 'garantias'];
+    function Controller($log, productos, garantias) {
 
         var self = this;
         //self.pieza_selected={};
         self.show_resto = false;
         self.procesadas = [];
-        self.productos=productos.data;
-         self.garantias=garantias.data;
+        self.productos = productos.data;
+        self.garantias = garantias.data;
         self.rollo = null;
-        self.toggleFormulaPrecio182=true;
-        self.toggleFormulaPrecio152=true;
-        
-        
-        self.cot={
-          precio:175.80,
-          flete:20.00,
-          instalacion:75.00,
-          dolar:19.00
-          
+        self.toggleFormulaPrecio182 = false;
+        self.toggleFormulaPrecio152 = false;
+        self.toggleFormulaCosto182 = false;
+        self.toggleFormulaCosto152 = false;
+
+
+        self.cot = {
+            flete: 800.00,
+            instalacion_m2: 75.00,
+            dolar: 19.00
+
         };
-        
+
+        self.costo_60 = function () {
+            if (self.cot.rollo_60 && self.cot.rollo_60.precio && self.cot.dolar) {
+
+                //return Math.round(((self.cot.rollo_60.precio * 100) * (self.cot.dolar * 100)) / (4645)) / 100;
+                return Math.round(((self.cot.rollo_60.precio * self.cot.dolar) / 46.45) * 100) / 100;
+            }
+        };
+
+        self.precio_60 = function () {
+            if (self.cot.garantia && self.cot.costo_60 && self.cot.flete_m2 && self.cot.garantia.comision_venta && self.cot.instalacion_m2 && self.cot.garantia.utilidad) {
+
+                var precio = parseFloat(self.cot.costo_60) + parseFloat(self.cot.flete_m2) + parseFloat(self.cot.garantia.comision_venta) + parseFloat(self.cot.instalacion_m2);
+                console.log("precio", precio);
+                var utilidad = self.cot.garantia.utilidad + 100;
+                console.log("utilidad", utilidad);
+                return Math.round(precio * utilidad) / 100;
+            }
+        };
+
+        self.precio_merma_60 = function () {
+            if (self.cot.costo_60 && self.cot.flete_m2) {
+
+                var precio = parseFloat(self.cot.costo_60) + parseFloat(self.cot.flete_m2);
+
+                return Math.round(precio * 100) / 100;
+            }
+        };
+
+        self.costo_80 = function () {
+            if (self.cot.rollo_80 && self.cot.rollo_80.precio && self.cot.dolar) {
+
+                return Math.round(((self.cot.rollo_80.precio * self.cot.dolar) / 61.93) * 100) / 100;
+            }
+        };
+
+        self.flete = function () {
+            if (self.cot.flete) {
+
+                return Math.round((self.cot.flete / 46.45) * 100) / 100;
+            }
+        };
+
         self.piezas = [
             {
                 cantidad: 2,
@@ -2130,7 +2173,7 @@
                 ancho: .95
             }
         ];
-        
+
 
         self.addPieza = function () {
             self.piezas.push({cantidad: 1});
