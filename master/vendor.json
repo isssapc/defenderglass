@@ -3,6 +3,7 @@
     "bower_components/fontawesome/css/font-awesome.min.css",
     "bower_components/fontawesome/fonts/*",
     "bower_components/simple-line-icons/css/simple-line-icons.css",
-    "bower_components/simple-line-icons/fonts/*"
-    
+    "bower_components/simple-line-icons/fonts/*",
+    "bower_components/angularjs-toaster/toaster.js",
+    "bower_components/angularjs-toaster/toaster.css"
 ]

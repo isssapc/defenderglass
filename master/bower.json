@@ -47,7 +47,8 @@
     "satellizer": "^0.15.4",
     "bootstrap": "^3.3.7",
     "whirl": "^1.0.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "AngularJS-Toaster": "angularjs-toaster#^2.0.0"
   },
   "resolutions": {
     "angular": "1.5.0",

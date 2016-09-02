@@ -325,24 +325,24 @@
 
     }
 })();
-(function() {
+(function () {
     'use strict';
 
     angular
-        .module('app.lazyload')
-        .constant('APP_REQUIRES', {
-          // jQuery based and standalone scripts
-          scripts: {
-            'modernizr':          ['vendor/modernizr/modernizr.custom.js'],
-            'icons':              ['vendor/fontawesome/css/font-awesome.min.css',
-                                   'vendor/simple-line-icons/css/simple-line-icons.css']
-          },
-          // Angular based script (use the right module name)
-          modules: [
-            // {name: 'toaster', files: ['vendor/angularjs-toaster/toaster.js', 'vendor/angularjs-toaster/toaster.css']}
-          ]
-        })
-        ;
+            .module('app.lazyload')
+            .constant('APP_REQUIRES', {
+                // jQuery based and standalone scripts
+                scripts: {
+                    'modernizr': ['vendor/modernizr/modernizr.custom.js'],
+                    'icons': ['vendor/fontawesome/css/font-awesome.min.css',
+                        'vendor/simple-line-icons/css/simple-line-icons.css']
+                },
+                // Angular based script (use the right module name)
+                modules: [
+                    {name: 'toaster', files: ['vendor/angularjs-toaster/toaster.js', 'vendor/angularjs-toaster/toaster.css']}
+                ]
+            })
+            ;
 
 })();
 
@@ -867,7 +867,7 @@
                     url: '/app',
                     abstract: true,
                     templateUrl: helper.basepath('app.html'),
-                    resolve: helper.resolveFor('modernizr', 'icons')
+                    resolve: helper.resolveFor('modernizr', 'icons','toaster')
                 })
                 .state('app.singleview', {
                     url: '/singleview',
@@ -887,7 +887,13 @@
                     resolve: {
                         usuarios: ['UsuarioSrv', function (UsuarioSrv) {
                                 return UsuarioSrv.get_usuarios();
-                            }]
+                            }],
+                        roles: ['RolUsuarioSrv', function (RolUsuarioSrv) {
+                                return RolUsuarioSrv.get_roles();
+                            }],
+                        editar_usuario_tpl: function () {
+                            return  helper.basepath('usuario_editar_modal.html');
+                        }
                     }
                 })
                 .state('app.nuevo_usuario', {
@@ -3087,19 +3093,73 @@
             .module('app.logic')
             .controller('UsuariosCtrl', Controller);
 
-    Controller.$inject = ['$log', 'UsuarioSrv', 'usuarios'];
-    function Controller($log, UsuarioSrv, usuarios) {
+    Controller.$inject = ['UsuarioSrv', '$uibModal', 'toaster', 'usuarios', 'roles', 'editar_usuario_tpl'];
+    function Controller(UsuarioSrv, $uibModal, toaster, usuarios, roles, editar_usuario_tpl) {
 
         var self = this;
 
         self.usuarios = usuarios.data;
-
-//        UsuarioSrv.get_usuarios().then(function (response) {
-//            console.log("usuarios", JSON.stringify(response.data));
-//            self.usuarios = response.data;
-//        });
+        self.roles = roles.data;
 
 
+        self.pre_edit_usuario = function (u) {
+
+            var copia_usuario = angular.copy(u);
+            var modalInstance = $uibModal.open({
+                templateUrl: editar_usuario_tpl,
+                controller: function ($scope, usuario, roles) {
+
+                    $scope.usuario = usuario;
+                    $scope.roles = roles;
+
+                    $scope.ok = function () {
+                        $scope.$close(true);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    usuario: function () {
+                        return copia_usuario;
+                    },
+                    roles: function () {
+                        return self.roles;
+                    }
+                }
+            });
+
+
+            modalInstance.result.then(function (resultado) {
+                console.log("response", resultado);
+                self.edit_usuario(copia_usuario);
+            }, function (response) {
+                console.log("response", response);
+            });
+        };
+
+
+
+        self.edit_usuario = function (usuario) {
+
+            var i = self.usuarios.indexOf(usuario);
+            var id_usuario = usuario.id_usuario;
+            delete usuario.id_usuario;
+            delete usuario.rol;
+
+
+            UsuarioSrv.update_usuario(id_usuario, usuario).then(function (response) {
+                self.usuarios[i] = response.data;
+                toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+                console.log("toaster done");
+            }).catch(function (response) {
+
+            }).finally(function (response) {
+
+            });
+
+        };
 
 
     }
@@ -3126,6 +3186,9 @@
             },
             add_usuario: function (usuario) {
                 return $http.post(url + 'usuarios', {usuario: usuario});
+            },
+            update_usuario: function (id_usuario, usuario) {
+                return $http.put(url + 'usuarios/' + id_usuario, {usuario: usuario});
             }
         };
     }

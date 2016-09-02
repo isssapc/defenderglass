@@ -19,6 +19,9 @@
             },
             add_usuario: function (usuario) {
                 return $http.post(url + 'usuarios', {usuario: usuario});
+            },
+            update_usuario: function (id_usuario, usuario) {
+                return $http.put(url + 'usuarios/' + id_usuario, {usuario: usuario});
             }
         };
     }

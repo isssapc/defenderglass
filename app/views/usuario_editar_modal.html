@@ -1,0 +1,52 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="modal-title">Editar Usuario</h3>
+</div>
+<div class="modal-body" id="modal-body">
+    <form name="form" class="" id="form" ng-submit="form.$valid && ok()" novalidate>    
+        <!--<ng-include src="'app/views/producto_nuevo_include.html'"></ng-include>-->
+        <div class="row">                   
+            <div class="col-xs-12 col-sm-12">
+                <div class="form-group" ng-class="{'has-error':(form.$submitted || form.nombre.$touched) && form.nombre.$error.required}">
+                    <label class="control-label">Nombre</label>
+                    <input type="text" name="nombre" class="form-control" ng-model="usuario.nombre" required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12">
+                <div class="form-group" ng-class="{'has-error':(form.$submitted || form.rol.$touched) && form.rol.$error.required}">
+                    <label class="control-label">Rol</label>
+                    <select class="form-control" name="rol" ng-options="r.id_rol as r.rol for r in roles" ng-model="usuario.id_rol" required>
+                        <option value="">Seleccionar</option>                                           
+                    </select>
+                </div>
+            </div>		
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-12">
+                <div class="form-group" ng-class="{'has-error':(form.$submitted || form.email.$touched) && form.email.$error.required}">
+                    <label class="control-label">Email</label>
+                    <input type="email" name="email" class="form-control" ng-model="usuario.email" required>
+                </div>
+            </div>		
+        </div>
+
+        <div class="row">			
+            <div class="col-xs-12 col-sm-12">
+                <div class="form-group" ng-class="{'has-error':(form.$submitted || form.password.$touched) && form.password.$error.required}">
+                    <label class="control-label">Contraseña</label>
+                    <input type="password" name="password" class="form-control" ng-model=" usuario.password" >
+                </div>
+            </div>
+
+        
+        </div>
+        <div>{{usuario|json}}</div>
+    </form>   
+</div>
+<div class="modal-footer">   
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+    <button class="btn btn-primary" type="submit" form="form">Guardar</button>
+</div>

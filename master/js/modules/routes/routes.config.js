@@ -25,7 +25,7 @@
                     url: '/app',
                     abstract: true,
                     templateUrl: helper.basepath('app.html'),
-                    resolve: helper.resolveFor('modernizr', 'icons')
+                    resolve: helper.resolveFor('modernizr', 'icons','toaster')
                 })
                 .state('app.singleview', {
                     url: '/singleview',
@@ -45,7 +45,13 @@
                     resolve: {
                         usuarios: ['UsuarioSrv', function (UsuarioSrv) {
                                 return UsuarioSrv.get_usuarios();
-                            }]
+                            }],
+                        roles: ['RolUsuarioSrv', function (RolUsuarioSrv) {
+                                return RolUsuarioSrv.get_roles();
+                            }],
+                        editar_usuario_tpl: function () {
+                            return  helper.basepath('usuario_editar_modal.html');
+                        }
                     }
                 })
                 .state('app.nuevo_usuario', {
