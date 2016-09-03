@@ -11,13 +11,17 @@
                                 <th>Id</th>
                                 <th>Nombre</th>
                                 <th>Valor</th>  
+                                <th style="width: 35px;"></th> 
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="p in ctrl.parametros">
                                 <td>{{p.id_parametro}}</td>
                                 <td>{{p.nombre}}</td>     
-                                <td>{{p.valor|currency}}</td> 
+                                <td>{{p.valor|currency}}</td>
+                                <td>
+                                    <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_edit_parametro(p)"><i class="fa fa-edit"></i></button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

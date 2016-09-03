@@ -3,47 +3,59 @@
     <h3 class="modal-title" id="modal-title">Editar Usuario</h3>
 </div>
 <div class="modal-body" id="modal-body">
-    <form name="form" class="" id="form" ng-submit="form.$valid && ok()" novalidate>    
+    <form name="form" class="form-horizontal" id="form" ng-submit="form.$valid && ok()" novalidate>    
         <!--<ng-include src="'app/views/producto_nuevo_include.html'"></ng-include>-->
-        <div class="row">                   
-            <div class="col-xs-12 col-sm-12">
-                <div class="form-group" ng-class="{'has-error':(form.$submitted || form.nombre.$touched) && form.nombre.$error.required}">
-                    <label class="control-label">Nombre</label>
-                    <input type="text" name="nombre" class="form-control" ng-model="usuario.nombre" required>
-                </div>
+
+        <div class="form-group" ng-class="{'has-error':(form.$submitted || form.nombre.$touched) && form.nombre.$error.required}">
+            <label class="col-lg-2 control-label">Nombre</label>
+            <div class="col-lg-10">
+                <input type="text" name="nombre" class="form-control" ng-model="usuario.nombre" required>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12">
-                <div class="form-group" ng-class="{'has-error':(form.$submitted || form.rol.$touched) && form.rol.$error.required}">
-                    <label class="control-label">Rol</label>
-                    <select class="form-control" name="rol" ng-options="r.id_rol as r.rol for r in roles" ng-model="usuario.id_rol" required>
-                        <option value="">Seleccionar</option>                                           
-                    </select>
-                </div>
-            </div>		
+
+        <div class="form-group" ng-class="{'has-error':(form.$submitted || form.rol.$touched) && form.rol.$error.required}">
+            <label class="col-lg-2 control-label">Rol</label>
+            <div class="col-lg-10">
+                <select class="form-control" name="rol" ng-options="r.id_rol as r.rol for r in roles" ng-model="usuario.id_rol" required>
+                    <option value="">Seleccionar</option>                                           
+                </select>
+            </div>
         </div>
 
-        <div class="row">
-            <div class="col-xs-12 col-sm-12">
-                <div class="form-group" ng-class="{'has-error':(form.$submitted || form.email.$touched) && form.email.$error.required}">
-                    <label class="control-label">Email</label>
-                    <input type="email" name="email" class="form-control" ng-model="usuario.email" required>
-                </div>
-            </div>		
+        <div class="form-group" ng-class="{'has-error':(form.$submitted || form.email.$touched) && form.email.$error.required}">
+            <label class="col-lg-2 control-label">Email</label>
+            <div class="col-lg-10">
+                <input type="email" name="email" class="form-control" ng-model="usuario.email" required>
+            </div>
         </div>
 
-        <div class="row">			
-            <div class="col-xs-12 col-sm-12">
-                <div class="form-group" ng-class="{'has-error':(form.$submitted || form.password.$touched) && form.password.$error.required}">
-                    <label class="control-label">Contraseña</label>
-                    <input type="password" name="password" class="form-control" ng-model=" usuario.password" >
+        <div class="checkbox c-checkbox">
+            <label>
+                <input type="checkbox" ng-model="usuario.cambiar_password" />
+                <span class="fa fa-check"></span>Restaurar password</label>
+        </div>
+
+        <fieldset ng-disabled="!usuario.cambiar_password">
+            <div class="form-group" ng-class="{'has-error':(form.$submitted || form.password.$touched) && form.password.$error.pattern}">
+                <label class="col-lg-2 control-label">Contraseña</label>
+                <div class="col-lg-10">
+                    <input type="password" name="password" class="form-control" ng-model=" usuario.password" ng-pattern="/^[a-zA-Z0-9]{6,10}$/" >
+                    <span ng-show="form.password.$dirty && form.password.$error.pattern" class="text-danger">Caracteres alfanuméricos. Longitud de 6-10</span>
                 </div>
             </div>
 
-        
-        </div>
-        <div>{{usuario|json}}</div>
+            <div class="form-group" ng-class="{'has-error':(form.$submitted || form.match.$touched) && (form.match.$error.validator || form.match.$error.required)}">
+                <label class="col-lg-2 control-label">Confirmación</label>
+                <div class="col-lg-10">
+                    <input type="password" name="match" class="form-control" ng-model="match" ng-required="usuario.cambiar_password" ui-validate="'$value==usuario.password'" ui-validate-watch="'usuario.password'">
+                    <span ng-show="(form.$submitted || form.match.$dirty) && form.match.$error.validator" class="text-danger">Confirmación incorrecta. </span>
+                    <span ng-show="(form.$submitted || form.match.$touched) && form.match.$error.required" class="text-danger">Su password debe tener una longitud de 6-10 caracteres.</span>
+                </div>
+            </div>
+        </fieldset>
+<!--        <div>{{form.$valid|json}}</div>
+        <div>{{form.match.$error|json}}</div>
+        <div>{{usuario|json}}</div>-->
     </form>   
 </div>
 <div class="modal-footer">   

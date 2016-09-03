@@ -57,6 +57,14 @@
             }
         };
 
+        self.total_efectivo_152 = function () {
+            return Math.round(self.cot.precio_efectivo_152 * self.cot.efectivo_m2 * 100) / 100;
+        };
+
+        self.total_merma_152 = function () {
+            return Math.round(self.cot.precio_merma_152 * self.cot.merma_m2 * 100) / 100;
+        };
+
         self.costo_80 = function () {
             if (self.cot.rollo_80 && self.cot.rollo_80.precio && self.cot.dolar) {
 
@@ -480,13 +488,29 @@
 
         };
 
+        self.set_merma_152 = function () {
+            self.cot.merma_m2 = self.cot.merma_152;
+            self.cot.rollo = 1;
+        };
+
+        self.set_merma_182 = function () {
+            self.cot.merma_m2 = self.cot.merma_182;
+            self.cot.rollo = 2;
+        };
+
+        self.set_merma_optimo = function () {
+            self.cot.merma_m2 = self.cot.merma_optimo;
+            self.cot.rollo = 3;
+        };
+
         self.sum_efectivo = function (procesadas) {
 
             var sum = 0;
             for (var i = 0; i < procesadas.length; i++) {
                 sum += procesadas[i].efectivo;
             }
-            return Math.floor(sum * 10000) / 10000;
+            self.cot.efectivo_m2 = Math.floor(sum * 10000) / 10000;
+            return self.cot.efectivo_m2;
         };
 
         self.sum_merma = function (procesadas, op) {
@@ -508,7 +532,18 @@
                 }
 
             }
-            return Math.floor(sum * 10000) / 10000;
+
+            if (op === 1) {
+                self.cot.merma_152 = Math.floor(sum * 10000) / 10000;
+                return self.cot.merma_152;
+            } else if (op === 2) {
+                self.cot.merma_182 = Math.floor(sum * 10000) / 10000;
+                return self.cot.merma_182;
+            } else if (op === 3) {
+                self.cot.merma_optimo = Math.floor(sum * 10000) / 10000;
+                return self.cot.merma_optimo;
+            }
+            //return Math.floor(sum * 10000) / 10000;
         };
 
     }

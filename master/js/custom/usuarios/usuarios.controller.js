@@ -30,7 +30,7 @@
                     $scope.roles = roles;
 
                     $scope.ok = function () {
-                        $scope.$close(true);
+                        $scope.$close($scope.usuario);
                     };
 
                     $scope.cancel = function () {
@@ -48,33 +48,50 @@
             });
 
 
-            modalInstance.result.then(function (resultado) {
-                console.log("response", resultado);
-                self.edit_usuario(copia_usuario);
-            }, function (response) {
-                console.log("response", response);
+            modalInstance.result.then(function (copia) {
+                self.edit_usuario(copia, u);
+            }, function () {
+                console.log("cancel edit");
             });
         };
 
 
 
-        self.edit_usuario = function (usuario) {
+        self.edit_usuario = function (usuario, original) {
 
-            var i = self.usuarios.indexOf(usuario);
+            var i = self.usuarios.indexOf(original);
+
+            var cambiar_password = usuario.cambiar_password;
+            delete usuario.cambiar_password;
+            if (!cambiar_password) {
+                delete usuario.password;
+            }
+
             var id_usuario = usuario.id_usuario;
             delete usuario.id_usuario;
             delete usuario.rol;
 
+            for (var key in usuario) {
+                if (usuario[key] === original[key]) {
+                    delete usuario[key];
+                }
+            }
 
-            UsuarioSrv.update_usuario(id_usuario, usuario).then(function (response) {
-                self.usuarios[i] = response.data;
-                toaster.pop('info', '', 'Los datos se han actualizado correctamente');
-                console.log("toaster done");
-            }).catch(function (response) {
+            console.log("propiedades para actualizar", JSON.stringify(usuario));
 
-            }).finally(function (response) {
+            if (!_.isEmpty(usuario)) {
 
-            });
+                UsuarioSrv.update_usuario(id_usuario, usuario).then(function (response) {
+
+                    self.usuarios[i] = response.data;
+                    toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+
+                }).catch(function (response) {
+
+                }).finally(function (response) {
+
+                });
+            }
 
         };
 

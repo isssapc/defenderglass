@@ -77,13 +77,24 @@
                                 <td></td>                       
                                 <td></td>
                                 <th>{{ctrl.sum_efectivo(ctrl.procesadas)}}</th>  
-                                <th>{{ctrl.sum_merma(ctrl.procesadas, 1)}}</th>
-                                <th>{{ctrl.sum_merma(ctrl.procesadas, 2)}}</th> 
-                                <th>{{ctrl.sum_merma(ctrl.procesadas, 3)}}</th> 
+                                <th><button class="btn btn-default btn-block" ng-click="ctrl.set_merma_152()"><strong>{{ctrl.sum_merma(ctrl.procesadas, 1)}}</strong></button></th>
+                                <th><button class="btn btn-default btn-block" ng-click="ctrl.set_merma_182()"><strong>{{ctrl.sum_merma(ctrl.procesadas, 2)}}</strong></button></th> 
+                                <th><button class="btn btn-default btn-block" ng-click="ctrl.set_merma_optimo()" ng-disabled="ctrl.cot.merma_optimo === ctrl.cot.merma_152 || ctrl.cot.merma_optimo === ctrl.cot.merma_182"><strong>{{ctrl.sum_merma(ctrl.procesadas, 3)}}</strong></button></th> 
                                 <td></td>
                             </tr>
                         </tfoot>
-                    </table>
+                    </table>                    
+                </div>
+                <!--<hr>-->
+                <div class="row">
+                    <div class="col-xs-6 text-center">
+                        <p class="h4">m<sup>2</sup> Efectivos</p>
+                        <div class="h1">{{ctrl.cot.efectivo_m2||0}}</div>
+                    </div>
+                    <div class="col-xs-6 text-center">
+                        <p class="h4">m<sup>2</sup> Merma</p>
+                        <div class="h1">{{ctrl.cot.merma_m2||0}}</div>
+                    </div>                        
                 </div>
                 <!--                <div id="dibujo" class="rollo" style="height: 320px;"></div>-->
                 <!--                <uib-tabset>
@@ -100,16 +111,17 @@
                 <!--<div>{{ctrl.procesadas|json}}</div>-->
 
             </div>
-            <div class="panel-footer">
-                <button class="btn btn-primary">Guardar</button>
-            </div>
+<!--            <div class="panel-footer">
+                <button class="btn btn-primary">Continuar</button>
+            </div>-->
         </div>
 
         <div class="panel panel-default">
             <div class="panel-heading">Parámetros Cotización</div>
             <div class="panel-body">
                 <form class="form-horizontal">
-                    <fieldset>
+
+                    <fieldset ng-if="ctrl.cot.rollo===1">
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Rollo de 1.52m</label>
                             <div class="col-lg-6">
@@ -126,7 +138,8 @@
                             </div>
                         </div>
                     </fieldset>
-                    <fieldset> 
+
+                    <fieldset ng-if="ctrl.cot.rollo>1"> 
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Rollo de 1.82m</label>
                             <div class="col-lg-6">
@@ -143,6 +156,7 @@
                             </div>
                         </div>
                     </fieldset>
+
                     <fieldset>
                         <div class="form-group">
                             <label class="col-lg-2 control-label">Garantía</label>
@@ -167,6 +181,7 @@
                             </div>
                         </div>
                     </fieldset>
+
                     <div class="form-group">
                         <label class="col-lg-2 control-label">Dólar</label>
                         <div class="col-lg-10">
@@ -176,6 +191,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="form-group">
                         <label class="col-lg-2 control-label">Instalación m<sup>2</sup></label>
                         <div class="col-lg-10">
@@ -185,6 +201,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="form-group">
                         <label class="col-lg-2 control-label">Flete</label>
                         <div class="col-lg-10">
@@ -194,6 +211,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="form-group">
                         <label class="col-lg-2 control-label">Flete m<sup>2</sup></label>
                         <div class="col-lg-10">
@@ -206,13 +224,15 @@
                             </div>
                             <div uib-collapse="ctrl.toggleFormulaFlete">                                
                                 <blockquote style="margin-top: 10px;">
-                                    <p><span ng-class="{'text-danger':!ctrl.cot.flete}">{{ctrl.cot.flete||'flete'}}</span> / 46.45 = {{ctrl.flete() || 'complete los datos'}} </p>
+                                    <p><span ng-class="{
+                                            'text-danger'
+                                                    :!ctrl.cot.flete}">{{ctrl.cot.flete||'flete'}}</span> / 46.45 = {{ctrl.flete() || 'complete los datos'}} </p>
                                 </blockquote>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" ng-if="ctrl.cot.rollo===1">
                         <label class="col-lg-2 control-label">Costo m<sup>2</sup> (1.52m)</label>
                         <div class="col-lg-10">
                             <div class="input-group"> 
@@ -225,12 +245,17 @@
                             <div uib-collapse="ctrl.toggleFormulaCosto152">
                                 <!--                                <div class="well bg-gray-lighter">Some content</div>-->
                                 <blockquote style="margin-top: 10px;">
-                                    <p>( <span ng-class="{'text-danger':!ctrl.cot.rollo_60.precio}">{{ctrl.cot.rollo_60.precio||'precio rollo'}}</span> * <span ng-class="{'text-danger':!ctrl.cot.dolar}">{{ctrl.cot.dolar||'dolar'}}</span> ) / 46.45 = {{ctrl.costo_60() || 'completa los datos'}}</p>
+                                    <p>( <span ng-class="{
+                                            'text-danger'
+                                                    :!ctrl.cot.rollo_60.precio}">{{ctrl.cot.rollo_60.precio||'precio rollo'}}</span> * <span ng-class="{
+                                                            'text-danger'
+                                                                    :!ctrl.cot.dolar}">{{ctrl.cot.dolar||'dolar'}}</span> ) / 46.45 = {{ctrl.costo_60() || 'complete los datos'}}</p>
                                 </blockquote>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
+
+                    <div class="form-group" ng-if="ctrl.cot.rollo>1">
                         <label class="col-lg-2 control-label">Costo m<sup>2</sup> (1.82m)</label>
                         <div class="col-lg-10">
                             <div class="input-group"> 
@@ -242,36 +267,69 @@
                             </div>
                             <div uib-collapse="ctrl.toggleFormulaCosto182">                                
                                 <blockquote style="margin-top: 10px;">
-                                    <p>( {{ctrl.cot.rollo_80.precio||'precio rollo'}} * {{ctrl.cot.dolar||'dolar'}} ) / 61.93 = {{ctrl.costo_80() || 'completa los datos'}} </p>
+                                    <p>( {{ctrl.cot.rollo_80.precio||'precio rollo'}} * {{ctrl.cot.dolar||'dolar'}} ) / 61.93 = {{ctrl.costo_80() || 'complete los datos'}} </p>
                                 </blockquote>
                             </div>
                         </div>
                     </div>
 
-
-                    <div class="form-group">
+                    <div class="form-group" ng-if="ctrl.cot.rollo===1">
                         <label class="col-lg-2 control-label">Precio m<sup>2</sup> Efectivo (1.52m)</label>
                         <div class="col-lg-10">
                             <div class="input-group"> 
                                 <span class="input-group-addon">MXN</span>
-                                <input type="text" class="form-control" />
+                                <input type="text" class="form-control" ng-model="ctrl.cot.precio_efectivo_152" />
                                 <span class="input-group-btn">
                                     <button type="button" class="btn btn-default" ng-click="ctrl.toggleFormulaPrecio152 = !ctrl.toggleFormulaPrecio152">?</button>
                                 </span> 
                             </div>
                             <div uib-collapse="ctrl.toggleFormulaPrecio152">                                
                                 <blockquote style="margin-top: 10px;">
-                                    <p>( <span ng-class="{'text-danger':!ctrl.cot.costo_60}">{{ctrl.cot.costo_60|| 'm2 rollo '}}</span> + 
-                                        <span ng-class="{'text-danger':!ctrl.cot.flete_m2}">{{ctrl.cot.flete_m2|| 'm2 flete'}}</span> + 
-                                        <span ng-class="{'text-danger':!ctrl.cot.garantia.comision_venta}">{{ctrl.cot.garantia.comision_venta|| 'comisión venta'}}</span> + 
-                                        <span ng-class="{'text-danger':!ctrl.cot.instalacion_m2}">{{ctrl.cot.instalacion_m2||'costo instalación'}}</span> ) + 
-                                        <span ng-class="{'text-danger':!ctrl.cot.garantia.utilidad}">{{ctrl.cot.garantia.utilidad|| 'utilidad'}} %</span> =  {{ctrl.precio_60() || 'complete los datos'}}</p>
+                                    <p>( <span ng-class="{
+                                            'text-danger'
+                                                    :!ctrl.cot.costo_60}">{{ctrl.cot.costo_60|| 'm2 rollo '}}</span> + 
+                                        <span ng-class="{
+                                                'text-danger'
+                                                        :!ctrl.cot.flete_m2}">{{ctrl.cot.flete_m2|| 'm2 flete'}}</span> + 
+                                        <span ng-class="{
+                                                'text-danger'
+                                                        :!ctrl.cot.garantia.comision_venta}">{{ctrl.cot.garantia.comision_venta|| 'comisión venta'}}</span> + 
+                                        <span ng-class="{
+                                                'text-danger'
+                                                        :!ctrl.cot.instalacion_m2}">{{ctrl.cot.instalacion_m2||'costo instalación'}}</span> ) + 
+                                        <span ng-class="{
+                                                'text-danger'
+                                                        :!ctrl.cot.garantia.utilidad}">{{ctrl.cot.garantia.utilidad|| 'utilidad'}} %</span> =  {{ctrl.precio_60() || 'complete los datos'}}</p>
                                 </blockquote>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
+
+                    <div class="form-group" ng-if="ctrl.cot.rollo===1">
                         <label class="col-lg-2 control-label">Precio m<sup>2</sup> Merma (1.52m)</label>
+                        <div class="col-lg-10">
+                            <div class="input-group"> 
+                                <span class="input-group-addon">MXN</span>
+                                <input type="text" class="form-control"  ng-model="ctrl.cot.precio_merma_152" />
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" ng-click="ctrl.toggleFormulaPrecio152 = !ctrl.toggleFormulaPrecio152">?</button>
+                                </span> 
+                            </div>
+                            <div uib-collapse="ctrl.toggleFormulaPrecio152">                                
+                                <blockquote style="margin-top: 10px;">
+                                    <p><span ng-class="{
+                                            'text-danger'
+                                                    :!ctrl.cot.costo_60}">{{ctrl.cot.costo_60|| 'm2 rollo '}}</span> + 
+                                        <span ng-class="{
+                                                'text-danger'
+                                                        :!ctrl.cot.flete_m2}">{{ctrl.cot.flete_m2|| 'm2 flete'}}</span> =  {{ctrl.precio_merma_60() || 'complete los datos'}}</p>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-if="ctrl.cot.rollo===1">
+                        <label class="col-lg-2 control-label">Total m<sup>2</sup> Efectivos (1.52m)</label>
                         <div class="col-lg-10">
                             <div class="input-group"> 
                                 <span class="input-group-addon">MXN</span>
@@ -282,13 +340,39 @@
                             </div>
                             <div uib-collapse="ctrl.toggleFormulaPrecio152">                                
                                 <blockquote style="margin-top: 10px;">
-                                    <p><span ng-class="{'text-danger':!ctrl.cot.costo_60}">{{ctrl.cot.costo_60|| 'm2 rollo '}}</span> + 
-                                        <span ng-class="{'text-danger':!ctrl.cot.flete_m2}">{{ctrl.cot.flete_m2|| 'm2 flete'}}</span> =  {{ctrl.precio_merma_60() || 'complete los datos'}}</p>
+                                    <p><span ng-class="{
+                                            'text-danger'
+                                                    :!ctrl.cot.precio_efectivo_152}">{{ctrl.cot.precio_efectivo_152|| 'precio m2 efectivo  '}}</span> * 
+                                        <span ng-class="{
+                                                'text-danger'
+                                                        :!ctrl.cot.efectivo_m2}">{{ctrl.cot.efectivo_m2|| 'm2 efectivos'}}</span> =  {{ctrl.total_efectivo_152() || 0 | number}}</p>
                                 </blockquote>
                             </div>
                         </div>
                     </div>
 
+                    <div class="form-group" ng-if="ctrl.cot.rollo===1">
+                        <label class="col-lg-2 control-label">Total m<sup>2</sup> Merma (1.52m)</label>
+                        <div class="col-lg-10">
+                            <div class="input-group"> 
+                                <span class="input-group-addon">MXN</span>
+                                <input type="text" class="form-control" />
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" ng-click="ctrl.toggleFormulaPrecio152 = !ctrl.toggleFormulaPrecio152">?</button>
+                                </span> 
+                            </div>
+                            <div uib-collapse="ctrl.toggleFormulaPrecio152">                                
+                                <blockquote style="margin-top: 10px;">
+                                    <p><span ng-class="{
+                                            'text-danger'
+                                                    :!ctrl.cot.precio_merma_152}">{{ctrl.cot.precio_merma_152|| 'precio m2 merma '}}</span> * 
+                                        <span ng-class="{
+                                                'text-danger'
+                                                        :!ctrl.cot.merma_m2}">{{ctrl.cot.merma_m2|| 'm2 merma'}}</span> =  {{ctrl.total_merma_152() || 0 | number}}</p>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
 
                 </form>
             </div>

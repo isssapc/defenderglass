@@ -12,7 +12,7 @@
                                 <th>Nombre</th>
                                 <th>Email</th>
                                 <th>Rol</th>
-                                <th style="width: 35px;"></th>
+                                <th style="width: 87px;"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -21,7 +21,10 @@
                                 <td>{{u.nombre}}</td>
                                 <td>{{u.email}}</td>
                                 <td>{{u.rol}}</td>
-                                <td><button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_edit_usuario(u)"><i class="fa fa-edit"></i></button></td>
+                                <td>
+                                    <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_edit_usuario(u)"><i class="fa fa-edit"></i></button>
+                                    <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_del_usuario(u)"><i class="fa fa-remove"></i></button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
