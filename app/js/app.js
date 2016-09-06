@@ -2109,6 +2109,10 @@
 
         };
 
+        self.get_pdf = function () {
+            console.log("crear documento PDF");
+        };
+
         self.cotizar = function () {
             self.cot.flete_m2 = Math.ceil(self.cot.flete / (46.45 * 10)) * 10;
             self.cot.costo_152 = Math.ceil((self.cot.rollo_152.precio * self.cot.dolar) / (46.45 * 10)) * 10;
