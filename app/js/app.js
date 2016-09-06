@@ -577,22 +577,16 @@
 
                     $auth.login(vm.account).then(function (response) {
                         console.log("response", JSON.stringify(response.data));
+
                         $state.go('app.cotizar_arquitectonico');
+                    }).catch(function (response) {
+                        if (response.data.error) {
+                            vm.authMsg = response.data.error.message;
+                        } else {
+                            vm.authMsg="Error de conexión";
+                        }
                     });
 
-//              $http
-//                .post('api/account/login', {email: vm.account.email, password: vm.account.password})
-//                .then(function(response) {
-//                  // assumes if ok, response is an object with some data, if not, a string with error
-//                  // customize according to your api
-//                  if ( !response.account ) {
-//                    vm.authMsg = 'Incorrect credentials.';
-//                  }else{
-//                    $state.go('app.dashboard');
-//                  }
-//                }, function() {
-//                  vm.authMsg = 'Server Request Error';
-//                });
                 }
                 else {
                     // set as dirty if the user click directly to login so we show the validation messages
@@ -2105,29 +2099,32 @@
 
         };
 
-        self.costo_60 = function () {
-            if (self.cot.rollo_60 && self.cot.rollo_60.precio && self.cot.dolar) {
+        self.costo_152 = function () {
+            if (self.cot.rollo_152 && self.cot.rollo_152.precio && self.cot.dolar) {
 
-                //return Math.round(((self.cot.rollo_60.precio * 100) * (self.cot.dolar * 100)) / (4645)) / 100;
-                return Math.round(((self.cot.rollo_60.precio * self.cot.dolar) / 46.45) * 100) / 100;
+                self.cot.costo_152 = Math.ceil((self.cot.rollo_152.precio * self.cot.dolar) / (46.45 * 10)) * 10;
+                return Math.round(((self.cot.rollo_152.precio * self.cot.dolar) / 46.45) * 100) / 100;
             }
         };
 
-        self.precio_60 = function () {
-            if (self.cot.garantia && self.cot.costo_60 && self.cot.flete_m2 && self.cot.garantia.comision_venta && self.cot.instalacion_m2 && self.cot.garantia.utilidad) {
+        self.precio_152 = function () {
+            if (self.cot.garantia && self.cot.costo_152 && self.cot.flete_m2 && self.cot.garantia.comision_venta && self.cot.instalacion_m2 && self.cot.garantia.utilidad) {
 
-                var precio = parseFloat(self.cot.costo_60) + parseFloat(self.cot.flete_m2) + parseFloat(self.cot.garantia.comision_venta) + parseFloat(self.cot.instalacion_m2);
-                console.log("precio", precio);
-                var utilidad = self.cot.garantia.utilidad + 100;
-                console.log("utilidad", utilidad);
-                return Math.round(precio * utilidad) / 100;
+                var precio = parseFloat(self.cot.costo_152) + parseFloat(self.cot.flete_m2) + parseFloat(self.cot.garantia.comision_venta) + parseFloat(self.cot.instalacion_m2);
+                //console.log("precio", precio);
+                var utilidad = (100 - self.cot.garantia.utilidad) / 100;
+                //console.log("utilidad", utilidad);
+                self.cot.precio_efectivo_152 = Math.ceil(precio / (utilidad * 10)) * 10;
+                return Math.round((precio / utilidad) * 100) / 100;
             }
         };
 
-        self.precio_merma_60 = function () {
-            if (self.cot.costo_60 && self.cot.flete_m2) {
+        self.precio_merma_152 = function () {
+            if (self.cot.costo_152 && self.cot.flete_m2) {
 
-                var precio = parseFloat(self.cot.costo_60) + parseFloat(self.cot.flete_m2);
+                var precio = parseFloat(self.cot.costo_152) + parseFloat(self.cot.flete_m2) + 50;
+
+                self.cot.precio_merma_152 = Math.ceil(precio / 10) * 10;
 
                 return Math.round(precio * 100) / 100;
             }
@@ -2150,6 +2147,8 @@
 
         self.flete = function () {
             if (self.cot.flete) {
+
+                self.cot.flete_m2 = Math.ceil(self.cot.flete / (46.45 * 10)) * 10;
 
                 return Math.round((self.cot.flete / 46.45) * 100) / 100;
             }

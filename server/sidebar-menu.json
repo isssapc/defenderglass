@@ -7,7 +7,7 @@
     {
         "text": "Cotizar",
         "sref": "#",
-        "icon": "fa fa-file-o",
+        "icon": "fa fa-money",
         "submenu": [
             {
                 "text": "Arquitectónico",
@@ -24,12 +24,12 @@
     {
         "text": "Cotizaciones",
         "sref": "app.cotizaciones",
-        "icon": "fa fa-file-o"
+        "icon": "fa fa-file-text"
     },
     {
         "text": "Configuración",
         "sref": "#",
-        "icon": "fa fa-file-o",
+        "icon": "fa fa-cogs",
         "submenu": [
             {
                 "text": "Gastos Extras",
@@ -58,7 +58,7 @@
     {
         "text": "Productos",
         "sref": "#",
-        "icon": "fa fa-file-o",
+        "icon": "fa fa-cubes",
         "submenu": [
             {
                 "text": "Catálogo",
@@ -77,7 +77,7 @@
     {
         "text": "Clientes",
         "sref": "#",
-        "icon": "icon-folder",
+        "icon": "fa fa-users",
         "submenu": [
             {
                 "text": "Catálogo",
@@ -100,7 +100,7 @@
     {
         "text": "Ayuda",
         "sref": "#",
-        "icon": "icon-folder",
+        "icon": "fa fa-question",
         "submenu": [
             {
                 "text": "FAQ",

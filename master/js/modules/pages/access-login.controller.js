@@ -32,22 +32,16 @@
 
                     $auth.login(vm.account).then(function (response) {
                         console.log("response", JSON.stringify(response.data));
+
                         $state.go('app.cotizar_arquitectonico');
+                    }).catch(function (response) {
+                        if (response.data.error) {
+                            vm.authMsg = response.data.error.message;
+                        } else {
+                            vm.authMsg="Error de conexión";
+                        }
                     });
 
-//              $http
-//                .post('api/account/login', {email: vm.account.email, password: vm.account.password})
-//                .then(function(response) {
-//                  // assumes if ok, response is an object with some data, if not, a string with error
-//                  // customize according to your api
-//                  if ( !response.account ) {
-//                    vm.authMsg = 'Incorrect credentials.';
-//                  }else{
-//                    $state.go('app.dashboard');
-//                  }
-//                }, function() {
-//                  vm.authMsg = 'Server Request Error';
-//                });
                 }
                 else {
                     // set as dirty if the user click directly to login so we show the validation messages
