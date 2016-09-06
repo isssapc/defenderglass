@@ -108,15 +108,15 @@
     'use strict';
 
     angular
-        .module('app.settings', []);
+        .module('app.routes', [
+            'app.lazyload'
+        ]);
 })();
 (function() {
     'use strict';
 
     angular
-        .module('app.routes', [
-            'app.lazyload'
-        ]);
+        .module('app.settings', []);
 })();
 (function() {
     'use strict';
@@ -750,79 +750,6 @@
     }
 
 })();
-(function() {
-    'use strict';
-
-    angular
-        .module('app.settings')
-        .run(settingsRun);
-
-    settingsRun.$inject = ['$rootScope', '$localStorage'];
-
-    function settingsRun($rootScope, $localStorage){
-
-
-      // User Settings
-      // -----------------------------------
-      $rootScope.user = {
-        name:     'John',
-        job:      'ng-developer',
-        picture:  'app/img/user/02.jpg'
-      };
-
-      // Hides/show user avatar on sidebar from any element
-      $rootScope.toggleUserBlock = function(){
-        $rootScope.$broadcast('toggleUserBlock');
-      };
-
-      // Global Settings
-      // -----------------------------------
-      $rootScope.app = {
-        name: 'Defender Glass',
-        description: 'Cotizador',
-        year: ((new Date()).getFullYear()),
-        layout: {
-          isFixed: true,
-          isCollapsed: false,
-          isBoxed: false,
-          isRTL: false,
-          horizontal: false,
-          isFloat: false,
-          asideHover: false,
-          theme: null,
-          asideScrollbar: false,
-          isCollapsedText: false
-        },
-        useFullLayout: false,
-        hiddenFooter: false,
-        offsidebarOpen: false,
-        asideToggled: false,
-        viewAnimation: 'ng-fadeInUp'
-      };
-
-      // Setup the layout mode
-      $rootScope.app.layout.horizontal = ( $rootScope.$stateParams.layout === 'app-h') ;
-
-      // Restore layout settings [*** UNCOMMENT TO ENABLE ***]
-      // if( angular.isDefined($localStorage.layout) )
-      //   $rootScope.app.layout = $localStorage.layout;
-      // else
-      //   $localStorage.layout = $rootScope.app.layout;
-      //
-      // $rootScope.$watch('app.layout', function () {
-      //   $localStorage.layout = $rootScope.app.layout;
-      // }, true);
-
-      // Close submenu when sidebar change from collapsed to normal
-      $rootScope.$watch('app.layout.isCollapsed', function(newValue) {
-        if( newValue === false )
-          $rootScope.$broadcast('closeSidebarMenu');
-      });
-
-    }
-
-})();
-
 /**=========================================================
  * Module: helpers.js
  * Provides helper functions for routes definition
@@ -934,7 +861,7 @@
                     url: '/app',
                     abstract: true,
                     templateUrl: helper.basepath('app.html'),
-                    resolve: helper.resolveFor('modernizr', 'icons','toaster')
+                    resolve: helper.resolveFor('modernizr', 'icons', 'toaster')
                 })
                 .state('app.singleview', {
                     url: '/singleview',
@@ -945,6 +872,10 @@
                     url: '/submenu',
                     title: 'Submenu',
                     templateUrl: helper.basepath('submenu.html')
+                })
+                .state('app.logout', {
+                    url: '/logout',
+                    controller: 'LogoutCtrl'
                 })
                 .state('app.usuarios', {
                     url: '/usuarios',
@@ -983,8 +914,11 @@
                         gastos: ['GastoSrv', function (GastoSrv) {
                                 return GastoSrv.get_gastos();
                             }],
-                        nuevogasto_tpl: function () {
-                            return  helper.basepath('modal_nuevo_gasto.html');
+                        nuevo_tpl: function () {
+                            return  helper.basepath('gasto_nuevo_modal.html');
+                        },
+                        editar_tpl: function () {
+                            return  helper.basepath('gasto_editar_modal.html');
                         }
                     }
                 })
@@ -1007,7 +941,10 @@
                     resolve: {
                         parametros: ['ParametroSrv', function (ParametroSrv) {
                                 return ParametroSrv.get_parametros();
-                            }]
+                            }],
+                        editar_tpl: function () {
+                            return  helper.basepath('parametro_editar_modal.html');
+                        }
                     }
                 })
                 .state('app.productos', {
@@ -1098,6 +1035,79 @@
 
 })();
 
+
+(function() {
+    'use strict';
+
+    angular
+        .module('app.settings')
+        .run(settingsRun);
+
+    settingsRun.$inject = ['$rootScope', '$localStorage'];
+
+    function settingsRun($rootScope, $localStorage){
+
+
+      // User Settings
+      // -----------------------------------
+      $rootScope.user = {
+        name:     'John',
+        job:      'ng-developer',
+        picture:  'app/img/user/02.jpg'
+      };
+
+      // Hides/show user avatar on sidebar from any element
+      $rootScope.toggleUserBlock = function(){
+        $rootScope.$broadcast('toggleUserBlock');
+      };
+
+      // Global Settings
+      // -----------------------------------
+      $rootScope.app = {
+        name: 'Defender Glass',
+        description: 'Cotizador',
+        year: ((new Date()).getFullYear()),
+        layout: {
+          isFixed: true,
+          isCollapsed: false,
+          isBoxed: false,
+          isRTL: false,
+          horizontal: false,
+          isFloat: false,
+          asideHover: false,
+          theme: 'app/css/theme-e.css', //null,
+          asideScrollbar: false,
+          isCollapsedText: false
+        },
+        useFullLayout: false,
+        hiddenFooter: false,
+        offsidebarOpen: false,
+        asideToggled: false,
+        viewAnimation: 'ng-fadeInUp'
+      };
+
+      // Setup the layout mode
+      $rootScope.app.layout.horizontal = ( $rootScope.$stateParams.layout === 'app-h') ;
+
+      // Restore layout settings [*** UNCOMMENT TO ENABLE ***]
+      // if( angular.isDefined($localStorage.layout) )
+      //   $rootScope.app.layout = $localStorage.layout;
+      // else
+      //   $localStorage.layout = $rootScope.app.layout;
+      //
+      // $rootScope.$watch('app.layout', function () {
+      //   $localStorage.layout = $rootScope.app.layout;
+      // }, true);
+
+      // Close submenu when sidebar change from collapsed to normal
+      $rootScope.$watch('app.layout.isCollapsed', function(newValue) {
+        if( newValue === false )
+          $rootScope.$broadcast('closeSidebarMenu');
+      });
+
+    }
+
+})();
 
 /**=========================================================
  * Module: sidebar-menu.js
@@ -2647,8 +2657,8 @@
             .module('app.logic')
             .controller('GastosCtrl', Controller);
 
-    Controller.$inject = ['$log', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevogasto_tpl', 'cfpLoadingBar'];
-    function Controller($log, GastoSrv, gastos, $scope, $uibModal, nuevogasto_tpl, cfpLoadingBar) {
+    Controller.$inject = ['toaster', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevo_tpl', 'editar_tpl', 'cfpLoadingBar'];
+    function Controller(toaster, GastoSrv, gastos, $scope, $uibModal, nuevo_tpl, editar_tpl, cfpLoadingBar) {
 
         var self = this;
 
@@ -2666,7 +2676,7 @@
 
         self.pre_add_gasto = function () {
             var modalInstance = $uibModal.open({
-                templateUrl: nuevogasto_tpl,
+                templateUrl: nuevo_tpl,
                 //controller: 'ModalNuevoGastoCtrl',
                 //controllerAs: 'ctrl'
                 controller: function ($scope) {
@@ -2685,6 +2695,37 @@
 
             modalInstance.result.then(function (gasto) {
                 self.add_gasto(gasto);
+            }, function (response) {
+                console.log("response", response);
+            });
+        };
+
+        self.pre_edit_gasto = function (original) {
+
+            var copia = angular.copy(original);
+            var modalInstance = $uibModal.open({
+                templateUrl: editar_tpl,
+                controller: function ($scope, gasto) {
+                    $scope.gasto = gasto;
+                    $scope.ok = function () {
+                        $scope.$close($scope.gasto);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    gasto: function () {
+                        return copia;
+                    }
+                }
+
+            });
+
+
+            modalInstance.result.then(function (gasto) {
+                self.edit_gasto(gasto, original);
             }, function (response) {
                 console.log("response", response);
             });
@@ -2727,7 +2768,7 @@
 
                 }).catch(function (response) {
                     console.log("error");
-                }).finally(function (response) {                   
+                }).finally(function (response) {
                 });
             }, function (response) {
                 console.log("response", response);
@@ -2765,6 +2806,23 @@
             });
         };
 
+        self.edit_gasto = function (gasto,original) {
+
+            var i = self.gastos.indexOf(original);
+            delete gasto.id_gasto;
+
+            GastoSrv.update_gasto(original.id_gasto, gasto).then(function (response) {
+
+                self.gastos[i] = response.data;
+                toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+
+            }).catch(function (response) {
+
+            }).finally(function (response) {
+
+            });
+        };
+
 
 
 
@@ -2792,7 +2850,11 @@
             },
             del_gasto: function (id_gasto) {
                 return $http.delete(url + 'gastosextras/' + id_gasto);
+            },
+            update_gasto: function (id_gasto, gasto) {
+                return $http.put(url + 'gastosextras/' + id_gasto, {gasto: gasto});
             }
+
         };
     }
 
@@ -2860,19 +2922,90 @@
 
     angular
             .module('app.logic')
+            .controller('LogoutCtrl', Controller);
+
+    Controller.$inject = ['$state', '$auth'];
+    function Controller($state, $auth) {
+
+        var self = this;
+
+        $auth.removeToken();
+        console.log("logout");
+        $state.go('page.login');
+
+
+
+    }
+})();
+
+
+// To run this code, edit file index.html or index.jade and change
+// html data-ng-app attribute from angle to myAppName
+// ----------------------------------------------------------------------
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
             .controller('ParametrosCtrl', Controller);
 
-    Controller.$inject = ['$log', 'ParametroSrv', 'parametros'];
-    function Controller($log, ParametroSrv, parametros) {
+    Controller.$inject = ['toaster', '$uibModal', 'ParametroSrv', 'parametros', 'editar_tpl'];
+    function Controller(toaster, $uibModal, ParametroSrv, parametros, editar_tpl) {
 
         var self = this;
 
         self.parametros = parametros.data;
 
-//        UsuarioSrv.get_usuarios().then(function (response) {
-//            console.log("usuarios", JSON.stringify(response.data));
-//            self.usuarios = response.data;
-//        });
+        self.pre_edit_parametro = function (original) {
+
+            var copia = angular.copy(original);
+            var modalInstance = $uibModal.open({
+                templateUrl: editar_tpl,
+                controller: function ($scope, param) {
+                    $scope.param = param;
+                    $scope.ok = function () {
+                        $scope.$close($scope.param);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    param: function () {
+                        return copia;
+                    }
+                }
+
+            });
+
+
+            modalInstance.result.then(function (param) {
+                self.edit_parametro(param, original);
+            }, function (response) {
+                console.log("response", response);
+            });
+        };
+        
+         self.edit_parametro = function (param,original) {
+
+            var i = self.parametros.indexOf(original);
+            delete param.id_parametro;
+            delete param.id_nombre;
+
+            ParametroSrv.update_parametro(original.id_parametro, param).then(function (response) {
+
+                self.parametros[i] = response.data;
+                toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+
+            }).catch(function (response) {
+
+            }).finally(function (response) {
+
+            });
+        };
+
 
 
 
@@ -2901,6 +3034,9 @@
             },
             add_parametro: function (parametro) {
                 return $http.post(url + 'parametros', {parametro: parametro});
+            },
+            update_parametro: function (id_parametro, parametro) {
+                return $http.put(url + 'parametros/' + id_parametro, {parametro: parametro});
             }
         };
     }
@@ -3183,8 +3319,6 @@
             });
         };
 
-
-
         self.edit_usuario = function (usuario, original) {
 
             var i = self.usuarios.indexOf(original);
@@ -3223,6 +3357,61 @@
 
         };
 
+        self.pre_del_usuario = function (u) {
+
+            var modalInstance = $uibModal.open({
+                templateUrl: 'confirmar.html',
+                controller: function ($scope, usuario) {
+
+                    $scope.usuario = usuario;
+
+
+                    $scope.ok = function () {
+                        $scope.$close(true);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    usuario: function () {
+                        return u;
+                    }
+                }
+            });
+
+
+            modalInstance.result.then(function (result) {
+                self.del_usuario(u);
+            }, function () {
+                console.log("cancel delete");
+            });
+        };
+
+        self.del_usuario = function (usuario) {
+
+            var i = self.usuarios.indexOf(usuario);
+
+            UsuarioSrv.del_usuario(usuario.id_usuario).then(function (response) {
+                console.log("response delete", response);
+
+                if (response.data === 1) {
+                    self.usuarios.splice(i, 1);
+                    toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+                } else {
+                    toaster.pop('danger', '', 'Los datos no se han actualizado correctamente');
+                }
+
+            }).catch(function (response) {
+                toaster.pop('danger', '', 'Los datos no se han actualizado correctamente');
+            }).finally(function (response) {
+
+            });
+
+
+        };
+
 
     }
 })();
@@ -3251,6 +3440,9 @@
             },
             update_usuario: function (id_usuario, usuario) {
                 return $http.put(url + 'usuarios/' + id_usuario, {usuario: usuario});
+            },
+            del_usuario: function (id_usuario) {
+                return $http.delete(url + 'usuarios/' + id_usuario);
             }
         };
     }

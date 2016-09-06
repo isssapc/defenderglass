@@ -10,8 +10,8 @@
             .module('app.logic')
             .controller('GastosCtrl', Controller);
 
-    Controller.$inject = ['$log', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevogasto_tpl', 'cfpLoadingBar'];
-    function Controller($log, GastoSrv, gastos, $scope, $uibModal, nuevogasto_tpl, cfpLoadingBar) {
+    Controller.$inject = ['toaster', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevo_tpl', 'editar_tpl', 'cfpLoadingBar'];
+    function Controller(toaster, GastoSrv, gastos, $scope, $uibModal, nuevo_tpl, editar_tpl, cfpLoadingBar) {
 
         var self = this;
 
@@ -29,7 +29,7 @@
 
         self.pre_add_gasto = function () {
             var modalInstance = $uibModal.open({
-                templateUrl: nuevogasto_tpl,
+                templateUrl: nuevo_tpl,
                 //controller: 'ModalNuevoGastoCtrl',
                 //controllerAs: 'ctrl'
                 controller: function ($scope) {
@@ -48,6 +48,37 @@
 
             modalInstance.result.then(function (gasto) {
                 self.add_gasto(gasto);
+            }, function (response) {
+                console.log("response", response);
+            });
+        };
+
+        self.pre_edit_gasto = function (original) {
+
+            var copia = angular.copy(original);
+            var modalInstance = $uibModal.open({
+                templateUrl: editar_tpl,
+                controller: function ($scope, gasto) {
+                    $scope.gasto = gasto;
+                    $scope.ok = function () {
+                        $scope.$close($scope.gasto);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    gasto: function () {
+                        return copia;
+                    }
+                }
+
+            });
+
+
+            modalInstance.result.then(function (gasto) {
+                self.edit_gasto(gasto, original);
             }, function (response) {
                 console.log("response", response);
             });
@@ -90,7 +121,7 @@
 
                 }).catch(function (response) {
                     console.log("error");
-                }).finally(function (response) {                   
+                }).finally(function (response) {
                 });
             }, function (response) {
                 console.log("response", response);
@@ -125,6 +156,23 @@
                 //$scope.formNuevoGasto.$setPristine();
                 //$scope.formNuevoGasto.$setUntouched();
                 //self.nuevo_gasto = {};
+            });
+        };
+
+        self.edit_gasto = function (gasto,original) {
+
+            var i = self.gastos.indexOf(original);
+            delete gasto.id_gasto;
+
+            GastoSrv.update_gasto(original.id_gasto, gasto).then(function (response) {
+
+                self.gastos[i] = response.data;
+                toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+
+            }).catch(function (response) {
+
+            }).finally(function (response) {
+
             });
         };
 

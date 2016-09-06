@@ -19,6 +19,9 @@
             },
             add_parametro: function (parametro) {
                 return $http.post(url + 'parametros', {parametro: parametro});
+            },
+            update_parametro: function (id_parametro, parametro) {
+                return $http.put(url + 'parametros/' + id_parametro, {parametro: parametro});
             }
         };
     }

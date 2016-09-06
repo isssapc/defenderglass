@@ -37,7 +37,7 @@
           horizontal: false,
           isFloat: false,
           asideHover: false,
-          theme: null,
+          theme: 'app/css/theme-e.css', //null,
           asideScrollbar: false,
           isCollapsedText: false
         },

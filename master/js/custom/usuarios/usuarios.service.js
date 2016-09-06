@@ -22,6 +22,9 @@
             },
             update_usuario: function (id_usuario, usuario) {
                 return $http.put(url + 'usuarios/' + id_usuario, {usuario: usuario});
+            },
+            del_usuario: function (id_usuario) {
+                return $http.delete(url + 'usuarios/' + id_usuario);
             }
         };
     }

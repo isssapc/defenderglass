@@ -25,7 +25,7 @@
                     url: '/app',
                     abstract: true,
                     templateUrl: helper.basepath('app.html'),
-                    resolve: helper.resolveFor('modernizr', 'icons','toaster')
+                    resolve: helper.resolveFor('modernizr', 'icons', 'toaster')
                 })
                 .state('app.singleview', {
                     url: '/singleview',
@@ -36,6 +36,10 @@
                     url: '/submenu',
                     title: 'Submenu',
                     templateUrl: helper.basepath('submenu.html')
+                })
+                .state('app.logout', {
+                    url: '/logout',
+                    controller: 'LogoutCtrl'
                 })
                 .state('app.usuarios', {
                     url: '/usuarios',
@@ -74,8 +78,11 @@
                         gastos: ['GastoSrv', function (GastoSrv) {
                                 return GastoSrv.get_gastos();
                             }],
-                        nuevogasto_tpl: function () {
-                            return  helper.basepath('modal_nuevo_gasto.html');
+                        nuevo_tpl: function () {
+                            return  helper.basepath('gasto_nuevo_modal.html');
+                        },
+                        editar_tpl: function () {
+                            return  helper.basepath('gasto_editar_modal.html');
                         }
                     }
                 })
@@ -98,7 +105,10 @@
                     resolve: {
                         parametros: ['ParametroSrv', function (ParametroSrv) {
                                 return ParametroSrv.get_parametros();
-                            }]
+                            }],
+                        editar_tpl: function () {
+                            return  helper.basepath('parametro_editar_modal.html');
+                        }
                     }
                 })
                 .state('app.productos', {

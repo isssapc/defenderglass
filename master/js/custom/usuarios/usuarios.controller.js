@@ -55,8 +55,6 @@
             });
         };
 
-
-
         self.edit_usuario = function (usuario, original) {
 
             var i = self.usuarios.indexOf(original);
@@ -92,6 +90,61 @@
 
                 });
             }
+
+        };
+
+        self.pre_del_usuario = function (u) {
+
+            var modalInstance = $uibModal.open({
+                templateUrl: 'confirmar.html',
+                controller: function ($scope, usuario) {
+
+                    $scope.usuario = usuario;
+
+
+                    $scope.ok = function () {
+                        $scope.$close(true);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    usuario: function () {
+                        return u;
+                    }
+                }
+            });
+
+
+            modalInstance.result.then(function (result) {
+                self.del_usuario(u);
+            }, function () {
+                console.log("cancel delete");
+            });
+        };
+
+        self.del_usuario = function (usuario) {
+
+            var i = self.usuarios.indexOf(usuario);
+
+            UsuarioSrv.del_usuario(usuario.id_usuario).then(function (response) {
+                console.log("response delete", response);
+
+                if (response.data === 1) {
+                    self.usuarios.splice(i, 1);
+                    toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+                } else {
+                    toaster.pop('danger', '', 'Los datos no se han actualizado correctamente');
+                }
+
+            }).catch(function (response) {
+                toaster.pop('danger', '', 'Los datos no se han actualizado correctamente');
+            }).finally(function (response) {
+
+            });
+
 
         };
 

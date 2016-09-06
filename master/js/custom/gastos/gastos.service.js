@@ -18,7 +18,11 @@
             },
             del_gasto: function (id_gasto) {
                 return $http.delete(url + 'gastosextras/' + id_gasto);
+            },
+            update_gasto: function (id_gasto, gasto) {
+                return $http.put(url + 'gastosextras/' + id_gasto, {gasto: gasto});
             }
+
         };
     }
 
