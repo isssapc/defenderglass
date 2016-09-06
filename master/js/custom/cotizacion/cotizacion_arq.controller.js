@@ -29,22 +29,31 @@
 
         };
 
+        self.cotizar = function () {
+            self.cot.flete_m2 = Math.ceil(self.cot.flete / (46.45 * 10)) * 10;
+            self.cot.costo_152 = Math.ceil((self.cot.rollo_152.precio * self.cot.dolar) / (46.45 * 10)) * 10;
+            self.cot.precio_efectivo_152 = Math.ceil((parseFloat(self.cot.costo_152) + parseFloat(self.cot.flete_m2) + parseFloat(self.cot.garantia.comision_venta) + parseFloat(self.cot.instalacion_m2)) / (((100 - self.cot.garantia.utilidad) / 100) * 10)) * 10;
+            self.cot.precio_merma_152 = Math.ceil((parseFloat(self.cot.costo_152) + parseFloat(self.cot.flete_m2) + 50) / 10) * 10;
+            self.cot.total_efectivo_152 = Math.ceil((self.cot.precio_efectivo_152 * self.cot.efectivo_m2) / 10) * 10;
+            self.cot.total_merma_152 = Math.ceil((self.cot.precio_merma_152 * self.cot.merma_m2) / 10) * 10;
+        };
+
         self.costo_152 = function () {
             if (self.cot.rollo_152 && self.cot.rollo_152.precio && self.cot.dolar) {
 
-                self.cot.costo_152 = Math.ceil((self.cot.rollo_152.precio * self.cot.dolar) / (46.45 * 10)) * 10;
+                //self.cot.costo_152 = Math.ceil((self.cot.rollo_152.precio * self.cot.dolar) / (46.45 * 10)) * 10;
                 return Math.round(((self.cot.rollo_152.precio * self.cot.dolar) / 46.45) * 100) / 100;
             }
         };
 
-        self.precio_152 = function () {
+        self.precio_efectivo_152 = function () {
             if (self.cot.garantia && self.cot.costo_152 && self.cot.flete_m2 && self.cot.garantia.comision_venta && self.cot.instalacion_m2 && self.cot.garantia.utilidad) {
 
                 var precio = parseFloat(self.cot.costo_152) + parseFloat(self.cot.flete_m2) + parseFloat(self.cot.garantia.comision_venta) + parseFloat(self.cot.instalacion_m2);
                 //console.log("precio", precio);
                 var utilidad = (100 - self.cot.garantia.utilidad) / 100;
                 //console.log("utilidad", utilidad);
-                self.cot.precio_efectivo_152 = Math.ceil(precio / (utilidad * 10)) * 10;
+                //elf.cot.precio_efectivo_152 = Math.ceil(precio / (utilidad * 10)) * 10;
                 return Math.round((precio / utilidad) * 100) / 100;
             }
         };
@@ -54,17 +63,19 @@
 
                 var precio = parseFloat(self.cot.costo_152) + parseFloat(self.cot.flete_m2) + 50;
 
-                self.cot.precio_merma_152 = Math.ceil(precio / 10) * 10;
+                //self.cot.precio_merma_152 = Math.ceil(precio / 10) * 10;
 
                 return Math.round(precio * 100) / 100;
             }
         };
 
         self.total_efectivo_152 = function () {
+            //self.cot.total_efectivo_152 = Math.ceil((self.cot.precio_efectivo_152 * self.cot.efectivo_m2) / 10) * 10;
             return Math.round(self.cot.precio_efectivo_152 * self.cot.efectivo_m2 * 100) / 100;
         };
 
         self.total_merma_152 = function () {
+            //self.cot.total_merma_152 = Math.ceil((self.cot.precio_merma_152 * self.cot.merma_m2) / 10) * 10;
             return Math.round(self.cot.precio_merma_152 * self.cot.merma_m2 * 100) / 100;
         };
 
@@ -75,10 +86,10 @@
             }
         };
 
-        self.flete = function () {
+        self.flete_m2 = function () {
             if (self.cot.flete) {
 
-                self.cot.flete_m2 = Math.ceil(self.cot.flete / (46.45 * 10)) * 10;
+                //self.cot.flete_m2 = Math.ceil(self.cot.flete / (46.45 * 10)) * 10;
 
                 return Math.round((self.cot.flete / 46.45) * 100) / 100;
             }

@@ -14,7 +14,7 @@
     function Controller($log, ProductoSrv, productos, $uibModal, nuevoproducto_tpl) {
 
         var self = this;
-
+        self.segmento=0;
         self.productos = productos.data;
        
 

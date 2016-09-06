@@ -29,13 +29,13 @@
             </div>
         </div>
 
-        <div class="checkbox c-checkbox">
-            <label>
+        <div class="form-group"> <div class="checkbox c-checkbox">
+                <label class="col-lg-offset-2 col-lg-10" style="padding-left: 35px;">
                 <input type="checkbox" ng-model="usuario.cambiar_password" />
                 <span class="fa fa-check"></span>Restaurar password</label>
-        </div>
+        </div></div>
 
-        <fieldset ng-disabled="!usuario.cambiar_password">
+        <fieldset class="last-child" ng-disabled="!usuario.cambiar_password">
             <div class="form-group" ng-class="{'has-error':(form.$submitted || form.password.$touched) && form.password.$error.pattern}">
                 <label class="col-lg-2 control-label">Contraseña</label>
                 <div class="col-lg-10">
@@ -43,7 +43,7 @@
                     <span ng-show="form.password.$dirty && form.password.$error.pattern" class="text-danger">Caracteres alfanuméricos. Longitud de 6-10</span>
                 </div>
             </div>
-
+            <br>
             <div class="form-group" ng-class="{'has-error':(form.$submitted || form.match.$touched) && (form.match.$error.validator || form.match.$error.required)}">
                 <label class="col-lg-2 control-label">Confirmación</label>
                 <div class="col-lg-10">

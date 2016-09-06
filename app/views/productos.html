@@ -1,15 +1,54 @@
-<h3>Productos</h3>
-<div class="row">
-    <div class="col-lg-12">
 
+<div class=" form-group pull-right" style="font-size: 14px;">
+    <label class="radio-inline c-radio">
+        <input id="inlineradio1" type="radio" name="categoria2" value="0"  />
+        <span class="fa fa-check"></span>Automotriz</label>
+    <label class="radio-inline c-radio">
+        <input id="inlineradio2" type="radio" name="categoria2" value="1" />
+        <span class="fa fa-check"></span>Arquitectónico</label>
+</div> 
+<h3>
+    <!--    <div class=" form-group pull-right" style="font-size: 14px;">
+            <label class="radio-inline c-radio">
+                <input id="inlineradio1" type="radio" name="categoria" value="0" checked="checked" />
+                <span class="fa fa-check"></span>Automotriz</label>
+            <label class="radio-inline c-radio">
+                <input id="inlineradio2" type="radio" name="categoria" value="1" />
+                <span class="fa fa-check"></span>Arquitectónico</label>
+        </div>    -->
+    Productos
+</h3>
+<div class="row mb-lg">
+    <div class="col-lg-12">
+        <label class="radio-inline c-radio">
+            <input id="inlineradio1" type="radio" name="categoria" value="0" checked="checked" ng-model="ctrl.segmento" />
+            <span class="fa fa-check"></span>Automotriz</label>
+        <label class="radio-inline c-radio">
+            <input id="inlineradio2" type="radio" name="categoria" value="1" ng-model="ctrl.segmento" />
+            <span class="fa fa-check"></span>Arquitectónico</label>
+    </div>
+</div>
+
+<div class="row">
+
+    <!--  <div class="form-group col-lg-12">
+            <label class="radio-inline c-radio">
+                <input id="inlineradio1" type="radio" name="categoria" value="0" checked="checked" />
+                <span class="fa fa-check"></span>Automotriz</label>
+            <label class="radio-inline c-radio">
+                <input id="inlineradio2" type="radio" name="categoria" value="1" />
+                <span class="fa fa-check"></span>Arquitectónico</label>
+        </div>-->
+
+    <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-body">
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Id</th>
-                                <th>Segmento</th>
+                                <!--<th>Id</th>-->
+                                <!--<th>Segmento</th>-->
                                 <th>Categoría</th>
                                 <th>Modelo</th>
                                 <th>Marca</th>
@@ -23,9 +62,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="p in ctrl.productos">
-                                <td>{{p.id_producto}}</td>
-                                <td>{{p.segmento}}</td>
+                            <tr ng-repeat="p in ctrl.productos|filter:{id_segmento:ctrl.segmento}">
+                                <!--<td>{{p.id_producto}}</td>-->
+                                <!--<td>{{p.segmento}}</td>-->
                                 <td>{{p.categoria}}</td>
                                 <td>{{p.modelo}}</td>
                                 <td>{{p.marca}}</td>
@@ -46,19 +85,20 @@
                 </div>
             </div>
         </div>
+        
     </div>
 </div>
 
 <script type="text/ng-template" id="confirmar.html">
-<div class="modal-header">
+    <div class="modal-header">
     <button type="button" class="close" ng-click="cancel()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     <h3 class="modal-title" id="modal-title">Eliminar Producto</h3>
-</div>
-<div class="modal-body" id="modal-body">
-<p>¿Desea eliminar el producto <strong>{{producto.modelo}}</strong>?</p>   
-</div>
-<div class="modal-footer">
+    </div>
+    <div class="modal-body" id="modal-body">
+    <p>¿Desea eliminar el producto <strong>{{producto.modelo}}</strong>?</p>   
+    </div>
+    <div class="modal-footer">
     <button class="btn btn-default" type="button" ng-click="cancel()">Cancelar</button>
     <button class="btn btn-danger" type="button" ng-click="ok()" >Eliminar</button>
-</div>
+    </div>
 </script>
