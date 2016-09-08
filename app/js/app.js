@@ -2078,6 +2078,40 @@
 
 })();
 
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .service('CotizacionSrv', Cotizacion);
+
+    Cotizacion.$inject = ['$http', 'URL_API'];
+    function Cotizacion($http, URL_API) {
+        var url = URL_API;
+        return {
+            get_cotizaciones: function () {
+                return $http.get(url + 'cotizaciones');
+            },
+            get_cotizacion: function (id_cotizacion) {
+                return $http.get(url + 'cotizaciones/' + id_cotizacion);
+            },
+            del_cotizacion: function (id_cotizacion) {
+                return $http.delete(url + 'cotizaciones/' + id_cotizacion);
+            },
+            add_cotizacion: function (cotizacion) {
+                return $http.post(url + 'cotizaciones', {cotizacion: cotizacion});
+            },
+            update_cotizacion: function (id_cotizacion, cotizacion) {
+                return $http.put(url + 'cotizaciones/' + id_cotizacion, {cotizacion: cotizacion});
+            },
+            get_reporte: function (id_cotizacion, cotizacion) {
+                return $http.post(url + 'cotizaciones/reporte/' + id_cotizacion, {cotizacion: cotizacion});
+            }
+        };
+    }
+
+})();
+
 
 (function () {
     'use strict';
@@ -2086,8 +2120,8 @@
             .module('app.logic')
             .controller('CotizacionArqCtrl', Controller);
 
-    Controller.$inject = ['$log', 'productos', 'garantias'];
-    function Controller($log, productos, garantias) {
+    Controller.$inject = ['CotizacionSrv', '$window', 'productos', 'garantias'];
+    function Controller(CotizacionSrv, $window, productos, garantias) {
 
         var self = this;
         //self.pieza_selected={};
@@ -2111,7 +2145,54 @@
 
         self.get_pdf = function () {
             console.log("crear documento PDF");
+            CotizacionSrv.get_reporte(1, {hola: "mundo"}).then(function (response) {
+
+                console.log("response", response);
+                $window.open("data:application/pdf;base64," + response.data.pdfbase64, "_blank");
+//                
+
+//                var win = $window.open("", "win");
+//                win.document.open("application/pdf");
+//                win.document.write(response.data);
+//                win.document.close();
+
+               
+
+//                var blob = self.b64toBlob(response.data.pdfbase64, 'application/pdf');
+//                var blobUrl = URL.createObjectURL(blob);
+//
+//
+//                $window.open(blobUrl);
+
+
+            }).catch(function (response) {
+                console.log("error");
+            });
         };
+
+        self.b64toBlob = function (b64Data, contentType, sliceSize) {
+            contentType = contentType || '';
+            sliceSize = sliceSize || 512;
+
+            var byteCharacters = atob(b64Data);
+            var byteArrays = [];
+
+            for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+                var byteNumbers = new Array(slice.length);
+                for (var i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+
+                var byteArray = new Uint8Array(byteNumbers);
+
+                byteArrays.push(byteArray);
+            }
+
+            var blob = new Blob(byteArrays, {type: contentType});
+            return blob;
+        }
 
         self.cotizar = function () {
             self.cot.flete_m2 = Math.ceil(self.cot.flete / (46.45 * 10)) * 10;
@@ -3016,11 +3097,6 @@
 
     }
 })();
-
-/**=========================================================
- * Module: browser.js
- * Browser detection
- =========================================================*/
 
 (function () {
     'use strict';
