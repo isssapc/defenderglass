@@ -24,6 +24,8 @@
             'app.preloader',
             'angular-loading-bar',
             //'app.loadingbar',
+            'app.bootstrapui',
+            'app.panels',
             'app.translate',
             'app.settings',
             'app.utils',
@@ -33,6 +35,12 @@
 })();
 
 
+(function() {
+    'use strict';
+
+    angular
+        .module('app.bootstrapui', []);
+})();
 (function() {
     'use strict';
 
@@ -100,6 +108,12 @@
     'use strict';
 
     angular
+        .module('app.panels', []);
+})();
+(function() {
+    'use strict';
+
+    angular
         .module('app.preloader', []);
 })();
 
@@ -139,6 +153,18 @@
           ]);
 })();
 
+(function() {
+    'use strict';
+
+    angular
+        .module('app.bootstrapui')
+        .config(bootstrapuiConfig);
+
+    bootstrapuiConfig.$inject = ['$uibTooltipProvider'];
+    function bootstrapuiConfig($uibTooltipProvider){
+      $uibTooltipProvider.options({appendToBody: true});
+    }
+})();
 (function() {
     'use strict';
 
@@ -657,6 +683,340 @@
     }
 })();
 
+/**=========================================================
+ * Collapse panels * [panel-collapse]
+ =========================================================*/
+(function() {
+    'use strict';
+
+    angular
+        .module('app.panels')
+        .directive('panelCollapse', panelCollapse);
+
+    function panelCollapse () {
+        var directive = {
+            controller: Controller,
+            restrict: 'A',
+            scope: false
+        };
+        return directive;
+    }
+
+    Controller.$inject = ['$scope', '$element', '$timeout', '$localStorage'];
+    function Controller ($scope, $element, $timeout, $localStorage) {
+      var storageKeyName = 'panelState';
+
+      // Prepare the panel to be collapsible
+      var $elem   = $($element),
+          parent  = $elem.closest('.panel'), // find the first parent panel
+          panelId = parent.attr('id');
+
+      // Load the saved state if exists
+      var currentState = loadPanelState( panelId );
+      if ( typeof currentState !== 'undefined') {
+        $timeout(function(){
+            $scope[panelId] = currentState; },
+          10);
+      }
+
+      // bind events to switch icons
+      $element.bind('click', function(e) {
+        e.preventDefault();
+        savePanelState( panelId, !$scope[panelId] );
+
+      });
+  
+      // Controller helpers
+      function savePanelState(id, state) {
+        if(!id) return false;
+        var data = angular.fromJson($localStorage[storageKeyName]);
+        if(!data) { data = {}; }
+        data[id] = state;
+        $localStorage[storageKeyName] = angular.toJson(data);
+      }
+      function loadPanelState(id) {
+        if(!id) return false;
+        var data = angular.fromJson($localStorage[storageKeyName]);
+        if(data) {
+          return data[id];
+        }
+      }
+    }
+
+})();
+
+/**=========================================================
+ * Dismiss panels * [panel-dismiss]
+ =========================================================*/
+
+(function() {
+    'use strict';
+
+    angular
+        .module('app.panels')
+        .directive('panelDismiss', panelDismiss);
+
+    function panelDismiss () {
+
+        var directive = {
+            controller: Controller,
+            restrict: 'A'
+        };
+        return directive;
+
+    }
+
+    Controller.$inject = ['$scope', '$element', '$q', 'Utils'];
+    function Controller ($scope, $element, $q, Utils) {
+      var removeEvent   = 'panel-remove',
+          removedEvent  = 'panel-removed';
+
+      $element.on('click', function (e) {
+        e.preventDefault();
+
+        // find the first parent panel
+        var parent = $(this).closest('.panel');
+
+        removeElement();
+
+        function removeElement() {
+          var deferred = $q.defer();
+          var promise = deferred.promise;
+          
+          // Communicate event destroying panel
+          $scope.$emit(removeEvent, parent.attr('id'), deferred);
+          promise.then(destroyMiddleware);
+        }
+
+        // Run the animation before destroy the panel
+        function destroyMiddleware() {
+          if(Utils.support.animation) {
+            parent.animo({animation: 'bounceOut'}, destroyPanel);
+          }
+          else destroyPanel();
+        }
+
+        function destroyPanel() {
+
+          var col = parent.parent();
+          parent.remove();
+          // remove the parent if it is a row and is empty and not a sortable (portlet)
+          col
+            .filter(function() {
+            var el = $(this);
+            return (el.is('[class*="col-"]:not(.sortable)') && el.children('*').length === 0);
+          }).remove();
+
+          // Communicate event destroyed panel
+          $scope.$emit(removedEvent, parent.attr('id'));
+
+        }
+
+      });
+    }
+})();
+
+
+
+/**=========================================================
+ * Refresh panels
+ * [panel-refresh] * [data-spinner="standard"]
+ =========================================================*/
+
+(function() {
+    'use strict';
+
+    angular
+        .module('app.panels')
+        .directive('panelRefresh', panelRefresh);
+
+    function panelRefresh () {
+        var directive = {
+            controller: Controller,
+            restrict: 'A',
+            scope: false
+        };
+        return directive;
+
+    }
+
+    Controller.$inject = ['$scope', '$element'];
+    function Controller ($scope, $element) {
+      var refreshEvent   = 'panel-refresh',
+          whirlClass     = 'whirl',
+          defaultSpinner = 'standard';
+
+      // catch clicks to toggle panel refresh
+      $element.on('click', function (e) {
+        e.preventDefault();
+
+        var $this   = $(this),
+            panel   = $this.parents('.panel').eq(0),
+            spinner = $this.data('spinner') || defaultSpinner
+            ;
+
+        // start showing the spinner
+        panel.addClass(whirlClass + ' ' + spinner);
+
+        // Emit event when refresh clicked
+        $scope.$emit(refreshEvent, panel.attr('id'));
+
+      });
+
+      // listen to remove spinner
+      $scope.$on('removeSpinner', removeSpinner);
+
+      // method to clear the spinner when done
+      function removeSpinner (ev, id) {
+        if (!id) return;
+        var newid = id.charAt(0) === '#' ? id : ('#'+id);
+        angular
+          .element(newid)
+          .removeClass(whirlClass);
+      }
+    }
+})();
+
+
+
+/**=========================================================
+ * Module panel-tools.js
+ * Directive tools to control panels.
+ * Allows collapse, refresh and dismiss (remove)
+ * Saves panel state in browser storage
+ =========================================================*/
+
+(function() {
+    'use strict';
+
+    angular
+        .module('app.panels')
+        .directive('paneltool', paneltool);
+
+    paneltool.$inject = ['$compile', '$timeout'];
+    function paneltool ($compile, $timeout) {
+        var directive = {
+            link: link,
+            restrict: 'E',
+            scope: false
+        };
+        return directive;
+
+        function link(scope, element, attrs) {
+
+          var templates = {
+            /* jshint multistr: true */
+            collapse:'<a href="#" panel-collapse="" uib-tooltip="Colapsar" ng-click="{{panelId}} = !{{panelId}}">\
+                       <em ng-show="{{panelId}}" class="fa fa-plus ng-no-animation"></em>\
+                       <em ng-show="!{{panelId}}" class="fa fa-minus ng-no-animation"></em>\
+                      </a>',
+            dismiss: '<a href="#" panel-dismiss="" uib-tooltip="Cerrar">\
+                       <em class="fa fa-times"></em>\
+                     </a>',
+            refresh: '<a href="#" panel-refresh="" data-spinner="{{spinner}}" uib-tooltip="Actualizar">\
+                       <em class="fa fa-refresh"></em>\
+                     </a>'
+          };
+
+          var tools = scope.panelTools || attrs;
+
+          $timeout(function() {
+            element.html(getTemplate(element, tools )).show();
+            $compile(element.contents())(scope);
+
+            element.addClass('pull-right');
+          });
+
+          function getTemplate( elem, attrs ){
+            var temp = '';
+            attrs = attrs || {};
+            if(attrs.toolCollapse)
+              temp += templates.collapse.replace(/{{panelId}}/g, (elem.parent().parent().attr('id')) );
+            if(attrs.toolDismiss)
+              temp += templates.dismiss;
+            if(attrs.toolRefresh)
+              temp += templates.refresh.replace(/{{spinner}}/g, attrs.toolRefresh);
+            return temp;
+          }
+        }// link
+    }
+
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('app.panels')
+        .controller('DraggablePanelController', DraggablePanelController);
+
+    DraggablePanelController.$inject = ['$timeout', '$localStorage'];
+    function DraggablePanelController($timeout, $localStorage) {
+        var vm = this;
+        var storageKeyName = 'portletState';
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+
+            // https://github.com/angular-ui/ui-sortable
+            vm.sortablePortletOptions = {
+                connectWith:          '.portlet-connect',
+                handler:              '.panel-heading',
+                opacity:              0.7,
+                placeholder:          'portlet box-placeholder',
+                cancel:               '.portlet-cancel',
+                forcePlaceholderSize: true,
+                iframeFix:            false,
+                tolerance:            'pointer',
+                helper:               'original',
+                revert:               200,
+                forceHelperSize:      true,
+                update:               savePortletOrder,
+                create:               loadPortletOrder
+            };
+
+            function savePortletOrder(event) {
+                var self = event.target;
+                var data = angular.fromJson($localStorage[storageKeyName]);
+
+                if (!data) {
+                    data = {};
+                }
+
+                data[self.id] = $(self).sortable('toArray');
+
+                if (data) {
+                    $timeout(function() {
+                        $localStorage[storageKeyName] = angular.toJson(data);
+                    });
+                }
+            }
+
+            function loadPortletOrder(event) {
+                var self = event.target;
+                var data = angular.fromJson($localStorage[storageKeyName]);
+
+                if (data) {
+
+                    var porletId = self.id,
+                        panels = data[porletId];
+
+                    if (panels) {
+                        var portlet = $('#' + porletId);
+
+                        $.each(panels, function(index, value) {
+                            $('#' + value).appendTo(portlet);
+                        });
+                    }
+                }
+            }
+
+        }
+    }
+})();
 (function() {
     'use strict';
 
@@ -992,6 +1352,9 @@
                             }],
                         garantias: ['ProductoSrv', function (ProductoSrv) {
                                 return ProductoSrv.get_garantias();
+                            }],
+                        parametros: ['ParametroSrv', function (ParametroSrv) {
+                                return ParametroSrv.get_parametros();
                             }]
                     }
                 })
@@ -2115,13 +2478,11 @@
 
 (function () {
     'use strict';
-
     angular
             .module('app.logic')
             .controller('CotizacionArqCtrl', Controller);
-
-    Controller.$inject = ['CotizacionSrv', '$window', 'productos', 'garantias'];
-    function Controller(CotizacionSrv, $window, productos, garantias) {
+    Controller.$inject = ['CotizacionSrv', '$window', 'productos', 'garantias', 'parametros'];
+    function Controller(CotizacionSrv, $window, productos, garantias, parametros) {
 
         var self = this;
         //self.pieza_selected={};
@@ -2129,26 +2490,29 @@
         self.procesadas = [];
         self.productos = productos.data;
         self.garantias = garantias.data;
+        self.parametros = parametros.data;
         self.rollo = null;
         self.toggleFormulaPrecio182 = false;
         self.toggleFormulaPrecio152 = false;
         self.toggleFormulaCosto182 = false;
         self.toggleFormulaCosto152 = false;
-
-
         self.cot = {
-            flete: 800.00,
-            instalacion_m2: 75.00,
-            dolar: 19.00
-
+            flete: _.findWhere(self.parametros, {clave: 'flete'}).valor,
+            instalacion_m2: _.findWhere(self.parametros, {clave: 'instalacion'}).valor,
+            dolar: _.findWhere(self.parametros, {clave: 'dolar'}).valor,
+            intro: _.findWhere(self.parametros, {clave: 'intro'}).texto,
+            notas: _.findWhere(self.parametros, {clave: 'notas'}).texto,
+            cuenta: _.findWhere(self.parametros, {clave: 'cuenta'}).texto
         };
-
         self.get_pdf = function () {
             console.log("crear documento PDF");
-            CotizacionSrv.get_reporte(1, {hola: "mundo"}).then(function (response) {
+            CotizacionSrv.get_reporte(1, self.cot).then(function (response) {
 
                 console.log("response", response);
-                $window.open("data:application/pdf;base64," + response.data.pdfbase64, "_blank");
+                //$window.open("data:application/pdf;base64," + response.data.pdfbase64, "_blank");
+                
+                $window.open("/defenderglass_api/public/" + response.data.filename, "_blank");
+                
 //                
 
 //                var win = $window.open("", "win");
@@ -2156,7 +2520,7 @@
 //                win.document.write(response.data);
 //                win.document.close();
 
-               
+
 
 //                var blob = self.b64toBlob(response.data.pdfbase64, 'application/pdf');
 //                var blobUrl = URL.createObjectURL(blob);
@@ -2169,24 +2533,19 @@
                 console.log("error");
             });
         };
-
         self.b64toBlob = function (b64Data, contentType, sliceSize) {
             contentType = contentType || '';
             sliceSize = sliceSize || 512;
-
             var byteCharacters = atob(b64Data);
             var byteArrays = [];
-
             for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
                 var slice = byteCharacters.slice(offset, offset + sliceSize);
-
                 var byteNumbers = new Array(slice.length);
                 for (var i = 0; i < slice.length; i++) {
                     byteNumbers[i] = slice.charCodeAt(i);
                 }
 
                 var byteArray = new Uint8Array(byteNumbers);
-
                 byteArrays.push(byteArray);
             }
 
@@ -2202,7 +2561,6 @@
             self.cot.total_efectivo_152 = Math.ceil((self.cot.precio_efectivo_152 * self.cot.efectivo_m2) / 10) * 10;
             self.cot.total_merma_152 = Math.ceil((self.cot.precio_merma_152 * self.cot.merma_m2) / 10) * 10;
         };
-
         self.costo_152 = function () {
             if (self.cot.rollo_152 && self.cot.rollo_152.precio && self.cot.dolar) {
 
@@ -2210,7 +2568,6 @@
                 return Math.round(((self.cot.rollo_152.precio * self.cot.dolar) / 46.45) * 100) / 100;
             }
         };
-
         self.precio_efectivo_152 = function () {
             if (self.cot.garantia && self.cot.costo_152 && self.cot.flete_m2 && self.cot.garantia.comision_venta && self.cot.instalacion_m2 && self.cot.garantia.utilidad) {
 
@@ -2222,35 +2579,29 @@
                 return Math.round((precio / utilidad) * 100) / 100;
             }
         };
-
         self.precio_merma_152 = function () {
             if (self.cot.costo_152 && self.cot.flete_m2) {
 
                 var precio = parseFloat(self.cot.costo_152) + parseFloat(self.cot.flete_m2) + 50;
-
                 //self.cot.precio_merma_152 = Math.ceil(precio / 10) * 10;
 
                 return Math.round(precio * 100) / 100;
             }
         };
-
         self.total_efectivo_152 = function () {
             //self.cot.total_efectivo_152 = Math.ceil((self.cot.precio_efectivo_152 * self.cot.efectivo_m2) / 10) * 10;
             return Math.round(self.cot.precio_efectivo_152 * self.cot.efectivo_m2 * 100) / 100;
         };
-
         self.total_merma_152 = function () {
             //self.cot.total_merma_152 = Math.ceil((self.cot.precio_merma_152 * self.cot.merma_m2) / 10) * 10;
             return Math.round(self.cot.precio_merma_152 * self.cot.merma_m2 * 100) / 100;
         };
-
         self.costo_80 = function () {
             if (self.cot.rollo_80 && self.cot.rollo_80.precio && self.cot.dolar) {
 
                 return Math.round(((self.cot.rollo_80.precio * self.cot.dolar) / 61.93) * 100) / 100;
             }
         };
-
         self.flete_m2 = function () {
             if (self.cot.flete) {
 
@@ -2259,7 +2610,6 @@
                 return Math.round((self.cot.flete / 46.45) * 100) / 100;
             }
         };
-
         self.piezas = [
             {
                 cantidad: 2,
@@ -2292,21 +2642,16 @@
                 ancho: .95
             }
         ];
-
-
         self.addPieza = function () {
             self.piezas.push({cantidad: 1});
         };
-
         self.delPieza = function (pieza) {
             var i = self.piezas.indexOf(pieza);
             self.piezas.splice(i, 1);
         };
-
         self.print = function () {
             console.log(JSON.stringify(self.piezas));
         };
-
         self.analisis = function () {
             self.procesadas = angular.copy(self.piezas);
             var A = 1.52;
@@ -2316,11 +2661,8 @@
             }
 
             analizar(self.procesadas, 1.52);
-
             analizar(self.procesadas, 1.82);
-
             calcular_optimo(self.procesadas);
-
 //            for (var k = 0; k < self.procesadas.length; k++) {
 //
 //                var l = self.procesadas[k].largo;
@@ -2393,7 +2735,6 @@
 
 
         };
-
         function calcular_optimo(piezas) {
             for (var k = 0; k < piezas.length; k++) {
                 if (piezas[k]._152.merma <= piezas[k]._182.merma) {
@@ -2415,13 +2756,10 @@
                 var l = piezas[k].largo;
                 var a = piezas[k].ancho;
                 var n = piezas[k].cantidad;
-
                 var mc = 0, mr = 0;
-
                 // 1. Cuantos caben a lo ancho
                 var na = Math.floor(A / a);
                 console.log("cuantos caben a lo ancho", na);
-
                 if (na > 0) {
                     // 2 cociente
                     var c = Math.floor(n / na);
@@ -2429,7 +2767,6 @@
                     //3 resto
                     var r = n - (na * c);
                     console.log("resto", r);
-
                     //4 calcular merma cociente
                     var Hc = {h1: 0, h2: 0, h3: l, h4: A};
                     //console.log("Hc", JSON.stringify(Hc));
@@ -2437,7 +2774,6 @@
                     var aux = 0;
                     // ancho en mm
                     var am = a * 1000;
-
                     if (c > 0) {
 
                         for (var i = 0; i < na; i++) {
@@ -2465,8 +2801,6 @@
                     }
 
                     console.log("fin------------------");
-
-
                     piezas[k].efectivo = Math.round(n * l * a * 10000) / 10000;
                     if (A == 1.52) {
                         piezas[k]._152 = {};
@@ -2499,20 +2833,17 @@
 
         self.analisis2 = function () {
             self.procesadas = angular.copy(self.piezas);
-
             var A = 1.52;
             for (var i = 0; i < self.procesadas.length; i++) {
 
                 var l = self.procesadas[i].largo;
                 var a = self.procesadas[i].ancho;
-
                 var mo, mr = 0;
                 if (l <= A && a <= A) {
                     //posicion original
                     mo = Math.round(l * (A - a) * 10000) / 10000;
                     //rotar
                     mr = Math.round(a * (A - l) * 10000) / 10000;
-
                     if (mo < mr) {
                         self.procesadas[i].rotar = 0;
                         self.procesadas[i].merma = mo;
@@ -2520,7 +2851,6 @@
                         self.procesadas[i].m2 = a;
                         self.procesadas[i].m3 = l;
                         self.procesadas[i].m4 = A;
-
                     } else {
                         self.procesadas[i].largo = self.procesadas[i].ancho;
                         self.procesadas[i].ancho = l;
@@ -2530,7 +2860,6 @@
                         self.procesadas[i].m2 = l;
                         self.procesadas[i].m3 = a;
                         self.procesadas[i].m4 = A;
-
                     }
 
                 }
@@ -2540,11 +2869,9 @@
 
 
         };
-
         self.draw2 = function (pieza) {
             var dibujo = $("#dibujo");
             dibujo.empty();
-
             if (pieza.bc.length > 0) {
 
                 for (var i = 0; i < pieza.bc.length; i++) {
@@ -2554,23 +2881,19 @@
                     pos += "left:" + Math.floor((pieza.bc[i].b1 * 1000) / 5) + "px;";
                     pos += "width:" + Math.floor(w / 5) + "px;";
                     pos += "height:" + Math.floor(h / 5) + "px;";
-
                     dibujo.append('<div class="waste" style="' + pos + '">' + w + " x " + h + '</div>');
                 }
 
                 h = Math.floor((pieza.hc.h4 - pieza.hc.h2) * 1000);
                 w = Math.floor((pieza.hc.h3) * 1000);
-
                 pos = "top:" + Math.floor((pieza.hc.h2 * 1000) / 5) + "px;";
                 pos += "left:" + Math.floor((pieza.hc.h1 * 1000) / 5) + "px;";
                 pos += "width:" + Math.floor(w / 5) + "px;";
                 pos += "height:" + Math.floor(h / 5) + "px;";
                 dibujo.append('<div class="pieza" style="' + pos + '">' + w + " x " + h + '</div>');
-
             }
 
         };
-
         self.draw = function (p, A) {
             //self.pieza_selected=pieza;
             self.show_resto = false;
@@ -2578,11 +2901,9 @@
             var resto = $("#resto");
             cociente.empty();
             resto.empty();
-
             var B = null;
             var H = null;
             var es_resto = false;
-
             //elegimos el ancho del rollo
             var pieza = null;
             if (A === 152) {
@@ -2592,98 +2913,78 @@
             }
 
             console.log("pieza", JSON.stringify(pieza));
-
             //tiene piezas en el cociente?
             if (pieza.bc.length > 0) {
 
                 B = pieza.bc;
                 H = pieza.hc;
-
             } else {
                 //solo tiene piezas en el resto
                 B = pieza.br;
                 H = pieza.hr;
                 es_resto = true;
-
             }
             // dibujar cociente
             for (var i = 0; i < B.length; i++) {
                 var l = Math.floor(B[i].b3 * 1000);
                 var a = Math.floor(B[i].b4 * 1000 - B[i].b2 * 1000);
-
                 var pos = "top:" + Math.floor((B[i].b2 * 1000) / 5) + "px;";
                 pos += "left:" + Math.floor((B[i].b1 * 1000) / 5) + "px;";
                 pos += "width:" + Math.floor(l / 5) + "px;";
                 pos += "height:" + Math.floor(a / 5) + "px;";
-
                 cociente.append('<div class="waste" style="' + pos + '">' + l / 1000 + " x " + a / 1000 + '</div>');
             }
 
             a = Math.floor(H.h4 * 1000 - H.h2 * 1000);
             l = Math.floor(H.h3 * 1000);
-
             pos = "top:" + Math.floor((H.h2 * 1000) / 5) + "px;";
             pos += "left:" + Math.floor((H.h1 * 1000) / 5) + "px;";
             pos += "width:" + Math.floor(l / 5) + "px;";
             pos += "height:" + Math.floor(a / 5) + "px;";
             cociente.append('<div class="pieza" style="' + pos + '">' + l / 1000 + " x " + a / 1000 + '</div>');
-
             var num = pieza.c;
             if (es_resto) {
                 num = 1;
             }
             cociente.append('<div class="pull-right"><h1>x ' + num + '</h1></div>');
-
             //dibujar resto
             if (pieza.br.length > 0 && !es_resto) {
                 self.show_resto = true;
                 B = pieza.br;
                 H = pieza.hr;
-
                 for (var i = 0; i < B.length; i++) {
                     var l = Math.floor(B[i].b3 * 1000);
                     var a = Math.floor(B[i].b4 * 1000 - B[i].b2 * 1000);
-
                     var pos = "top:" + Math.floor((B[i].b2 * 1000) / 5) + "px;";
                     pos += "left:" + Math.floor((B[i].b1 * 1000) / 5) + "px;";
                     pos += "width:" + Math.floor(l / 5) + "px;";
                     pos += "height:" + Math.floor(a / 5) + "px;";
-
                     resto.append('<div class="waste" style="' + pos + '">' + l / 1000 + " x " + a / 1000 + '</div>');
                 }
 
                 a = Math.floor(H.h4 * 1000 - H.h2 * 1000);
                 l = Math.floor(H.h3 * 1000);
-
                 pos = "top:" + Math.floor((H.h2 * 1000) / 5) + "px;";
                 pos += "left:" + Math.floor((H.h1 * 1000) / 5) + "px;";
                 pos += "width:" + Math.floor(l / 5) + "px;";
                 pos += "height:" + Math.floor(a / 5) + "px;";
                 resto.append('<div class="pieza" style="' + pos + '">' + l / 1000 + " x " + a / 1000 + '</div>');
-
                 resto.append('<div class="pull-right"><h1>x 1</h1></div>');
-
-
-
             }
 
         };
-
         self.set_merma_152 = function () {
             self.cot.merma_m2 = self.cot.merma_152;
             self.cot.rollo = 1;
         };
-
         self.set_merma_182 = function () {
             self.cot.merma_m2 = self.cot.merma_182;
             self.cot.rollo = 2;
         };
-
         self.set_merma_optimo = function () {
             self.cot.merma_m2 = self.cot.merma_optimo;
             self.cot.rollo = 3;
         };
-
         self.sum_efectivo = function (procesadas) {
 
             var sum = 0;
@@ -2693,7 +2994,6 @@
             self.cot.efectivo_m2 = Math.floor(sum * 10000) / 10000;
             return self.cot.efectivo_m2;
         };
-
         self.sum_merma = function (procesadas, op) {
             var sum = 0;
             for (var i = 0; i < procesadas.length; i++) {
@@ -2726,7 +3026,6 @@
             }
             //return Math.floor(sum * 10000) / 10000;
         };
-
     }
 })();
 
@@ -3042,6 +3341,10 @@
 
         self.parametros = parametros.data;
 
+//        self.param_introduccion = _.findWhere(self.parametros, {clave: 'intro'});
+//        self.param_notas = _.findWhere(self.parametros, {clave: 'notas'});
+//        self.param_cuenta = _.findWhere(self.parametros, {clave: 'cuenta'});
+
         self.pre_edit_parametro = function (original) {
 
             var copia = angular.copy(original);
@@ -3072,12 +3375,15 @@
                 console.log("response", response);
             });
         };
-        
-         self.edit_parametro = function (param,original) {
+
+        self.edit_parametro = function (param, original) {
 
             var i = self.parametros.indexOf(original);
             delete param.id_parametro;
-            delete param.id_nombre;
+            delete param.nombre;
+            delete param.tipo;
+            delete param.clave;
+            delete param.id_empresa;
 
             ParametroSrv.update_parametro(original.id_parametro, param).then(function (response) {
 
@@ -3090,6 +3396,37 @@
 
             });
         };
+
+
+        self.update_parametro = function (param, form) {
+
+            //var id_parametro = param.id_parametro;
+            var i = self.parametros.indexOf(param);
+
+            var copia = angular.copy(param);
+
+            delete copia.id_parametro;
+            delete copia.nombre;
+            delete copia.tipo;
+            delete copia.clave;
+            delete copia.id_empresa;
+
+            ParametroSrv.update_parametro(param.id_parametro, copia).then(function (response) {
+
+                self.parametros[i] = response.data;
+                toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+                form.$setPristine();
+                form.$setUntouched();
+
+            }).catch(function (response) {
+
+            }).finally(function (response) {
+
+            });
+        };
+
+
+
 
 
 

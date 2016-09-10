@@ -156,6 +156,9 @@
                             }],
                         garantias: ['ProductoSrv', function (ProductoSrv) {
                                 return ProductoSrv.get_garantias();
+                            }],
+                        parametros: ['ParametroSrv', function (ParametroSrv) {
+                                return ParametroSrv.get_parametros();
                             }]
                     }
                 })

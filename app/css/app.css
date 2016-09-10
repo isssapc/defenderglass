@@ -5134,6 +5134,21 @@ fieldset[disabled] .btn-pink.focus {
   padding-left: 0;
   padding-right: 0;
 }
+.panel.panel-default.primary {
+  border-top-color: #5d9cec;
+}
+.panel.panel-default.danger {
+  border-top-color: #f05050;
+}
+.panel.panel-default.warning {
+  border-top-color: #ff902b;
+}
+.panel.panel-default.info {
+  border-top-color: #23b7e5;
+}
+.panel.panel-default.success {
+  border-top-color: #27c24c;
+}
 .panel-flat {
   margin: 0 !important;
   border: 0;
@@ -5719,6 +5734,53 @@ label + .form-control + .parsley-errors-list + .form-control-feedback {
   font-size: 12px;
   list-style: none;
   color: #f05050;
+}
+/* ========================================================================
+   Component: table-extras.less
+ ========================================================================== */
+.table > thead > tr > th {
+  padding: 14px 8px;
+  color: #888;
+}
+.table > tbody > tr > td {
+  vertical-align: middle;
+}
+.table > tbody > tr > td > .media img {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto;
+}
+.table .checkbox {
+  margin: 0 auto;
+  width: 20px;
+}
+.table .progress {
+  margin-bottom: 0;
+}
+.table .radial-bar {
+  margin-bottom: 0;
+  margin: 0 auto;
+}
+.jqstooltip {
+  box-sizing: content-box;
+}
+#table-ext-1 th:nth-child(1) {
+  width: 3%;
+}
+#table-ext-1 th:nth-child(2) {
+  width: 5%;
+}
+#table-ext-1 th:nth-child(7) {
+  width: 5%;
+}
+#table-ext-1 th:nth-child(9) {
+  width: 5%;
+}
+#table-ext-2 th:nth-child(1) {
+  width: 5%;
+}
+#table-ext-2 th:nth-child(3) {
+  width: 10%;
 }
 /* ========================================================================
    Component: plugins.less

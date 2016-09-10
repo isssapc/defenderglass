@@ -3,240 +3,271 @@
 </h3>
 <div class="row">
     <div class="col-lg-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">Medidas</div>
-            <div class="panel-body">             
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Cantidad</th>
-                                <th>Largo(m)</th>
-                                <th>Ancho(m)</th>
-                                <th style="width: 61px;"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="pieza in ctrl.piezas">
-                                <td><input type="number" class="form-control" ng-model="pieza.cantidad" min="1"></td>                       
-                                <td><input type="number" class="form-control" ng-model="pieza.largo"></td>                       
-                                <td><input type="number" class="form-control" ng-model="pieza.ancho"></td>                        
-                                <td><button class="btn btn-default" ng-click="ctrl.delPieza(pieza)"><span class="fa fa-remove"></span></button></td>
-                            </tr>                       
-                        </tbody>
-                    </table>
-                </div>
-                <div>
-                    <button class="btn btn-default" ng-click="ctrl.addPieza()">Agregar</button>
-                    <!--<button class="btn btn-default" ng-click="ctrl.analisis()">Analizar</button>-->
-                </div>
-                <!--                <div>{{ctrl.piezas|json}}</div>
-                                <div>{{ctrl.rollo|json}}</div>-->
+
+        <!-- Medidas -->
+        <div id="panelMedidas" class="panel panel-default info">
+            <div ng-class="{'panel-heading-collapsed':panelMedidas}" class="panel-heading">
+                Medidas
+                <paneltool tool-collapse="tool-collapse" ></paneltool>
             </div>
-            <div class="panel-footer">
-                <button class="btn btn-primary" ng-click="ctrl.analisis()">Analizar</button>
+            <div uib-collapse="panelMedidas" class="panel-wrapper">
+                <div class="panel-body">             
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Cantidad</th>
+                                    <th>Largo(m)</th>
+                                    <th>Ancho(m)</th>
+                                    <th style="width: 61px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="pieza in ctrl.piezas">
+                                    <td><input type="number" class="form-control" ng-model="pieza.cantidad" min="1"></td>                       
+                                    <td><input type="number" class="form-control" ng-model="pieza.largo"></td>                       
+                                    <td><input type="number" class="form-control" ng-model="pieza.ancho"></td>                        
+                                    <td><button class="btn btn-default" ng-click="ctrl.delPieza(pieza)"><span class="fa fa-remove"></span></button></td>
+                                </tr>                       
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <button class="btn btn-default" ng-click="ctrl.addPieza()">Agregar</button>
+                        <!--<button class="btn btn-default" ng-click="ctrl.analisis()">Analizar</button>-->
+                    </div>
+                    <!--                <div>{{ctrl.piezas|json}}</div>
+                                    <div>{{ctrl.rollo|json}}</div>-->
+                </div>
+                <div class="panel-footer">
+                    <button class="btn btn-primary" ng-click="ctrl.analisis()">Analizar</button>
+                </div>
             </div>
         </div>
-
-        <div class="panel panel-default">
-            <div class="panel-heading">Análisis</div>
-            <div class="panel-body">           
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Cantidad</th>
-                                <th>Largo(m)</th>
-                                <th>Ancho(m)</th>
-                                <th>m<sup>2</sup> Efectivos</th>
-                                <th>m<sup>2</sup> Merma (1.52)</th>
-                                <th>m<sup>2</sup> Merma (1.82)</th>
-                                <th>m<sup>2</sup> Merma (óptimo)</th>
-                                <th style="width: 61px;"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="pieza in ctrl.procesadas">
-                                <td>{{pieza.cantidad}}</td>                       
-                                <td>{{pieza.largo}}</td>                       
-                                <td>{{pieza.ancho}}</td>
-                                <td>{{pieza.efectivo}}</td>  
-                                <td ng-class="{
+        <!-- Analisis -->
+        <div id="panelAnalisis" class="panel panel-default">
+            <div ng-class="{'panel-heading-collapsed':panelAnalisis}" class="panel-heading">
+                Análisis
+                <paneltool tool-collapse="tool-collapse" ></paneltool>
+            </div>
+            <div uib-collapse="panelAnalisis" class="panel-wrapper">
+                <div class="panel-body">           
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Cantidad</th>
+                                    <th>Largo(m)</th>
+                                    <th>Ancho(m)</th>
+                                    <th>m<sup>2</sup> Efectivos</th>
+                                    <th>m<sup>2</sup> Merma (1.52)</th>
+                                    <th>m<sup>2</sup> Merma (1.82)</th>
+                                    <th>m<sup>2</sup> Merma (óptimo)</th>
+                                    <th style="width: 61px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="pieza in ctrl.procesadas">
+                                    <td>{{pieza.cantidad}}</td>                       
+                                    <td>{{pieza.largo}}</td>                       
+                                    <td>{{pieza.ancho}}</td>
+                                    <td>{{pieza.efectivo}}</td>  
+                                    <td ng-class="{
                                             info:pieza.optimo === 152
                                         }">{{pieza._152.merma}}</td>
-                                <td ng-class="{
+                                    <td ng-class="{
                                             info:pieza.optimo === 182
                                         }">{{pieza._182.merma}}</td> 
-                                <td>{{pieza.optimo===152?pieza._152.merma:pieza._182.merma}}</td> 
-                                <td><button class="btn btn-default" ng-click="ctrl.draw(pieza, 182)"><span class="fa fa-th-large"></span></button></td>
-                            </tr>                       
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td></td>                       
-                                <td></td>                       
-                                <td></td>
-                                <th>{{ctrl.sum_efectivo(ctrl.procesadas)}}</th>  
-                                <th><button class="btn btn-default btn-block" ng-click="ctrl.set_merma_152()"><strong>{{ctrl.sum_merma(ctrl.procesadas, 1)}}</strong></button></th>
-                                <th><button class="btn btn-default btn-block" ng-click="ctrl.set_merma_182()"><strong>{{ctrl.sum_merma(ctrl.procesadas, 2)}}</strong></button></th> 
-                                <th><button class="btn btn-default btn-block" ng-click="ctrl.set_merma_optimo()" ng-disabled="ctrl.cot.merma_optimo === ctrl.cot.merma_152 || ctrl.cot.merma_optimo === ctrl.cot.merma_182"><strong>{{ctrl.sum_merma(ctrl.procesadas, 3)}}</strong></button></th> 
-                                <td></td>
-                            </tr>
-                        </tfoot>
-                    </table>                    
-                </div>
-                <!--<hr>-->
-                <div class="row">
-                    <div class="col-xs-6 text-center">
-                        <p class="h4">m<sup>2</sup> Efectivos</p>
-                        <div class="h1">{{ctrl.cot.efectivo_m2||0}}</div>
+                                    <td>{{pieza.optimo===152?pieza._152.merma:pieza._182.merma}}</td> 
+                                    <td><button class="btn btn-default" ng-click="ctrl.draw(pieza, 182)"><span class="fa fa-th-large"></span></button></td>
+                                </tr>                       
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>                       
+                                    <td></td>                       
+                                    <td></td>
+                                    <th>{{ctrl.sum_efectivo(ctrl.procesadas)}}</th>  
+                                    <th><button class="btn btn-default btn-block" ng-click="ctrl.set_merma_152()"><strong>{{ctrl.sum_merma(ctrl.procesadas, 1)}}</strong></button></th>
+                                    <th><button class="btn btn-default btn-block" ng-click="ctrl.set_merma_182()"><strong>{{ctrl.sum_merma(ctrl.procesadas, 2)}}</strong></button></th> 
+                                    <th><button class="btn btn-default btn-block" ng-click="ctrl.set_merma_optimo()" ng-disabled="ctrl.cot.merma_optimo === ctrl.cot.merma_152 || ctrl.cot.merma_optimo === ctrl.cot.merma_182"><strong>{{ctrl.sum_merma(ctrl.procesadas, 3)}}</strong></button></th> 
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>                    
                     </div>
-                    <div class="col-xs-6 text-center">
-                        <p class="h4">m<sup>2</sup> Merma</p>
-                        <div class="h1">{{ctrl.cot.merma_m2||0}}</div>
-                    </div>                        
+                    <!--<hr>-->
+                    <div class="row">
+                        <div class="col-xs-6 text-center">
+                            <p class="h4">m<sup>2</sup> Efectivos</p>
+                            <div class="h1">{{ctrl.cot.efectivo_m2||0}}</div>
+                        </div>
+                        <div class="col-xs-6 text-center">
+                            <p class="h4">m<sup>2</sup> Merma</p>
+                            <div class="h1">{{ctrl.cot.merma_m2||0}}</div>
+                        </div>                        
+                    </div>
+                    <!--                <div id="dibujo" class="rollo" style="height: 320px;"></div>-->
+                    <!--                <uib-tabset>
+                                        <uib-tab heading="Patrón 1">
+                                            <div id="cociente" class="rollo" style="height: 320px;">
+                    
+                                            </div>
+                                        </uib-tab>
+                                        <uib-tab heading="Patrón 2" ng-show="ctrl.show_resto">
+                                            <div id="resto" class="rollo" style="height: 320px;"></div>
+                                        </uib-tab>                
+                                    </uib-tabset>
+                                    <hr>-->
+                    <!--<div>{{ctrl.procesadas|json}}</div>-->
+
                 </div>
-                <!--                <div id="dibujo" class="rollo" style="height: 320px;"></div>-->
-                <!--                <uib-tabset>
-                                    <uib-tab heading="Patrón 1">
-                                        <div id="cociente" class="rollo" style="height: 320px;">
-                
-                                        </div>
-                                    </uib-tab>
-                                    <uib-tab heading="Patrón 2" ng-show="ctrl.show_resto">
-                                        <div id="resto" class="rollo" style="height: 320px;"></div>
-                                    </uib-tab>                
-                                </uib-tabset>
-                                <hr>-->
-                <!--<div>{{ctrl.procesadas|json}}</div>-->
-
+                <!--            <div class="panel-footer">
+                                <button class="btn btn-primary">Continuar</button>
+                            </div>-->
             </div>
-            <!--            <div class="panel-footer">
-                            <button class="btn btn-primary">Continuar</button>
-                        </div>-->
         </div>
+        <!-- Seleccion rollo -->
+        <div class="panel">
+            <!--            <div class="panel-heading">Parámetros Cotización</div>
+                        <div class="panel-body">-->
+            <uib-tabset justified="true">
+                <uib-tab heading="Parámetros" classes="tab-item-dark">
+                    <!--<uib-tab-heading>Parámetros</uib-tab-heading>-->
+                    <form class="form-horizontal">
 
-        <div class="panel panel-default">
+                        <fieldset ng-if="ctrl.cot.rollo === 1">
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Rollo de 1.52m</label>
+                                <div class="col-lg-6">
+                                    <select class="form-control" ng-model="ctrl.cot.rollo_152" ng-options="p.modelo for p in ctrl.productos|filter:{ancho:1.52}" >
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+                                <label class="col-lg-2 control-label">Precio</label>
+                                <div class="col-lg-2">
+                                    <div class="input-group"> 
+                                        <span class="input-group-addon">USD</span>
+                                        <input type="text" class="form-control" ng-model="ctrl.cot.rollo_152.precio" />
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset ng-if="ctrl.cot.rollo > 1"> 
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Rollo de 1.82m</label>
+                                <div class="col-lg-6">
+                                    <select class="form-control" ng-model="ctrl.cot.rollo_80" ng-options="p.modelo for p in ctrl.productos|filter:{ancho:1.82}">
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+                                <label class="col-lg-2 control-label">Precio</label>
+                                <div class="col-lg-2">
+                                    <div class="input-group"> 
+                                        <span class="input-group-addon">USD</span>
+                                        <input type="text" class="form-control" ng-model="ctrl.cot.rollo_80.precio" />
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Garantía</label>
+                                <div class="col-lg-2">
+                                    <select class="form-control" ng-model="ctrl.cot.garantia" ng-options="g.nombre for g in ctrl.garantias" >
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>                           
+                                <label class="col-lg-2 control-label">Utilidad</label>
+                                <div class="col-lg-2">
+                                    <div class="input-group"> 
+                                        <input type="text" class="form-control" ng-model="ctrl.cot.garantia.utilidad" />
+                                        <span class="input-group-addon">%</span>
+                                    </div>
+                                </div>
+                                <label class="col-lg-2 control-label">Comisión</label>
+                                <div class="col-lg-2">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">MXN</span>
+                                        <input type="text" class="form-control" ng-model="ctrl.cot.garantia.comision_venta" />
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Dólar</label>
+                            <div class="col-lg-2">
+                                <div class="input-group"> 
+                                    <span class="input-group-addon">MXN</span>
+                                    <input type="text" class="form-control" ng-model="ctrl.cot.dolar" />
+                                </div>
+                            </div>
+
+                            <label class="col-lg-2 control-label">Flete</label>
+                            <div class="col-lg-2">
+                                <div class="input-group"> 
+                                    <span class="input-group-addon">MXN</span>
+                                    <input type="text" class="form-control" ng-model="ctrl.cot.flete" />
+                                </div>
+                            </div>
+
+                            <label class="col-lg-2 control-label">Instalación m<sup>2</sup></label>
+                            <div class="col-lg-2">
+                                <div class="input-group"> 
+                                    <span class="input-group-addon">MXN</span>
+                                    <input type="text" class="form-control" ng-model="ctrl.cot.instalacion_m2" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--                    <div class="form-group">
+                                                <label class="col-lg-2 control-label">Instalación m<sup>2</sup></label>
+                                                <div class="col-lg-10">
+                                                    <div class="input-group"> 
+                                                        <span class="input-group-addon">MXN</span>
+                                                        <input type="text" class="form-control" ng-model="ctrl.cot.instalacion_m2" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                        
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label">Flete</label>
+                                                <div class="col-lg-10">
+                                                    <div class="input-group"> 
+                                                        <span class="input-group-addon">MXN</span>
+                                                        <input type="text" class="form-control" ng-model="ctrl.cot.flete" />
+                                                    </div>
+                                                </div>
+                                            </div>-->
+
+                        <!--                    <div class="form-group">
+                                                <div class="col-lg-offset-2 col-lg-10">
+                                                    <button class="btn btn-primary" ng-click="ctrl.cotizar()">Cotizar</button>
+                                                </div>
+                                            </div>-->
+
+                    </form>
+                </uib-tab>
+                <uib-tab classes="tab-item-energized">
+                    <uib-tab-heading>Gastos Extras</uib-tab-heading>
+                    <div>
+                        Contenido Gastos Extras TODO...
+                    </div>
+                </uib-tab>
+            </uib-tabset>
+            <!--</div>-->
+            <div class="panel-footer">
+                <button class="btn btn-primary" ng-click="ctrl.cotizar()">Cotizar</button>
+            </div>
+        </div>
+        <!-- Analisis formato formulario-->
+        <div class="panel panel-default hidden">
             <div class="panel-heading">Parámetros Cotización</div>
             <div class="panel-body">
                 <form class="form-horizontal">
-
-                    <fieldset ng-if="ctrl.cot.rollo === 1">
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Rollo de 1.52m</label>
-                            <div class="col-lg-6">
-                                <select class="form-control" ng-model="ctrl.cot.rollo_152" ng-options="p.modelo for p in ctrl.productos|filter:{ancho:1.52}" >
-                                    <option value="">Seleccionar...</option>
-                                </select>
-                            </div>
-                            <label class="col-lg-2 control-label">Precio</label>
-                            <div class="col-lg-2">
-                                <div class="input-group"> 
-                                    <span class="input-group-addon">USD</span>
-                                    <input type="text" class="form-control" ng-model="ctrl.cot.rollo_152.precio" />
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
-
-                    <fieldset ng-if="ctrl.cot.rollo > 1"> 
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Rollo de 1.82m</label>
-                            <div class="col-lg-6">
-                                <select class="form-control" ng-model="ctrl.cot.rollo_80" ng-options="p.modelo for p in ctrl.productos|filter:{ancho:1.82}">
-                                    <option value="">Seleccionar...</option>
-                                </select>
-                            </div>
-                            <label class="col-lg-2 control-label">Precio</label>
-                            <div class="col-lg-2">
-                                <div class="input-group"> 
-                                    <span class="input-group-addon">USD</span>
-                                    <input type="text" class="form-control" ng-model="ctrl.cot.rollo_80.precio" />
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
-
-                    <fieldset>
-                        <div class="form-group">
-                            <label class="col-lg-2 control-label">Garantía</label>
-                            <div class="col-lg-2">
-                                <select class="form-control" ng-model="ctrl.cot.garantia" ng-options="g.nombre for g in ctrl.garantias" >
-                                    <option value="">Seleccionar...</option>
-                                </select>
-                            </div>                           
-                            <label class="col-lg-2 control-label">Utilidad</label>
-                            <div class="col-lg-2">
-                                <div class="input-group"> 
-                                    <input type="text" class="form-control" ng-model="ctrl.cot.garantia.utilidad" />
-                                    <span class="input-group-addon">%</span>
-                                </div>
-                            </div>
-                            <label class="col-lg-2 control-label">Comisión</label>
-                            <div class="col-lg-2">
-                                <div class="input-group">
-                                    <span class="input-group-addon">MXN</span>
-                                    <input type="text" class="form-control" ng-model="ctrl.cot.garantia.comision_venta" />
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
-
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">Dólar</label>
-                        <div class="col-lg-2">
-                            <div class="input-group"> 
-                                <span class="input-group-addon">MXN</span>
-                                <input type="text" class="form-control" ng-model="ctrl.cot.dolar" />
-                            </div>
-                        </div>
-
-                        <label class="col-lg-2 control-label">Flete</label>
-                        <div class="col-lg-2">
-                            <div class="input-group"> 
-                                <span class="input-group-addon">MXN</span>
-                                <input type="text" class="form-control" ng-model="ctrl.cot.flete" />
-                            </div>
-                        </div>
-
-                        <label class="col-lg-2 control-label">Instalación m<sup>2</sup></label>
-                        <div class="col-lg-2">
-                            <div class="input-group"> 
-                                <span class="input-group-addon">MXN</span>
-                                <input type="text" class="form-control" ng-model="ctrl.cot.instalacion_m2" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <!--                    <div class="form-group">
-                                            <label class="col-lg-2 control-label">Instalación m<sup>2</sup></label>
-                                            <div class="col-lg-10">
-                                                <div class="input-group"> 
-                                                    <span class="input-group-addon">MXN</span>
-                                                    <input type="text" class="form-control" ng-model="ctrl.cot.instalacion_m2" />
-                                                </div>
-                                            </div>
-                                        </div>
-                    
-                                        <div class="form-group">
-                                            <label class="col-lg-2 control-label">Flete</label>
-                                            <div class="col-lg-10">
-                                                <div class="input-group"> 
-                                                    <span class="input-group-addon">MXN</span>
-                                                    <input type="text" class="form-control" ng-model="ctrl.cot.flete" />
-                                                </div>
-                                            </div>
-                                        </div>-->
-
-                    <div class="form-group">
-                        <div class="col-lg-offset-2 col-lg-10">
-                            <button class="btn btn-primary" ng-click="ctrl.cotizar()">Cotizar</button>
-                        </div>
-                    </div>
-
-
-
-
                     <div class="form-group">
                         <label class="col-lg-2 control-label">Flete m<sup>2</sup></label>
                         <div class="col-lg-10">
@@ -398,180 +429,213 @@
                             </div>
                         </div>
                     </div>
-
                 </form>
             </div>
         </div>
-
+        <!-- Analisis formato tabla -->
         <div class="panel panel-default">
-            <div class="panel-heading">Parámetros Cotización</div>
+            <div class="panel-heading">Cotización</div>
             <div class="panel-body">
-                <!--                <form class="form-horizontal">
-                
-                                </form>-->
-
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>m2</th>
-                                <th>Fórmula</th>
-                                <th style="min-width: 120px;">1.52 m</th>
-                                <th>Fórmula</th>
-                                <th style="min-width: 120px;">1.82 m</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Flete</td>                       
-                                <td>
-                                    <p>
-                                        <span ng-class="{
+                <uib-tabset justified="true">
+                    <uib-tab heading="Parámetros">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">m2</th>
+                                        <th class="text-center">Fórmula</th>
+                                        <th class="text-center" style="min-width: 120px; width: 120px;">1.52 m</th>
+                                        <th class="text-center">Fórmula</th>
+                                        <th class="text-center" style="min-width: 120px;width: 120px;">1.82 m</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Flete</td>                       
+                                        <td>
+                                            <p>
+                                                <span ng-class="{
                                                     'text-danger'
                                                     :!ctrl.cot.flete}">{{ctrl.cot.flete||'flete'}}</span>
-                                        / 46.45 = {{ctrl.flete_m2() || 0 | number}}</p>
-                                </td>                       
-                                <td><input type="number" class="form-control" ng-model="ctrl.cot.flete_m2" ></td>
-                                <td>
-                                    <p>
-                                        <span ng-class="{
+                                                / 46.45 = {{ctrl.flete_m2() || 0 | number}}</p>
+                                        </td>                       
+                                        <td><input type="number" class="form-control" ng-model="ctrl.cot.flete_m2" ></td>
+                                        <td>
+                                            <p>
+                                                <span ng-class="{
                                                     'text-danger'
                                                     :!ctrl.cot.flete}">{{ctrl.cot.flete||'flete'}}</span>
-                                        / 46.45 = {{ctrl.flete_m2() || 0 | number}}</p>
-                                </td>                       
-                                <td><input type="number" class="form-control" ng-model="ctrl.cot.flete_m2" ></td>
-                            </tr>
-                            <tr>
-                                <td>Costo</td>                       
-                                <td>
-                                    <p>(<span ng-class="{
+                                                / 46.45 = {{ctrl.flete_m2() || 0 | number}}</p>
+                                        </td>                       
+                                        <td><input type="number" class="form-control" ng-model="ctrl.cot.flete_m2" ></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Costo</td>                       
+                                        <td>
+                                            <p>(<span ng-class="{
                                                 'text-danger'
                                                 :!ctrl.cot.rollo_152.precio}">{{ctrl.cot.rollo_152.precio||'precio rollo'}}</span> * 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                     :!ctrl.cot.dolar}">{{ctrl.cot.dolar||'dolar'}}</span>
-                                        ) / 46.45 = {{ctrl.costo_152() || 0 | number}}</p>
-                                </td>                       
-                                <td><input type="number" class="form-control" ng-model="ctrl.cot.costo_152" ></td>
-                                <td>
-                                    <p>(<span ng-class="{
+                                                ) / 46.45 = {{ctrl.costo_152() || 0 | number}}</p>
+                                        </td>                       
+                                        <td><input type="number" class="form-control" ng-model="ctrl.cot.costo_152" ></td>
+                                        <td>
+                                            <p>(<span ng-class="{
                                                 'text-danger'
                                                 :!ctrl.cot.rollo_152.precio}">{{ctrl.cot.rollo_152.precio||'precio rollo'}}</span> * 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                     :!ctrl.cot.dolar}">{{ctrl.cot.dolar||'dolar'}}</span>
-                                        ) / 46.45 = {{ctrl.costo_152() || 0 | number}}</p>
-                                </td>                       
-                                <td><input type="number" class="form-control" ng-model="ctrl.cot.costo_152" ></td>
-                            </tr>
-                            <tr>
-                                <td>Precio Efectivo</td>                       
-                                <td>                  
-                                    <p>( <span ng-class="{
+                                                ) / 46.45 = {{ctrl.costo_152() || 0 | number}}</p>
+                                        </td>                       
+                                        <td><input type="number" class="form-control" ng-model="ctrl.cot.costo_152" ></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Precio Efectivo</td>                       
+                                        <td>                  
+                                            <p>( <span ng-class="{
                                                 'text-danger'
                                                 :!ctrl.cot.costo_152}">{{ctrl.cot.costo_152|| 'm2 rollo '}}</span> + 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                     :!ctrl.cot.flete_m2}">{{ctrl.cot.flete_m2|| 'm2 flete'}}</span> + 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                     :!ctrl.cot.garantia.comision_venta}">{{ctrl.cot.garantia.comision_venta|| 'comisión venta'}}</span> + 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                     :!ctrl.cot.instalacion_m2}">{{ctrl.cot.instalacion_m2||'costo instalación'}}</span> ) + 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                     :!ctrl.cot.garantia.utilidad}">{{ctrl.cot.garantia.utilidad|| 'utilidad'}} %</span> =  {{ctrl.precio_efectivo_152() || 0 | number}}</p>
-                                </td>                       
-                                <td><input type="number" class="form-control" ng-model="ctrl.cot.precio_efectivo_152" ></td>
-                                <td>                  
-                                    <p>( <span ng-class="{
+                                        </td>                       
+                                        <td><input type="number" class="form-control" ng-model="ctrl.cot.precio_efectivo_152" ></td>
+                                        <td>                  
+                                            <p>( <span ng-class="{
                                                 'text-danger'
                                                 :!ctrl.cot.costo_152}">{{ctrl.cot.costo_152|| 'm2 rollo '}}</span> + 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                     :!ctrl.cot.flete_m2}">{{ctrl.cot.flete_m2|| 'm2 flete'}}</span> + 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                     :!ctrl.cot.garantia.comision_venta}">{{ctrl.cot.garantia.comision_venta|| 'comisión venta'}}</span> + 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                     :!ctrl.cot.instalacion_m2}">{{ctrl.cot.instalacion_m2||'costo instalación'}}</span> ) + 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                     :!ctrl.cot.garantia.utilidad}">{{ctrl.cot.garantia.utilidad|| 'utilidad'}} %</span> =  {{ctrl.precio_efectivo_152() || 0 | number}}</p>
-                                </td>                       
-                                <td><input type="number" class="form-control" ng-model="ctrl.cot.precio_efectivo_152" ></td>
-                            </tr>
-                            <tr>
-                                <td>Precio Merma</td>                       
-                                <td>
-                                    <p><span ng-class="{
+                                        </td>                       
+                                        <td><input type="number" class="form-control" ng-model="ctrl.cot.precio_efectivo_152" ></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Precio Merma</td>                       
+                                        <td>
+                                            <p><span ng-class="{
                                                 'text-danger'
                                                         :!ctrl.cot.costo_152}">{{ctrl.cot.costo_152|| 'm2 rollo '}}</span> + 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                             :!ctrl.cot.flete_m2}">{{ctrl.cot.flete_m2|| 'm2 flete'}}</span> + 50 =  {{ctrl.precio_merma_152() || 0 | number}}</p>
-                                </td>                       
-                                <td><input type="number" class="form-control" ng-model="ctrl.cot.precio_merma_152"></td>
-                                <td>
-                                    <p><span ng-class="{
+                                        </td>                       
+                                        <td><input type="number" class="form-control" ng-model="ctrl.cot.precio_merma_152"></td>
+                                        <td>
+                                            <p><span ng-class="{
                                                 'text-danger'
                                                         :!ctrl.cot.costo_152}">{{ctrl.cot.costo_152|| 'm2 rollo '}}</span> + 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                             :!ctrl.cot.flete_m2}">{{ctrl.cot.flete_m2|| 'm2 flete'}}</span> + 50 =  {{ctrl.precio_merma_152() || 0 | number}}</p>
-                                </td>                       
-                                <td><input type="number" class="form-control" ng-model="ctrl.cot.precio_merma_152"></td>
-                            </tr>
-                            <tr>
-                                <td>Total Efectivo</td>                       
-                                <td>
-                                    <p><span ng-class="{
+                                        </td>                       
+                                        <td><input type="number" class="form-control" ng-model="ctrl.cot.precio_merma_152"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Efectivo</td>                       
+                                        <td>
+                                            <p><span ng-class="{
                                                 'text-danger'
                                                         :!ctrl.cot.precio_efectivo_152}">{{ctrl.cot.precio_efectivo_152|| 'precio m2 efectivo  '}}</span> * 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                             :!ctrl.cot.efectivo_m2}">{{ctrl.cot.efectivo_m2|| 'm2 efectivos'}}</span> =  {{ctrl.total_efectivo_152() || 0 | number}}</p>
-                                </td>                       
-                                <td><input type="number" class="form-control" ng-model="ctrl.cot.total_efectivo_152" ></td>
-                                <td>
-                                    <p><span ng-class="{
+                                        </td>                       
+                                        <td><input type="number" class="form-control" ng-model="ctrl.cot.total_efectivo_152" ></td>
+                                        <td>
+                                            <p><span ng-class="{
                                                 'text-danger'
                                                         :!ctrl.cot.precio_efectivo_152}">{{ctrl.cot.precio_efectivo_152|| 'precio m2 efectivo  '}}</span> * 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                             :!ctrl.cot.efectivo_m2}">{{ctrl.cot.efectivo_m2|| 'm2 efectivos'}}</span> =  {{ctrl.total_efectivo_152() || 0 | number}}</p>
-                                </td>                       
-                                <td><input type="number" class="form-control" ng-model="ctrl.cot.total_efectivo_152" ></td>
-                            </tr>
-                            <tr>
-                                <td>Total Merma</td>                       
-                                <td>
-                                    <p><span ng-class="{
+                                        </td>                       
+                                        <td><input type="number" class="form-control" ng-model="ctrl.cot.total_efectivo_152" ></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Merma</td>                       
+                                        <td>
+                                            <p><span ng-class="{
                                                 'text-danger'
                                                         :!ctrl.cot.precio_merma_152}">{{ctrl.cot.precio_merma_152|| 'precio m2 merma '}}</span> * 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                             :!ctrl.cot.merma_m2}">{{ctrl.cot.merma_m2|| 'm2 merma'}}</span> =  {{ctrl.total_merma_152() || 0 | number}}</p>
-                                </td>                       
-                                <td><input type="number" class="form-control" ng-model="ctrl.cot.total_merma_152" ></td>
-                                <td>
-                                    <p><span ng-class="{
+                                        </td>                       
+                                        <td><input type="number" class="form-control" ng-model="ctrl.cot.total_merma_152" ></td>
+                                        <td>
+                                            <p><span ng-class="{
                                                 'text-danger'
                                                         :!ctrl.cot.precio_merma_152}">{{ctrl.cot.precio_merma_152|| 'precio m2 merma '}}</span> * 
-                                        <span ng-class="{
+                                                <span ng-class="{
                                                     'text-danger'
                                                             :!ctrl.cot.merma_m2}">{{ctrl.cot.merma_m2|| 'm2 merma'}}</span> =  {{ctrl.total_merma_152() || 0 | number}}</p>
-                                </td>                       
-                                <td><input type="number" class="form-control" ng-model="ctrl.cot.total_merma_152" ></td>
-                            </tr>
+                                        </td>                       
+                                        <td><input type="number" class="form-control" ng-model="ctrl.cot.total_merma_152" ></td>
+                                    </tr>
 
-                        </tbody>
-                    </table>
-                </div>
+                                </tbody>
+                            </table>
+                        </div>
+                    </uib-tab>
 
+                    <uib-tab heading="PDF">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Introducción</label>
+                                <div class="col-lg-10">
+                                    <textarea class="form-control" rows="5" ng-model="ctrl.cot.intro" ></textarea>
+                                </div>
+                            </div>
 
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Notas</label>
+                                <div class="col-lg-10">
+                                    <textarea class="form-control" rows="7" ng-model="ctrl.cot.notas"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Cuenta</label>
+                                <div class="col-lg-10">
+                                    <textarea class="form-control" rows="7" ng-model="ctrl.cot.cuenta"></textarea>
+                                </div>
+                            </div>
+
+                         
+                        </div>
+                    </uib-tab>
+
+                    <uib-tab heading="Cliente">
+                        <div>
+                            Contenido Cliente...
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
+            <div class="panel-footer">
+                <button class="btn btn-primary" ng-click="ctrl.guardar_cotizacion()">Guardar</button>
                 <button class="btn btn-primary" ng-click="ctrl.get_pdf()">PDF</button>
             </div>
         </div>

@@ -16,7 +16,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="p in ctrl.parametros">
+                            <tr ng-repeat="p in ctrl.parametros|filter:{tipo:'V'}">
                                 <td>{{p.id_parametro}}</td>
                                 <td>{{p.nombre}}</td>     
                                 <td>{{p.valor|currency}}</td>
@@ -27,6 +27,62 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">PDF Cotización</div>
+            <div class="panel-body">
+                <div class="mb-lg" ng-repeat="p in ctrl.parametros|filter:{tipo:'T'}">     
+                    <form id="update_form" name="update_form" class="form-horizontal">
+
+                        <div class="form-group" ng-class="{'has-success':(update_form.$dirty || update_form.nombre.$touched) }">
+                            <label class="control-label col-lg-2">{{p.nombre}}</label>                        
+                            <div class="col-lg-10">
+                                <textarea rows="7" class="form-control" ng-model="p.texto" ></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">  
+                            <div class="col-lg-10 col-lg-offset-2">
+                                <!--<button class="btn btn-default" ng-click="ctrl.edit_intro = !ctrl.edit_intro"><i class="fa fa-edit"></i> Editar</button>-->
+                                <button class="btn btn-primary" ng-click="ctrl.update_parametro(p, update_form)">Guardar</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!--                <div class="mb-lg">  
+                                    <form class="form-horizontal">
+                
+                                        <div class="form-group">
+                                            <label class="control-label col-lg-2">{{ctrl.param_notas.nombre}}</label>                        
+                                            <div class="col-lg-10">
+                                                <textarea rows="5" class="form-control" ng-model="ctrl.param_notas.texto" ng-disabled="ctrl.edit_notas"></textarea>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-default" ng-click="ctrl.edit_notas = !ctrl.edit_notas"><i class="fa fa-edit"></i> Editar</button>
+                                        <button class="btn btn-primary">Guardar</button>
+                
+                                    </form>
+                                </div>
+                
+                                <div>
+                                    <form class="form-horizontal">
+                
+                                        <div class="form-group">
+                                            <label class="control-label col-lg-2">{{ctrl.param_cuenta.nombre}}</label>                        
+                                            <div class="col-lg-10">
+                                                <textarea rows="5" class="form-control" ng-model="ctrl.param_cuenta.texto" ng-disabled="ctrl.edit_cuenta"></textarea>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-default" ng-click="ctrl.edit_cuenta = !ctrl.edit_cuenta"><i class="fa fa-edit"></i> Editar</button>
+                                        <button class="btn btn-primary">Guardar</button>
+                
+                                    </form>
+                                </div>-->
+
+
             </div>
         </div>
     </div>

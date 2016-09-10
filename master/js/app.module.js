@@ -24,6 +24,8 @@
             'app.preloader',
             'angular-loading-bar',
             //'app.loadingbar',
+            'app.bootstrapui',
+            'app.panels',
             'app.translate',
             'app.settings',
             'app.utils',
