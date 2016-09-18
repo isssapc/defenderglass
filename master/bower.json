@@ -48,7 +48,10 @@
     "bootstrap": "^3.3.7",
     "whirl": "^1.0.0",
     "underscore": "^1.8.3",
-    "AngularJS-Toaster": "angularjs-toaster#^2.0.0"
+    "AngularJS-Toaster": "angularjs-toaster#^2.0.0",
+    "bootstrap-filestyle": "^1.2.1",
+    "angular-file-upload": "^2.3.4",
+    "angular-toastr": "^2.1.1"
   },
   "resolutions": {
     "angular": "1.5.0",

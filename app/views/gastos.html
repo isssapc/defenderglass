@@ -1,5 +1,3 @@
-
-<toaster-container toaster-options="{'position-class': 'toast-bottom-right', 'close-button':true}"></toaster-container>
 <h3>Gastos Extras
     <button type="button" class="btn btn-default" ng-click="ctrl.loading_show()">show</button>
     <button type="button" class="btn btn-default" ng-click="ctrl.loading_hide()">hide</button>
@@ -18,7 +16,8 @@
                             <tr>
                                 <th>Id</th>
                                 <th>Descripción</th>
-                                <th>Precio m2</th>
+                                <th>Precio</th>
+                                <th>Tipo</th>
                                 <th style="width: 87px;"></th>
                             </tr>
                         </thead>
@@ -27,6 +26,7 @@
                                 <td>{{g.id_gasto}}</td>
                                 <td>{{g.nombre}}</td>
                                 <td>{{g.precio|currency}}</td>
+                                <td><span ng-bind-html="g.tipo | tipoGastoExtra"></span></td>
                                 <td>
                                     <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_edit_gasto(g)"><i class="fa fa-edit"></i></button>
                                     <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_del_gasto(g)"><i class="fa fa-remove"></i></button>

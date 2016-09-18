@@ -1,0 +1,83 @@
+<!--<toaster-container toaster-options="{'time-out':3000,'position-class': 'toast-bottom-full-width', 'close-button':true}"></toaster-container>-->
+<h3>
+    <!-- START Language list-->
+    <div class="pull-right">
+        <div uib-dropdown="" is-open="language.listIsOpen" class="btn-group">
+            <button type="button" uib-dropdown-toggle="" class="btn btn-default">{{language.selected}}
+                <span class="caret"></span>
+            </button>
+            <ul role="menu" class="dropdown-menu dropdown-menu-right animated fadeInUpShort">
+                <li ng-repeat="(localeId, langName) in language.available"><a ng-click="language.set(localeId, $event)">{{langName}}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- END Language list-->
+    Importar Productos
+    <small>{{ 'dashboard.WELCOME' | translate:{ appName: app.name } }} !</small>
+</h3>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default info">
+            <div class="panel-heading">Seleccionar archivo Excel</div>
+            <div class="panel-body">
+                <div class="form-horizontal">
+
+                    <fieldset>
+                        <div class="form-group">                          
+                            <div class="col-sm-12">
+                                <input filestyle type="file" data-buttonName="btn btn-default" data-icon="true" data-buttonText="Seleccionar" nv-file-select uploader="ctrl.uploader" />
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <table ng-if="ctrl.uploader.queue.length" class="table">
+                            <thead>
+                                <tr>
+                                    <th width="50%">Nombre</th>
+                                    <th width="80px">Tamaño</th>
+                                    <th>Progreso</th>
+                                    <th width="55px">Status</th>
+                                    <th width="113px">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>            
+                                <tr ng-repeat="item in ctrl.uploader.queue">
+                                    <td> 
+                                        <strong>{{item.file.name}}</strong>
+                                    </td>
+                                    <td nowrap>{{ item.file.size / 1024 / 1024|number:2 }} MB</td>
+                                    <td>
+                                        <div style="margin-bottom: 0;" class="progress progress-xs">
+                                            <div role="progressbar" ng-style="{
+                                                'width': item.progress + '%' }" class="progress-bar"></div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span ng-show="item.isSuccess">
+                                            <em class="fa fa-check fa-fw text-success"></em>
+                                        </span>
+                                        <span ng-show="item.isCancel">
+                                            <em class="fa fa-ban-circle fa-fw"></em>
+                                        </span>
+                                        <span ng-show="item.isError">
+                                            <em class="fa fa-times fa-fw"></em>
+                                        </span>
+                                    </td>
+                                    <td nowrap>   
+                                        <button type="button" class="btn btn-info" uib-tooltip="Subir" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                            <span class="icon-cloud-upload"></span></button>
+                                        <button type="button" ng-click="item.remove()" class="btn btn-danger" uib-tooltip="Eliminar">
+                                            <span class="icon-trash"></span></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </fieldset>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -132,7 +132,7 @@
             <!--            <div class="panel-heading">Parámetros Cotización</div>
                         <div class="panel-body">-->
             <uib-tabset justified="true">
-                <uib-tab heading="Parámetros" classes="tab-item-dark">
+                <uib-tab heading="Parámetros">
                     <!--<uib-tab-heading>Parámetros</uib-tab-heading>-->
                     <form class="form-horizontal">
 
@@ -251,10 +251,29 @@
 
                     </form>
                 </uib-tab>
-                <uib-tab classes="tab-item-energized">
+                <uib-tab>
                     <uib-tab-heading>Gastos Extras</uib-tab-heading>
-                    <div>
-                        Contenido Gastos Extras TODO...
+                    <div class="row">
+                        <div class="col-sm-6">       
+                            <div class="form-group" ng-repeat="g in ctrl.gastos|filter:{tipo: 'M'}">  
+                                <div class="checkbox c-checkbox">
+                                    <label>
+                                        <input type="checkbox" ng-model="g.selected"/>
+                                        <span class="fa fa-check"></span>{{g.nombre}} x <em class="texto-normal" ng-bind-html="g.tipo | tipoGastoExtra"></em>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">       
+                            <div class="form-group" ng-repeat="g in ctrl.gastos|filter:{tipo: 'D'}">  
+                                <div class="checkbox c-checkbox">
+                                    <label>
+                                        <input type="checkbox" ng-model="g.selected"/>
+                                        <span class="fa fa-check"></span>{{g.nombre}} x <em class="texto-normal" ng-bind-html="g.tipo | tipoGastoExtra"></em>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </uib-tab>
             </uib-tabset>
@@ -623,7 +642,7 @@
                                 </div>
                             </div>
 
-                         
+
                         </div>
                     </uib-tab>
 

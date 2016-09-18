@@ -12,25 +12,26 @@
 // APP START
 // ----------------------------------- 
 
-(function() {
+(function () {
     'use strict';
 
-    angular
-        .module('angle', [
-            'app.core',
-            'app.routes',
-            'app.sidebar',
-            'app.navsearch',
-            'app.preloader',
-            'angular-loading-bar',
-            //'app.loadingbar',
-            'app.bootstrapui',
-            'app.panels',
-            'app.translate',
-            'app.settings',
-            'app.utils',
-            'app.pages',
-            'app.logic'
-        ]);
+    angular.module('angle', [        
+        'app.core',
+        'app.routes',
+        'app.sidebar',
+        'app.navsearch',
+        'app.preloader',
+        'angular-loading-bar',
+        'toaster',        
+        //'app.loadingbar',
+        'app.bootstrapui',
+        'app.panels',
+        'app.forms',
+        'app.translate',
+        'app.settings',
+        'app.utils',
+        'app.pages',
+        'app.logic'
+    ]);
 })();
 

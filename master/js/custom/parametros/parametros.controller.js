@@ -10,8 +10,8 @@
             .module('app.logic')
             .controller('ParametrosCtrl', Controller);
 
-    Controller.$inject = ['toaster', '$uibModal', 'ParametroSrv', 'parametros', 'editar_tpl'];
-    function Controller(toaster, $uibModal, ParametroSrv, parametros, editar_tpl) {
+    Controller.$inject = ['toastr', '$uibModal', 'ParametroSrv', 'parametros', 'editar_tpl'];
+    function Controller(toastr, $uibModal, ParametroSrv, parametros, editar_tpl) {
 
         var self = this;
 
@@ -64,7 +64,7 @@
             ParametroSrv.update_parametro(original.id_parametro, param).then(function (response) {
 
                 self.parametros[i] = response.data;
-                toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+                toastr.success('info', '', 'Los datos se han actualizado correctamente');
 
             }).catch(function (response) {
 
@@ -90,7 +90,7 @@
             ParametroSrv.update_parametro(param.id_parametro, copia).then(function (response) {
 
                 self.parametros[i] = response.data;
-                toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+                toastr.success('info', '', 'Los datos se han actualizado correctamente');
                 form.$setPristine();
                 form.$setUntouched();
 

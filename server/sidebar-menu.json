@@ -69,6 +69,11 @@
                 "text": "Nuevo Producto",
                 "sref": "app.nuevo_producto"
 
+            },
+            {
+                "text": "Importar",
+                "sref": "app.importar_productos"
+
             }
 
         ]

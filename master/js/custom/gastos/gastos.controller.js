@@ -10,8 +10,8 @@
             .module('app.logic')
             .controller('GastosCtrl', Controller);
 
-    Controller.$inject = ['toaster', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevo_tpl', 'editar_tpl', 'cfpLoadingBar'];
-    function Controller(toaster, GastoSrv, gastos, $scope, $uibModal, nuevo_tpl, editar_tpl, cfpLoadingBar) {
+    Controller.$inject = ['toastr', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevo_tpl', 'editar_tpl', 'cfpLoadingBar'];
+    function Controller(toastr, GastoSrv, gastos, $scope, $uibModal, nuevo_tpl, editar_tpl, cfpLoadingBar) {
 
         var self = this;
 
@@ -167,7 +167,7 @@
             GastoSrv.update_gasto(original.id_gasto, gasto).then(function (response) {
 
                 self.gastos[i] = response.data;
-                toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+                toastr.success('info', '', 'Los datos se han actualizado correctamente');
 
             }).catch(function (response) {
 

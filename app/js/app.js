@@ -12,26 +12,27 @@
 // APP START
 // ----------------------------------- 
 
-(function() {
+(function () {
     'use strict';
 
-    angular
-        .module('angle', [
-            'app.core',
-            'app.routes',
-            'app.sidebar',
-            'app.navsearch',
-            'app.preloader',
-            'angular-loading-bar',
-            //'app.loadingbar',
-            'app.bootstrapui',
-            'app.panels',
-            'app.translate',
-            'app.settings',
-            'app.utils',
-            'app.pages',
-            'app.logic'
-        ]);
+    angular.module('angle', [        
+        'app.core',
+        'app.routes',
+        'app.sidebar',
+        'app.navsearch',
+        'app.preloader',
+        'angular-loading-bar',
+        'toaster',        
+        //'app.loadingbar',
+        'app.bootstrapui',
+        'app.panels',
+        'app.forms',
+        'app.translate',
+        'app.settings',
+        'app.utils',
+        'app.pages',
+        'app.logic'
+    ]);
 })();
 
 
@@ -65,6 +66,12 @@
             'ngResource',
             'ui.utils'
         ]);
+})();
+(function() {
+    'use strict';
+
+    angular
+        .module('app.forms', []);
 })();
 (function() {
     'use strict';
@@ -332,6 +339,45 @@
 })();
 
 
+/**=========================================================
+ * Module: filestyle.js
+ * Initializes the fielstyle plugin
+ =========================================================*/
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.forms')
+            .directive('filestyle', filestyle);
+
+    function filestyle() {
+        var directive = {
+            link: link,
+            restrict: 'A'
+        };
+        return directive;
+
+        function link(scope, element) {
+            var options = element.data();
+
+            // old usage support
+            //options.classInput = element.data('classinput') || options.classInput;
+            options.buttonText = element.data('buttontext');
+            options.buttonName = element.data('buttonname');
+
+            delete options.buttontext;
+            delete options.buttonname;
+
+            //console.log("options", JSON.stringify(options));
+
+            element.filestyle(options);
+            
+        }
+    }
+
+})();
+
 (function() {
     'use strict';
 
@@ -361,11 +407,14 @@
                 scripts: {
                     'modernizr': ['vendor/modernizr/modernizr.custom.js'],
                     'icons': ['vendor/fontawesome/css/font-awesome.min.css',
-                        'vendor/simple-line-icons/css/simple-line-icons.css']
+                        'vendor/simple-line-icons/css/simple-line-icons.css'],
+                    'filestyle': ['vendor/bootstrap-filestyle/src/bootstrap-filestyle.js']
                 },
                 // Angular based script (use the right module name)
                 modules: [
-                    {name: 'toaster', files: ['vendor/angularjs-toaster/toaster.js', 'vendor/angularjs-toaster/toaster.css']}
+                    //{name: 'toaster', files: ['vendor/angularjs-toaster/toaster.js', 'vendor/angularjs-toaster/toaster.css']},
+                    {name: 'toastr', files: ['vendor/angular-toastr/dist/angular-toastr.tpls.js', 'vendor/angular-toastr/dist/angular-toastr.css']},
+                    {name: 'angularFileUpload', files: ['vendor/angular-file-upload/dist/angular-file-upload.js']}
                 ]
             })
             ;
@@ -1221,7 +1270,7 @@
                     url: '/app',
                     abstract: true,
                     templateUrl: helper.basepath('app.html'),
-                    resolve: helper.resolveFor('modernizr', 'icons', 'toaster')
+                    resolve: helper.resolveFor('modernizr', 'icons', 'toastr')
                 })
                 .state('app.singleview', {
                     url: '/singleview',
@@ -1321,6 +1370,27 @@
                         }
                     }
                 })
+                .state('app.importar_productos', {
+                    url: '/importar_productos',
+                    title: 'Productos',
+                    controller: 'ImportarProductosCtrl as ctrl',
+                    templateUrl: helper.basepath('productos_importar.html'),
+                    resolve: angular.extend( helper.resolveFor('angularFileUpload','filestyle'), {
+                        niveles_seguridad: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_niveles_seguridad();
+                            }],
+                        segmentos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_segmentos();
+                            }],
+                        categorias: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_categorias();
+                            }],
+                        anchos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_anchos();
+                            }]
+                    })
+
+                })
                 .state('app.nuevo_producto', {
                     url: '/nuevo_producto',
                     title: 'Nuevo Producto',
@@ -1355,6 +1425,9 @@
                             }],
                         parametros: ['ParametroSrv', function (ParametroSrv) {
                                 return ParametroSrv.get_parametros();
+                            }],
+                        gastos: ['GastoSrv', function (GastoSrv) {
+                                return GastoSrv.get_gastos();
                             }]
                     }
                 })
@@ -2481,8 +2554,8 @@
     angular
             .module('app.logic')
             .controller('CotizacionArqCtrl', Controller);
-    Controller.$inject = ['CotizacionSrv', '$window', 'productos', 'garantias', 'parametros'];
-    function Controller(CotizacionSrv, $window, productos, garantias, parametros) {
+    Controller.$inject = ['CotizacionSrv', '$window', 'productos', 'garantias', 'parametros', 'gastos'];
+    function Controller(CotizacionSrv, $window, productos, garantias, parametros, gastos) {
 
         var self = this;
         //self.pieza_selected={};
@@ -2491,6 +2564,7 @@
         self.productos = productos.data;
         self.garantias = garantias.data;
         self.parametros = parametros.data;
+        self.gastos = gastos.data;
         self.rollo = null;
         self.toggleFormulaPrecio182 = false;
         self.toggleFormulaPrecio152 = false;
@@ -2510,9 +2584,9 @@
 
                 console.log("response", response);
                 //$window.open("data:application/pdf;base64," + response.data.pdfbase64, "_blank");
-                
+
                 $window.open("/defenderglass_api/public/" + response.data.filename, "_blank");
-                
+
 //                
 
 //                var win = $window.open("", "win");
@@ -3041,8 +3115,8 @@
             .module('app.logic')
             .controller('GastosCtrl', Controller);
 
-    Controller.$inject = ['toaster', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevo_tpl', 'editar_tpl', 'cfpLoadingBar'];
-    function Controller(toaster, GastoSrv, gastos, $scope, $uibModal, nuevo_tpl, editar_tpl, cfpLoadingBar) {
+    Controller.$inject = ['toastr', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevo_tpl', 'editar_tpl', 'cfpLoadingBar'];
+    function Controller(toastr, GastoSrv, gastos, $scope, $uibModal, nuevo_tpl, editar_tpl, cfpLoadingBar) {
 
         var self = this;
 
@@ -3198,7 +3272,7 @@
             GastoSrv.update_gasto(original.id_gasto, gasto).then(function (response) {
 
                 self.gastos[i] = response.data;
-                toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+                toastr.success('info', '', 'Los datos se han actualizado correctamente');
 
             }).catch(function (response) {
 
@@ -3214,6 +3288,24 @@
     }
 })();
 
+
+
+(function () {
+    'use strict';
+
+    angular.module('app.logic')
+            .filter('tipoGastoExtra', function () {
+                return function (input) {
+                    var tipo = 'm<sup>2</sup>';
+                    if (input === 'D') {
+                        tipo = 'Día';
+                    }
+
+                    return tipo;
+                };
+            });
+
+})();
 
 (function () {
     'use strict';
@@ -3322,6 +3414,140 @@
     }
 })();
 
+/**=========================================================
+ * Module panel-tools.js
+ * Directive tools to control panels.
+ * Allows collapse, refresh and dismiss (remove)
+ * Saves panel state in browser storage
+ =========================================================*/
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .directive('textParam', textParam);
+
+    textParam.$inject = ['$compile', '$timeout', 'ParametroSrv', 'toastr'];
+    function textParam($compile, $timeout, ParametroSrv, toastr) {
+
+
+
+        var directive = {
+            //link: link,
+            template: '<form id="form" name="form" class="form-horizontal">\
+                        <div class="form-group" ng-class="{\'has-success\':(form.texto.$dirty || form.texto.$touched) }">\
+                        <label class="control-label col-lg-2">{{p.nombre}}</label>\
+                            <div class="col-lg-10">\
+                                <textarea rows="7" class="form-control" name="texto" ng-model="copia.texto" ng-disabled="!edit" ></textarea>\
+                            </div>\
+                        </div>\
+                        <div class="form-group">\
+                            <div class="col-lg-10 col-lg-offset-2">\
+                                <button class="btn btn-default" ng-hide="edit" ng-click="editar()">Editar</button>\
+                                <button class="btn btn-default" ng-show="edit" ng-click="cancel()">Cancelar</button>\
+                                <button class="btn btn-primary" ng-show="edit" ng-click="update_parametro()">Guardar</button>\
+                            </div>\
+                        </div>\
+                    </form>',
+            restrict: 'E',
+            scope: {
+                p: '=param',
+                edit: '=disabled'
+
+            },
+            controller: ['$scope', function ($scope) {
+                    $scope.edit = false;
+                    $scope.copia = {};
+                    $scope.copia.texto = $scope.p.texto; //angular.copy($scope.p);
+                    $scope.editar=function(){
+                      $scope.edit=true;  
+                    };
+                    
+                    $scope.cancel = function () {
+                        //console.log("hola desde el controlador de la directiva");
+                        $scope.edit = !$scope.edit;
+                        $scope.form.$setPristine();
+                        $scope.form.$setUntouched();
+                        $scope.copia.texto = $scope.p.texto;
+                    };
+
+                    $scope.update_parametro = function () {
+
+                        ParametroSrv.update_parametro($scope.p.id_parametro, $scope.copia).then(function (response) {
+
+                            $scope.p = response.data;
+                            $scope.edit = false;
+                            toastr.success('info', '', 'Los datos se han actualizado correctamente');
+                            $scope.form.$setPristine();
+                            $scope.form.$setUntouched();
+
+                        }).catch(function (response) {
+
+                        }).finally(function (response) {
+
+                        });
+                    };
+                }]
+        };
+        return directive;
+
+
+
+        function link(scope, element, attrs) {
+
+//            scope.cancel=function(){
+//                console.log("cancelar desde la directiva");
+//            };
+
+//            var templates = {
+            /* jshint multistr: true */
+//                textarea: '<form id="textparam_{{index}}" name="textparam_{{index}}" class="form-horizontal">\
+//                        <div class="form-group">\
+//                        <label class="control-label col-lg-2">{{p.nombre}}</label>\
+//                            <div class="col-lg-10">\
+//                            <textarea rows="7" class="form-control" ng-model="p.texto" ng-disabled="textparam_{{index}}" ></textarea>\
+//                            </div>\
+//                        </div>\
+//                        <div class="form-group">\
+//                            <div class="col-lg-10 col-lg-offset-2">\
+//                                <button class="btn btn-default" ng-click="textparam_{{index}} = !textparam_{{index}}"><span ng-show="textparam_{{index}}">Editar</span><span ng-show="!textparam_{{index}}">Cancelar</span></button>\
+//                                <button class="btn btn-primary" ng-show="!textparam_{{index}}" ng-click="ctrl.update_parametro(p, update_form)">Guardar</button>\
+//                            </div>\
+//                        </div>\
+//                    </form>'
+//            collapse:'<a href="#" panel-collapse="" uib-tooltip="Colapsar" ng-click="{{panelId}} = !{{panelId}}">\
+//                       <em ng-show="{{panelId}}" class="fa fa-plus ng-no-animation"></em>\
+//                       <em ng-show="!{{panelId}}" class="fa fa-minus ng-no-animation"></em>\
+//                      </a>',
+//            dismiss: '<a href="#" panel-dismiss="" uib-tooltip="Cerrar">\
+//                       <em class="fa fa-times"></em>\
+//                     </a>',
+//            refresh: '<a href="#" panel-refresh="" data-spinner="{{spinner}}" uib-tooltip="Actualizar">\
+//                       <em class="fa fa-refresh"></em>\
+//                     </a>'
+//            };
+
+
+
+            //$timeout(function () {
+            //element.html(getTemplate(element, attrs)).show();
+            //$compile(element.contents())(scope);                
+            //});
+
+//            function getTemplate(elem, attrs) {
+//                var temp = '';
+//                attrs = attrs || {};
+//                if (attrs.index) {
+//                    temp += templates.textarea.replace(/{{index}}/g, attrs.index);
+//                }
+//                return temp;
+//            }
+        }// link
+    }
+
+})();
+
 
 // To run this code, edit file index.html or index.jade and change
 // html data-ng-app attribute from angle to myAppName
@@ -3334,8 +3560,8 @@
             .module('app.logic')
             .controller('ParametrosCtrl', Controller);
 
-    Controller.$inject = ['toaster', '$uibModal', 'ParametroSrv', 'parametros', 'editar_tpl'];
-    function Controller(toaster, $uibModal, ParametroSrv, parametros, editar_tpl) {
+    Controller.$inject = ['toastr', '$uibModal', 'ParametroSrv', 'parametros', 'editar_tpl'];
+    function Controller(toastr, $uibModal, ParametroSrv, parametros, editar_tpl) {
 
         var self = this;
 
@@ -3388,7 +3614,7 @@
             ParametroSrv.update_parametro(original.id_parametro, param).then(function (response) {
 
                 self.parametros[i] = response.data;
-                toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+                toastr.success('info', '', 'Los datos se han actualizado correctamente');
 
             }).catch(function (response) {
 
@@ -3414,7 +3640,7 @@
             ParametroSrv.update_parametro(param.id_parametro, copia).then(function (response) {
 
                 self.parametros[i] = response.data;
-                toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+                toastr.success('info', '', 'Los datos se han actualizado correctamente');
                 form.$setPristine();
                 form.$setUntouched();
 
@@ -3458,6 +3684,83 @@
         };
     }
 
+})();
+
+
+// To run this code, edit file index.html or index.jade and change
+// html data-ng-app attribute from angle to myAppName
+// ----------------------------------------------------------------------
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .controller('ImportarProductosCtrl', Controller);
+
+    Controller.$inject = ['$scope', 'toaster', 'ProductoSrv', 'niveles_seguridad', 'segmentos', 'categorias', 'anchos', 'FileUploader', 'URL_API'];
+    function Controller($scope, toaster, ProductoSrv, niveles_seguridad, segmentos, categorias, anchos, FileUploader, URL_API) {
+
+        var self = this;
+
+        self.niveles_seguridad = niveles_seguridad.data;
+        self.segmentos = segmentos.data;
+        self.categorias = categorias.data;
+        self.anchos = anchos.data;
+
+        self.uploader = new FileUploader({
+            url: URL_API + 'productos/upload'
+        });
+
+        self.uploader.filters.push({
+            name: 'customFilter',
+            fn: function (/*item, options*/) {
+                return this.queue.length < 1;
+            }
+        });
+
+
+
+        self.uploader.onWhenAddingFileFailed = function (item /*{File|FileLikeObject}*/, filter, options) {
+            console.info('onWhenAddingFileFailed', item, filter, options);
+        };
+        self.uploader.onAfterAddingFile = function (fileItem) {
+            console.info('onAfterAddingFile', fileItem);
+        };
+        self.uploader.onAfterAddingAll = function (addedFileItems) {
+            console.info('onAfterAddingAll', addedFileItems);
+        };
+        self.uploader.onBeforeUploadItem = function (item) {
+            console.info('onBeforeUploadItem', item);
+        };
+        self.uploader.onProgressItem = function (fileItem, progress) {
+            console.info('onProgressItem', fileItem, progress);
+        };
+        self.uploader.onProgressAll = function (progress) {
+            console.info('onProgressAll', progress);
+        };
+        self.uploader.onSuccessItem = function (fileItem, response, status, headers) {
+            console.info('onSuccessItem', fileItem, response, status, headers);
+        };
+        self.uploader.onErrorItem = function (fileItem, response, status, headers) {
+            console.info('onErrorItem', fileItem, response, status, headers);
+        };
+        self.uploader.onCancelItem = function (fileItem, response, status, headers) {
+            console.info('onCancelItem', fileItem, response, status, headers);
+        };
+        self.uploader.onCompleteItem = function (fileItem, response, status, headers) {
+            console.info('onCompleteItem', fileItem, response, status, headers);
+            //toastr.success('success', 'Los datos se han actualizado correctamente',{'positionClass':'toast-bottom-full-width','progressBar':true});
+            toaster.pop('success','', 'Los datos se han cargado correctamente');
+        };
+        self.uploader.onCompleteAll = function () {
+            console.info('onCompleteAll');
+        };
+
+
+
+
+    }
 })();
 
 (function () {
@@ -3691,8 +3994,8 @@
             .module('app.logic')
             .controller('UsuariosCtrl', Controller);
 
-    Controller.$inject = ['UsuarioSrv', '$uibModal', 'toaster', 'usuarios', 'roles', 'editar_usuario_tpl'];
-    function Controller(UsuarioSrv, $uibModal, toaster, usuarios, roles, editar_usuario_tpl) {
+    Controller.$inject = ['UsuarioSrv', '$uibModal', 'toastr', 'usuarios', 'roles', 'editar_usuario_tpl'];
+    function Controller(UsuarioSrv, $uibModal, toastr, usuarios, roles, editar_usuario_tpl) {
 
         var self = this;
 
@@ -3763,7 +4066,7 @@
                 UsuarioSrv.update_usuario(id_usuario, usuario).then(function (response) {
 
                     self.usuarios[i] = response.data;
-                    toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+                    toastr.success('info', '', 'Los datos se han actualizado correctamente');
 
                 }).catch(function (response) {
 
@@ -3815,13 +4118,13 @@
 
                 if (response.data === 1) {
                     self.usuarios.splice(i, 1);
-                    toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+                    toastr.success('info', '', 'Los datos se han actualizado correctamente');
                 } else {
-                    toaster.pop('danger', '', 'Los datos no se han actualizado correctamente');
+                    toastr.success('danger', '', 'Los datos no se han actualizado correctamente');
                 }
 
             }).catch(function (response) {
-                toaster.pop('danger', '', 'Los datos no se han actualizado correctamente');
+                toastr.success('danger', '', 'Los datos no se han actualizado correctamente');
             }).finally(function (response) {
 
             });

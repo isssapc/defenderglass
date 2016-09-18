@@ -25,7 +25,7 @@
                     url: '/app',
                     abstract: true,
                     templateUrl: helper.basepath('app.html'),
-                    resolve: helper.resolveFor('modernizr', 'icons', 'toaster')
+                    resolve: helper.resolveFor('modernizr', 'icons', 'toastr')
                 })
                 .state('app.singleview', {
                     url: '/singleview',
@@ -125,6 +125,27 @@
                         }
                     }
                 })
+                .state('app.importar_productos', {
+                    url: '/importar_productos',
+                    title: 'Productos',
+                    controller: 'ImportarProductosCtrl as ctrl',
+                    templateUrl: helper.basepath('productos_importar.html'),
+                    resolve: angular.extend( helper.resolveFor('angularFileUpload','filestyle'), {
+                        niveles_seguridad: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_niveles_seguridad();
+                            }],
+                        segmentos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_segmentos();
+                            }],
+                        categorias: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_categorias();
+                            }],
+                        anchos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_anchos();
+                            }]
+                    })
+
+                })
                 .state('app.nuevo_producto', {
                     url: '/nuevo_producto',
                     title: 'Nuevo Producto',
@@ -159,6 +180,9 @@
                             }],
                         parametros: ['ParametroSrv', function (ParametroSrv) {
                                 return ParametroSrv.get_parametros();
+                            }],
+                        gastos: ['GastoSrv', function (GastoSrv) {
+                                return GastoSrv.get_gastos();
                             }]
                     }
                 })

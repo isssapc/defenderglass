@@ -10,8 +10,8 @@
             .module('app.logic')
             .controller('UsuariosCtrl', Controller);
 
-    Controller.$inject = ['UsuarioSrv', '$uibModal', 'toaster', 'usuarios', 'roles', 'editar_usuario_tpl'];
-    function Controller(UsuarioSrv, $uibModal, toaster, usuarios, roles, editar_usuario_tpl) {
+    Controller.$inject = ['UsuarioSrv', '$uibModal', 'toastr', 'usuarios', 'roles', 'editar_usuario_tpl'];
+    function Controller(UsuarioSrv, $uibModal, toastr, usuarios, roles, editar_usuario_tpl) {
 
         var self = this;
 
@@ -82,7 +82,7 @@
                 UsuarioSrv.update_usuario(id_usuario, usuario).then(function (response) {
 
                     self.usuarios[i] = response.data;
-                    toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+                    toastr.success('info', '', 'Los datos se han actualizado correctamente');
 
                 }).catch(function (response) {
 
@@ -134,13 +134,13 @@
 
                 if (response.data === 1) {
                     self.usuarios.splice(i, 1);
-                    toaster.pop('info', '', 'Los datos se han actualizado correctamente');
+                    toastr.success('info', '', 'Los datos se han actualizado correctamente');
                 } else {
-                    toaster.pop('danger', '', 'Los datos no se han actualizado correctamente');
+                    toastr.success('danger', '', 'Los datos no se han actualizado correctamente');
                 }
 
             }).catch(function (response) {
-                toaster.pop('danger', '', 'Los datos no se han actualizado correctamente');
+                toastr.success('danger', '', 'Los datos no se han actualizado correctamente');
             }).finally(function (response) {
 
             });

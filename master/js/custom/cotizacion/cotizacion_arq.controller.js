@@ -4,8 +4,8 @@
     angular
             .module('app.logic')
             .controller('CotizacionArqCtrl', Controller);
-    Controller.$inject = ['CotizacionSrv', '$window', 'productos', 'garantias', 'parametros'];
-    function Controller(CotizacionSrv, $window, productos, garantias, parametros) {
+    Controller.$inject = ['CotizacionSrv', '$window', 'productos', 'garantias', 'parametros', 'gastos'];
+    function Controller(CotizacionSrv, $window, productos, garantias, parametros, gastos) {
 
         var self = this;
         //self.pieza_selected={};
@@ -14,6 +14,7 @@
         self.productos = productos.data;
         self.garantias = garantias.data;
         self.parametros = parametros.data;
+        self.gastos = gastos.data;
         self.rollo = null;
         self.toggleFormulaPrecio182 = false;
         self.toggleFormulaPrecio152 = false;
@@ -33,9 +34,9 @@
 
                 console.log("response", response);
                 //$window.open("data:application/pdf;base64," + response.data.pdfbase64, "_blank");
-                
+
                 $window.open("/defenderglass_api/public/" + response.data.filename, "_blank");
-                
+
 //                
 
 //                var win = $window.open("", "win");
