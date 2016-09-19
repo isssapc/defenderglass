@@ -3713,16 +3713,39 @@
         });
 
         self.uploader.filters.push({
-            name: 'customFilter',
+            name: 'queueFilter',
             fn: function (/*item, options*/) {
                 return this.queue.length < 1;
             }
         });
 
+        self.uploader.filters.push({
+            name: 'excelFilter',
+            fn: function (item /*{File|FileLikeObject}*/, options) {
+                //var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+                //console.log("type", type);
+                //console.log("file", item.name.split('.').pop());
+                var extension = item.name.split('.').pop();
+                return '|xls|xlsx|'.indexOf(extension) !== -1;
+            }
+        });
+
+        self.remove_file = function (item) {
+            item.remove();
+            //$('#archivo').val("");
+            $('#archivo').filestyle("clear");
+        };
+
 
 
         self.uploader.onWhenAddingFileFailed = function (item /*{File|FileLikeObject}*/, filter, options) {
             console.info('onWhenAddingFileFailed', item, filter, options);
+            if (filter.name === 'excelFilter') {
+                toaster.pop('error', '', 'Sólo se adminten archivos de Excel en formato XLS ó XLSX');
+            } else if (filter.name === 'queueFilter') {
+                toaster.pop('error', '', 'Sólo puede subir un archivo a la vez');
+            }
+            $('#archivo').filestyle("clear");
         };
         self.uploader.onAfterAddingFile = function (fileItem) {
             console.info('onAfterAddingFile', fileItem);
@@ -3751,7 +3774,7 @@
         self.uploader.onCompleteItem = function (fileItem, response, status, headers) {
             console.info('onCompleteItem', fileItem, response, status, headers);
             //toastr.success('success', 'Los datos se han actualizado correctamente',{'positionClass':'toast-bottom-full-width','progressBar':true});
-            toaster.pop('success','', 'Los datos se han cargado correctamente');
+            toaster.pop('success', '', 'Los datos se han cargado correctamente');
         };
         self.uploader.onCompleteAll = function () {
             console.info('onCompleteAll');

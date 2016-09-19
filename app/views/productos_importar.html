@@ -1,6 +1,6 @@
 <!--<toaster-container toaster-options="{'time-out':3000,'position-class': 'toast-bottom-full-width', 'close-button':true}"></toaster-container>-->
 <h3>
-    <!-- START Language list-->
+    
     <div class="pull-right">
         <div uib-dropdown="" is-open="language.listIsOpen" class="btn-group">
             <button type="button" uib-dropdown-toggle="" class="btn btn-default">{{language.selected}}
@@ -11,22 +11,20 @@
                 </li>
             </ul>
         </div>
-    </div>
-    <!-- END Language list-->
-    Importar Productos
-    <small>{{ 'dashboard.WELCOME' | translate:{ appName: app.name } }} !</small>
+    </div>  
+    Importar Productos    
 </h3>
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-default info">
-            <div class="panel-heading">Seleccionar archivo Excel</div>
+            <div class="panel-heading">Seleccionar archivo de Excel xls ó xlsx</div>
             <div class="panel-body">
                 <div class="form-horizontal">
 
                     <fieldset>
                         <div class="form-group">                          
                             <div class="col-sm-12">
-                                <input filestyle type="file" data-buttonName="btn btn-default" data-icon="true" data-buttonText="Seleccionar" nv-file-select uploader="ctrl.uploader" />
+                                <input filestyle type="file" accept=".xls,.xlsx" id="archivo" data-buttonName="btn btn-default" data-icon="true" data-buttonText="Seleccionar" nv-file-select uploader="ctrl.uploader" />
                             </div>
                         </div>
                     </fieldset>
@@ -68,7 +66,7 @@
                                     <td nowrap>   
                                         <button type="button" class="btn btn-info" uib-tooltip="Subir" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
                                             <span class="icon-cloud-upload"></span></button>
-                                        <button type="button" ng-click="item.remove()" class="btn btn-danger" uib-tooltip="Eliminar">
+                                        <button type="button" ng-click="ctrl.remove_file(item)" class="btn btn-danger" uib-tooltip="Eliminar">
                                             <span class="icon-trash"></span></button>
                                     </td>
                                 </tr>
