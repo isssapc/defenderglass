@@ -10,8 +10,8 @@
             .module('app.logic')
             .controller('GastosCtrl', Controller);
 
-    Controller.$inject = ['toastr', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevo_tpl', 'editar_tpl', 'cfpLoadingBar'];
-    function Controller(toastr, GastoSrv, gastos, $scope, $uibModal, nuevo_tpl, editar_tpl, cfpLoadingBar) {
+    Controller.$inject = ['toaster', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevo_tpl', 'editar_tpl', 'cfpLoadingBar'];
+    function Controller(toaster, GastoSrv, gastos, $scope, $uibModal, nuevo_tpl, editar_tpl, cfpLoadingBar) {
 
         var self = this;
 
@@ -33,7 +33,7 @@
                 //controller: 'ModalNuevoGastoCtrl',
                 //controllerAs: 'ctrl'
                 controller: function ($scope) {
-                    $scope.gasto = {};
+                    $scope.gasto = {tipo: 'M'};
                     $scope.ok = function () {
                         $scope.$close($scope.gasto);
                     };
@@ -118,10 +118,10 @@
                 GastoSrv.del_gasto(gasto_selected.id_gasto).then(function (response) {
                     var i = self.gastos.indexOf(gasto_selected);
                     self.gastos.splice(i, 1);
-
+                    toaster.pop('success', '', 'Los datos se han actualizado correctamente');
                 }).catch(function (response) {
-                    console.log("error");
-                }).finally(function (response) {
+                    toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+                }).finally(function () {
                 });
             }, function (response) {
                 console.log("response", response);
@@ -149,9 +149,10 @@
         self.add_gasto = function (gasto) {
             GastoSrv.add_gasto(gasto).then(function (response) {
                 self.gastos.push(response.data);
+                toaster.pop('success', '', 'Los datos se han actualizado correctamente');
             }).catch(function (response) {
-                console.log("error");
-            }).finally(function (response) {
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+            }).finally(function () {
 
                 //$scope.formNuevoGasto.$setPristine();
                 //$scope.formNuevoGasto.$setUntouched();
@@ -159,7 +160,7 @@
             });
         };
 
-        self.edit_gasto = function (gasto,original) {
+        self.edit_gasto = function (gasto, original) {
 
             var i = self.gastos.indexOf(original);
             delete gasto.id_gasto;
@@ -167,11 +168,11 @@
             GastoSrv.update_gasto(original.id_gasto, gasto).then(function (response) {
 
                 self.gastos[i] = response.data;
-                toastr.success('info', '', 'Los datos se han actualizado correctamente');
+                toaster.pop('success', '', 'Los datos se han actualizado correctamente');
 
             }).catch(function (response) {
-
-            }).finally(function (response) {
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+            }).finally(function () {
 
             });
         };

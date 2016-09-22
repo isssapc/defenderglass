@@ -10,8 +10,8 @@
             .module('app.logic')
             .controller('ParametrosCtrl', Controller);
 
-    Controller.$inject = ['toastr', '$uibModal', 'ParametroSrv', 'parametros', 'editar_tpl'];
-    function Controller(toastr, $uibModal, ParametroSrv, parametros, editar_tpl) {
+    Controller.$inject = ['toaster', '$uibModal', 'ParametroSrv', 'parametros', 'editar_tpl'];
+    function Controller(toaster, $uibModal, ParametroSrv, parametros, editar_tpl) {
 
         var self = this;
 
@@ -64,11 +64,11 @@
             ParametroSrv.update_parametro(original.id_parametro, param).then(function (response) {
 
                 self.parametros[i] = response.data;
-                toastr.success('info', '', 'Los datos se han actualizado correctamente');
+                toaster.pop('success', '', 'Los datos se han actualizado correctamente');
 
             }).catch(function (response) {
-
-            }).finally(function (response) {
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+            }).finally(function () {
 
             });
         };
@@ -90,13 +90,13 @@
             ParametroSrv.update_parametro(param.id_parametro, copia).then(function (response) {
 
                 self.parametros[i] = response.data;
-                toastr.success('info', '', 'Los datos se han actualizado correctamente');
+                toaster.pop('success', '', 'Los datos se han actualizado correctamente');
                 form.$setPristine();
                 form.$setUntouched();
 
             }).catch(function (response) {
-
-            }).finally(function (response) {
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+            }).finally(function () {
 
             });
         };

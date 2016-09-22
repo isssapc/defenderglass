@@ -12,8 +12,8 @@
             .module('app.logic')
             .directive('textParam', textParam);
 
-    textParam.$inject = ['$compile', '$timeout', 'ParametroSrv', 'toastr'];
-    function textParam($compile, $timeout, ParametroSrv, toastr) {
+    textParam.$inject = ['$compile', '$timeout', 'ParametroSrv', 'toaster'];
+    function textParam($compile, $timeout, ParametroSrv, toaster) {
 
 
 
@@ -44,10 +44,10 @@
                     $scope.edit = false;
                     $scope.copia = {};
                     $scope.copia.texto = $scope.p.texto; //angular.copy($scope.p);
-                    $scope.editar=function(){
-                      $scope.edit=true;  
+                    $scope.editar = function () {
+                        $scope.edit = true;
                     };
-                    
+
                     $scope.cancel = function () {
                         //console.log("hola desde el controlador de la directiva");
                         $scope.edit = !$scope.edit;
@@ -62,13 +62,13 @@
 
                             $scope.p = response.data;
                             $scope.edit = false;
-                            toastr.success('info', '', 'Los datos se han actualizado correctamente');
+                            toaster.pop('success', '', 'Los datos se han actualizado correctamente');
                             $scope.form.$setPristine();
                             $scope.form.$setUntouched();
 
                         }).catch(function (response) {
-
-                        }).finally(function (response) {
+                            toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+                        }).finally(function () {
 
                         });
                     };

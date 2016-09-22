@@ -3119,8 +3119,8 @@
             .module('app.logic')
             .controller('GastosCtrl', Controller);
 
-    Controller.$inject = ['toastr', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevo_tpl', 'editar_tpl', 'cfpLoadingBar'];
-    function Controller(toastr, GastoSrv, gastos, $scope, $uibModal, nuevo_tpl, editar_tpl, cfpLoadingBar) {
+    Controller.$inject = ['toaster', 'GastoSrv', 'gastos', '$scope', '$uibModal', 'nuevo_tpl', 'editar_tpl', 'cfpLoadingBar'];
+    function Controller(toaster, GastoSrv, gastos, $scope, $uibModal, nuevo_tpl, editar_tpl, cfpLoadingBar) {
 
         var self = this;
 
@@ -3142,7 +3142,7 @@
                 //controller: 'ModalNuevoGastoCtrl',
                 //controllerAs: 'ctrl'
                 controller: function ($scope) {
-                    $scope.gasto = {};
+                    $scope.gasto = {tipo: 'M'};
                     $scope.ok = function () {
                         $scope.$close($scope.gasto);
                     };
@@ -3227,10 +3227,10 @@
                 GastoSrv.del_gasto(gasto_selected.id_gasto).then(function (response) {
                     var i = self.gastos.indexOf(gasto_selected);
                     self.gastos.splice(i, 1);
-
+                    toaster.pop('success', '', 'Los datos se han actualizado correctamente');
                 }).catch(function (response) {
-                    console.log("error");
-                }).finally(function (response) {
+                    toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+                }).finally(function () {
                 });
             }, function (response) {
                 console.log("response", response);
@@ -3258,9 +3258,10 @@
         self.add_gasto = function (gasto) {
             GastoSrv.add_gasto(gasto).then(function (response) {
                 self.gastos.push(response.data);
+                toaster.pop('success', '', 'Los datos se han actualizado correctamente');
             }).catch(function (response) {
-                console.log("error");
-            }).finally(function (response) {
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+            }).finally(function () {
 
                 //$scope.formNuevoGasto.$setPristine();
                 //$scope.formNuevoGasto.$setUntouched();
@@ -3268,7 +3269,7 @@
             });
         };
 
-        self.edit_gasto = function (gasto,original) {
+        self.edit_gasto = function (gasto, original) {
 
             var i = self.gastos.indexOf(original);
             delete gasto.id_gasto;
@@ -3276,11 +3277,11 @@
             GastoSrv.update_gasto(original.id_gasto, gasto).then(function (response) {
 
                 self.gastos[i] = response.data;
-                toastr.success('info', '', 'Los datos se han actualizado correctamente');
+                toaster.pop('success', '', 'Los datos se han actualizado correctamente');
 
             }).catch(function (response) {
-
-            }).finally(function (response) {
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+            }).finally(function () {
 
             });
         };
@@ -3432,8 +3433,8 @@
             .module('app.logic')
             .directive('textParam', textParam);
 
-    textParam.$inject = ['$compile', '$timeout', 'ParametroSrv', 'toastr'];
-    function textParam($compile, $timeout, ParametroSrv, toastr) {
+    textParam.$inject = ['$compile', '$timeout', 'ParametroSrv', 'toaster'];
+    function textParam($compile, $timeout, ParametroSrv, toaster) {
 
 
 
@@ -3464,10 +3465,10 @@
                     $scope.edit = false;
                     $scope.copia = {};
                     $scope.copia.texto = $scope.p.texto; //angular.copy($scope.p);
-                    $scope.editar=function(){
-                      $scope.edit=true;  
+                    $scope.editar = function () {
+                        $scope.edit = true;
                     };
-                    
+
                     $scope.cancel = function () {
                         //console.log("hola desde el controlador de la directiva");
                         $scope.edit = !$scope.edit;
@@ -3482,13 +3483,13 @@
 
                             $scope.p = response.data;
                             $scope.edit = false;
-                            toastr.success('info', '', 'Los datos se han actualizado correctamente');
+                            toaster.pop('success', '', 'Los datos se han actualizado correctamente');
                             $scope.form.$setPristine();
                             $scope.form.$setUntouched();
 
                         }).catch(function (response) {
-
-                        }).finally(function (response) {
+                            toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+                        }).finally(function () {
 
                         });
                     };
@@ -3564,8 +3565,8 @@
             .module('app.logic')
             .controller('ParametrosCtrl', Controller);
 
-    Controller.$inject = ['toastr', '$uibModal', 'ParametroSrv', 'parametros', 'editar_tpl'];
-    function Controller(toastr, $uibModal, ParametroSrv, parametros, editar_tpl) {
+    Controller.$inject = ['toaster', '$uibModal', 'ParametroSrv', 'parametros', 'editar_tpl'];
+    function Controller(toaster, $uibModal, ParametroSrv, parametros, editar_tpl) {
 
         var self = this;
 
@@ -3618,11 +3619,11 @@
             ParametroSrv.update_parametro(original.id_parametro, param).then(function (response) {
 
                 self.parametros[i] = response.data;
-                toastr.success('info', '', 'Los datos se han actualizado correctamente');
+                toaster.pop('success', '', 'Los datos se han actualizado correctamente');
 
             }).catch(function (response) {
-
-            }).finally(function (response) {
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+            }).finally(function () {
 
             });
         };
@@ -3644,13 +3645,13 @@
             ParametroSrv.update_parametro(param.id_parametro, copia).then(function (response) {
 
                 self.parametros[i] = response.data;
-                toastr.success('info', '', 'Los datos se han actualizado correctamente');
+                toaster.pop('success', '', 'Los datos se han actualizado correctamente');
                 form.$setPristine();
                 form.$setUntouched();
 
             }).catch(function (response) {
-
-            }).finally(function (response) {
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+            }).finally(function () {
 
             });
         };
@@ -3782,20 +3783,18 @@
 
         self.remove_file = function (item) {
             item.remove();
-            //$('#archivo').val("");
             $('#archivo').filestyle("clear");
         };
 
         self.check_all = function () {
             _.each(self.productos, function (item) {
-
                 item.checked = self.checkall;
             });
         };
 
         self.delete = function () {
             self.productos = _.filter(self.productos, function (item) {
-                return !item.checked
+                return !item.checked;
             });
         };
 
@@ -3805,25 +3804,21 @@
                 delete item.checked;
             });
 
-            console.log("productos a insertar", JSON.stringify(self.productos));
+            //console.log("productos a insertar", JSON.stringify(self.productos));
 
             ProductoSrv.add_productos(self.productos).then(function (response) {
-
-                console.log("inserciones: " + response.data);
-                
-                toaster.pop('success', '', 'Se han agregado '+ response.data + ' productos a laa base de datos');
-                
-                self.productos=[];
-
+                //console.log("inserciones: " + response.data);
+                toaster.pop('success', '', 'Se han agregado ' + response.data + ' productos a laa base de datos');
+                self.productos = [];
             }).catch(function (response) {
-
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
             });
 
         };
 
 
         self.uploader.onWhenAddingFileFailed = function (item /*{File|FileLikeObject}*/, filter, options) {
-            console.info('onWhenAddingFileFailed', item, filter, options);
+            //console.info('onWhenAddingFileFailed', item, filter, options);
             if (filter.name === 'excelFilter') {
                 toaster.pop('error', '', 'Sólo se adminten archivos de Excel en formato XLS ó XLSX');
             } else if (filter.name === 'queueFilter') {
@@ -3831,19 +3826,23 @@
             }
             $('#archivo').filestyle("clear");
         };
-  
+
         self.uploader.onSuccessItem = function (fileItem, response, status, headers) {
-            console.info('onSuccessItem', fileItem, response, status, headers);
+            //console.info('onSuccessItem', fileItem, response, status, headers);
         };
-    
+
         self.uploader.onCompleteItem = function (fileItem, response, status, headers) {
-            console.info('onCompleteItem', fileItem, response, status, headers);
-            //toastr.success('success', 'Los datos se han actualizado correctamente',{'positionClass':'toast-bottom-full-width','progressBar':true});
-            console.log("response", JSON.stringify(response));
+            //console.info('onCompleteItem', fileItem, response, status, headers);
+            //console.log("response", JSON.stringify(response));
             self.productos = response.productos;
             toaster.pop('success', '', 'Los datos se han cargado correctamente');
         };
-      
+
+        self.uploader.onCompleteAll = function () {
+            //console.info('onCompleteAll');
+            $('#archivo').filestyle("clear");
+        };
+
 
 
 
@@ -4085,8 +4084,8 @@
             .module('app.logic')
             .controller('UsuariosCtrl', Controller);
 
-    Controller.$inject = ['UsuarioSrv', '$uibModal', 'toastr', 'usuarios', 'roles', 'editar_usuario_tpl'];
-    function Controller(UsuarioSrv, $uibModal, toastr, usuarios, roles, editar_usuario_tpl) {
+    Controller.$inject = ['UsuarioSrv', '$uibModal', 'toaster', 'usuarios', 'roles', 'editar_usuario_tpl'];
+    function Controller(UsuarioSrv, $uibModal, toaster, usuarios, roles, editar_usuario_tpl) {
 
         var self = this;
 
@@ -4157,10 +4156,10 @@
                 UsuarioSrv.update_usuario(id_usuario, usuario).then(function (response) {
 
                     self.usuarios[i] = response.data;
-                    toastr.success('info', '', 'Los datos se han actualizado correctamente');
+                    toaster.pop('success', '', 'Los datos se han actualizado correctamente');
 
                 }).catch(function (response) {
-
+                    toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
                 }).finally(function (response) {
 
                 });
@@ -4209,14 +4208,14 @@
 
                 if (response.data === 1) {
                     self.usuarios.splice(i, 1);
-                    toastr.success('info', '', 'Los datos se han actualizado correctamente');
+                    toaster.pop('success', '', 'Los datos se han actualizado correctamente');
                 } else {
-                    toastr.success('danger', '', 'Los datos no se han actualizado correctamente');
+                    toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
                 }
 
             }).catch(function (response) {
-                toastr.success('danger', '', 'Los datos no se han actualizado correctamente');
-            }).finally(function (response) {
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+            }).finally(function () {
 
             });
 
@@ -4288,28 +4287,30 @@
             .module('app.logic')
             .controller('NuevoUsuarioCtrl', Controller);
 
-    Controller.$inject = ['$log', 'UsuarioSrv', 'roles', '$scope'];
-    function Controller($log, UsuarioSrv, roles, $scope) {
+    Controller.$inject = ['$log', 'UsuarioSrv', 'roles', '$scope', 'toaster'];
+    function Controller($log, UsuarioSrv, roles, $scope, toaster) {
 
         var self = this;
 
         self.roles = roles.data;
 
         self.usuario = {};
+        self.confirmar = "";
 
 
 
         self.add_usuario = function () {
             UsuarioSrv.add_usuario(self.usuario).then(function (response) {
-                console.log("nuevo usuario", JSON.stringify(response.data));
+                //console.log("nuevo usuario", JSON.stringify(response.data));
                 self.usuario = {};
+                self.confirmar = "";
                 $scope.formNuevoUsuario.$setPristine();
                 $scope.formNuevoUsuario.$setUntouched();
 
-
+                toaster.pop('success', '', 'Los datos no has sido actualizados correctamente');
             }).catch(function (response) {
-                console.log("error");
-            }).finally(function (response) {
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+            }).finally(function () {
 
             });
         };

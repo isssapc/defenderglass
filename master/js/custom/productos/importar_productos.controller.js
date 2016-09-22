@@ -90,20 +90,18 @@
 
         self.remove_file = function (item) {
             item.remove();
-            //$('#archivo').val("");
             $('#archivo').filestyle("clear");
         };
 
         self.check_all = function () {
             _.each(self.productos, function (item) {
-
                 item.checked = self.checkall;
             });
         };
 
         self.delete = function () {
             self.productos = _.filter(self.productos, function (item) {
-                return !item.checked
+                return !item.checked;
             });
         };
 
@@ -113,25 +111,21 @@
                 delete item.checked;
             });
 
-            console.log("productos a insertar", JSON.stringify(self.productos));
+            //console.log("productos a insertar", JSON.stringify(self.productos));
 
             ProductoSrv.add_productos(self.productos).then(function (response) {
-
-                console.log("inserciones: " + response.data);
-                
-                toaster.pop('success', '', 'Se han agregado '+ response.data + ' productos a laa base de datos');
-                
-                self.productos=[];
-
+                //console.log("inserciones: " + response.data);
+                toaster.pop('success', '', 'Se han agregado ' + response.data + ' productos a laa base de datos');
+                self.productos = [];
             }).catch(function (response) {
-
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
             });
 
         };
 
 
         self.uploader.onWhenAddingFileFailed = function (item /*{File|FileLikeObject}*/, filter, options) {
-            console.info('onWhenAddingFileFailed', item, filter, options);
+            //console.info('onWhenAddingFileFailed', item, filter, options);
             if (filter.name === 'excelFilter') {
                 toaster.pop('error', '', 'Sólo se adminten archivos de Excel en formato XLS ó XLSX');
             } else if (filter.name === 'queueFilter') {
@@ -139,19 +133,23 @@
             }
             $('#archivo').filestyle("clear");
         };
-  
+
         self.uploader.onSuccessItem = function (fileItem, response, status, headers) {
-            console.info('onSuccessItem', fileItem, response, status, headers);
+            //console.info('onSuccessItem', fileItem, response, status, headers);
         };
-    
+
         self.uploader.onCompleteItem = function (fileItem, response, status, headers) {
-            console.info('onCompleteItem', fileItem, response, status, headers);
-            //toastr.success('success', 'Los datos se han actualizado correctamente',{'positionClass':'toast-bottom-full-width','progressBar':true});
-            console.log("response", JSON.stringify(response));
+            //console.info('onCompleteItem', fileItem, response, status, headers);
+            //console.log("response", JSON.stringify(response));
             self.productos = response.productos;
             toaster.pop('success', '', 'Los datos se han cargado correctamente');
         };
-      
+
+        self.uploader.onCompleteAll = function () {
+            //console.info('onCompleteAll');
+            $('#archivo').filestyle("clear");
+        };
+
 
 
 
