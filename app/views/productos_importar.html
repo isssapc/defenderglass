@@ -1,6 +1,6 @@
 <!--<toaster-container toaster-options="{'time-out':3000,'position-class': 'toast-bottom-full-width', 'close-button':true}"></toaster-container>-->
 <h3>
-    
+
     <div class="pull-right">
         <div uib-dropdown="" is-open="language.listIsOpen" class="btn-group">
             <button type="button" uib-dropdown-toggle="" class="btn btn-default">{{language.selected}}
@@ -75,6 +75,131 @@
                     </fieldset>
 
                 </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default" ng-show="ctrl.productos.length">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="pull-right">
+                            <div uib-dropdown auto-close="disabled " class="btn-group">
+                                <button type="button" uib-dropdown-toggle class="btn btn-default">Columnas
+                                    <span class="caret"></span>
+                                </button>
+                                <ul role="menu" uib-dropdown-menu class="dropdown-menu dropdown-menu-right">
+                                    <li  role="menuitem" ng-repeat="col in ctrl.columnas">
+                                        <div class="pv-sm ph-lg">
+                                            <div class="checkbox c-checkbox mv0">
+                                                <label>
+                                                    <input type="checkbox" ng-model="col.visible">
+                                                    <span class="fa fa-check"></span>
+                                                    {{col.nombre}}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <!--                            <li  role="menuitem">
+                                                                    <a href="#">
+                                                                        <div class="checkbox c-checkbox">
+                                                                            <label>
+                                                                                <input type="checkbox">
+                                                                                <span class="fa fa-check"></span>
+                                                                                Columna 2
+                                                                            </label>
+                                                                        </div>
+                                                                    </a>
+                                                                </li>-->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>  
+                </div> 
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th width="36px">
+                                    <div class="checkbox c-checkbox">
+                                        <label>
+                                            <input type="checkbox" ng-model="ctrl.checkall" ng-change="ctrl.check_all()" />
+                                            <span class="fa fa-check"></span>
+                                        </label>
+                                    </div>
+                                </th>
+                                <th>Modelo</th>
+                                <th ng-show="ctrl.columnas.segmento.visible" width="160px">Segmento</th>
+                                <th ng-show="ctrl.columnas.categoria.visible" width="230px">Categoría</th>
+
+                                <th ng-show="ctrl.columnas.marca.visible" width="130px">Marca</th>
+                                <th ng-show="ctrl.columnas.seguridad.visible" width="110px">Seguridad</th>
+                                <th ng-show="ctrl.columnas.precio.visible" width="100px">Precio</th>
+                                <th ng-show="ctrl.columnas.ancho.visible" width="100px">Ancho</th>
+                                <th ng-show="ctrl.columnas.rechazo.visible" width="70px" uib-tooltip="Rechazo Solar">RS</th>
+                                <th ng-show="ctrl.columnas.transmision.visible" width="70px" uib-tooltip="Transmisión de Luz">TL</th>
+                                <th ng-show="ctrl.columnas.proteccion.visible" width="70px" uib-tooltip="Protección UV">UV</th>
+                                <!--<th width="30px"></th>-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="p in ctrl.productos">
+                                <td>
+                                    <div class="checkbox c-checkbox">
+                                        <label>
+                                            <input type="checkbox" ng-model="p.checked" />
+                                            <span class="fa fa-check"></span>
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" ng-model="p.modelo">
+                                </td>
+                                <td ng-show="ctrl.columnas.segmento.visible">
+                                    <select class="form-control" ng-model="p.id_segmento" ng-options="s.id_segmento as s.nombre for s in ctrl.segmentos">
+                                    </select>
+                                </td>
+                                <td ng-show="ctrl.columnas.categoria.visible">
+                                    <select class="form-control" ng-model="p.id_categoria" ng-options="c.id_categoria as c.nombre for c in ctrl.categorias">
+                                    </select>
+                                </td>
+
+                                <td ng-show="ctrl.columnas.marca.visible">
+                                    <input type="text" class="form-control" ng-model="p.marca">
+                                </td>
+                                <td ng-show="ctrl.columnas.seguridad.visible">
+                                    <select class="form-control" ng-model="p.id_seguridad" ng-options="s.id_seguridad as s.nombre for s in ctrl.niveles_seguridad">
+                                    </select>
+                                </td>
+                                <td ng-show="ctrl.columnas.precio.visible">
+                                    <input type="text" class="form-control" ng-model="p.precio">
+                                </td>
+                                <td ng-show="ctrl.columnas.ancho.visible">
+                                    <select class="form-control" ng-model="p.id_ancho" ng-options="a.id_ancho as a.ancho for a in ctrl.anchos">
+                                    </select>
+                                </td>
+                                <td ng-show="ctrl.columnas.rechazo.visible">
+                                    <input type="text" class="form-control" ng-model="p.rechazo_solar"> 
+                                </td>
+                                <td ng-show="ctrl.columnas.transmision.visible">
+                                    <input type="text" class="form-control" ng-model="p.transmision_luz">  
+                                </td>
+                                <td ng-show="ctrl.columnas.proteccion.visible">
+                                    <input type="text" class="form-control" ng-model="p.proteccion_uv"> 
+                                </td>
+                                <!--                                <td>                                   
+                                                                    <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.del_producto(p)"><i class="fa fa-remove"></i></button>
+                                                                </td>-->
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--<div>{{ctrl.productos|json}}</div>-->
+            </div>
+
+            <div class="panel-footer">
+                <button type="button" class="btn btn-default" ng-click="ctrl.delete()">Eliminar</button>
+                <button type="button" class="btn btn-primary" ng-click="ctrl.save()">Guardar</button>
             </div>
         </div>
     </div>

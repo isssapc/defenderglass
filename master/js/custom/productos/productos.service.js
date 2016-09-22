@@ -35,6 +35,9 @@
             add_producto: function (producto) {
                 return $http.post(url + 'productos', {producto: producto});
             },
+            add_productos: function (productos) {
+                return $http.post(url + 'productos/add', {productos: productos});
+            },
             del_producto: function (id_producto) {
                 return $http.delete(url + 'productos/' + id_producto);
             }

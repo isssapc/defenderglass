@@ -6360,6 +6360,14 @@ scrollable {
 .mb0 {
   margin-bottom: 0 !important;
 }
+.mh0 {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.mv0 {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
 .m {
   margin: 10px !important;
 }

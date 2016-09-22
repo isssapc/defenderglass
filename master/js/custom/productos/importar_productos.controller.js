@@ -14,11 +14,57 @@
     function Controller($scope, toaster, ProductoSrv, niveles_seguridad, segmentos, categorias, anchos, FileUploader, URL_API) {
 
         var self = this;
+        self.checkall = false;
 
         self.niveles_seguridad = niveles_seguridad.data;
         self.segmentos = segmentos.data;
         self.categorias = categorias.data;
         self.anchos = anchos.data;
+
+        self.productos = [];
+
+        self.columnas = {
+            clave: {
+                nombre: 'Clave',
+                visible: false
+            },
+            segmento: {
+                nombre: 'Segmento',
+                visible: true
+            },
+            categoria: {
+                nombre: 'Categoría',
+                visible: true
+            },
+            marca: {
+                nombre: 'Marca',
+                visible: false
+            },
+            seguridad: {
+                nombre: 'Seguridad',
+                visible: false
+            },
+            precio: {
+                nombre: 'Precio',
+                visible: true
+            },
+            ancho: {
+                nombre: 'Ancho',
+                visible: true
+            },
+            rechazo: {
+                nombre: 'Rechazo Solar',
+                visible: false
+            },
+            transmision: {
+                nombre: 'Transmisión Luz',
+                visible: false
+            },
+            proteccion: {
+                nombre: 'Protección UV',
+                visible: false
+            }
+        };
 
         self.uploader = new FileUploader({
             url: URL_API + 'productos/upload'
@@ -48,6 +94,40 @@
             $('#archivo').filestyle("clear");
         };
 
+        self.check_all = function () {
+            _.each(self.productos, function (item) {
+
+                item.checked = self.checkall;
+            });
+        };
+
+        self.delete = function () {
+            self.productos = _.filter(self.productos, function (item) {
+                return !item.checked
+            });
+        };
+
+        self.save = function () {
+
+            _.each(self.productos, function (item) {
+                delete item.checked;
+            });
+
+            console.log("productos a insertar", JSON.stringify(self.productos));
+
+            ProductoSrv.add_productos(self.productos).then(function (response) {
+
+                console.log("inserciones: " + response.data);
+                
+                toaster.pop('success', '', 'Se han agregado '+ response.data + ' productos a laa base de datos');
+                
+                self.productos=[];
+
+            }).catch(function (response) {
+
+            });
+
+        };
 
 
         self.uploader.onWhenAddingFileFailed = function (item /*{File|FileLikeObject}*/, filter, options) {
@@ -59,38 +139,19 @@
             }
             $('#archivo').filestyle("clear");
         };
-        self.uploader.onAfterAddingFile = function (fileItem) {
-            console.info('onAfterAddingFile', fileItem);
-        };
-        self.uploader.onAfterAddingAll = function (addedFileItems) {
-            console.info('onAfterAddingAll', addedFileItems);
-        };
-        self.uploader.onBeforeUploadItem = function (item) {
-            console.info('onBeforeUploadItem', item);
-        };
-        self.uploader.onProgressItem = function (fileItem, progress) {
-            console.info('onProgressItem', fileItem, progress);
-        };
-        self.uploader.onProgressAll = function (progress) {
-            console.info('onProgressAll', progress);
-        };
+  
         self.uploader.onSuccessItem = function (fileItem, response, status, headers) {
             console.info('onSuccessItem', fileItem, response, status, headers);
         };
-        self.uploader.onErrorItem = function (fileItem, response, status, headers) {
-            console.info('onErrorItem', fileItem, response, status, headers);
-        };
-        self.uploader.onCancelItem = function (fileItem, response, status, headers) {
-            console.info('onCancelItem', fileItem, response, status, headers);
-        };
+    
         self.uploader.onCompleteItem = function (fileItem, response, status, headers) {
             console.info('onCompleteItem', fileItem, response, status, headers);
             //toastr.success('success', 'Los datos se han actualizado correctamente',{'positionClass':'toast-bottom-full-width','progressBar':true});
+            console.log("response", JSON.stringify(response));
+            self.productos = response.productos;
             toaster.pop('success', '', 'Los datos se han cargado correctamente');
         };
-        self.uploader.onCompleteAll = function () {
-            console.info('onCompleteAll');
-        };
+      
 
 
 
