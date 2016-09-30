@@ -22,7 +22,10 @@
         <div class="form-group" ng-class="{'has-error':(form.$submitted || form.precio.$touched) && form.precio.$error.required}">
             <label class="control-label col-sm-2">Precio</label>
             <div class="col-sm-10">
-                <input type="text" name="precio" class="form-control" ng-model="gasto.precio" required>
+                <div class="input-group">
+                    <span class="input-group-addon">MXN</span>
+                    <input type="text" name="precio" class="form-control" ng-model="gasto.precio" required>
+                </div>
             </div>
         </div>
     </form>   

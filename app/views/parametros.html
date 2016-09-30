@@ -16,10 +16,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="p in ctrl.parametros|filter:{tipo:'V'}">
+                            <tr ng-repeat="p in ctrl.parametros|filter:{tipo:'!T'}">
                                 <td>{{p.id_parametro}}</td>
                                 <td>{{p.nombre}}</td>     
-                                <td>{{p.valor|currency}}</td>
+                                <td>
+                                    <span ng-if="p.tipo=='M'">{{p.valor}}</span>
+                                    <span ng-if="p.tipo=='C'">{{p.valor|currency}}</span>
+                                </td>
                                 <td>
                                     <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_edit_parametro(p)"><i class="fa fa-edit"></i></button>
                                 </td>

@@ -4,8 +4,8 @@
     angular
             .module('app.logic')
             .controller('CotizacionArqCtrl', Controller);
-    Controller.$inject = ['CotizacionSrv', '$window', 'productos', 'garantias', 'parametros', 'gastos'];
-    function Controller(CotizacionSrv, $window, productos, garantias, parametros, gastos) {
+    Controller.$inject = ['CotizacionSrv', 'toaster', '$window', 'productos', 'garantias', 'parametros', 'gastos', 'SesionSrv'];
+    function Controller(CotizacionSrv, toaster, $window, productos, garantias, parametros, gastos, SesionSrv) {
 
         var self = this;
         //self.pieza_selected={};
@@ -15,18 +15,22 @@
         self.garantias = garantias.data;
         self.parametros = parametros.data;
         self.gastos = gastos.data;
-        self.rollo = null;
+        self.rendimiento = _.findWhere(self.parametros, {clave: 'rendimiento'}).valor,
+                self.rollo = null;
         self.toggleFormulaPrecio182 = false;
         self.toggleFormulaPrecio152 = false;
         self.toggleFormulaCosto182 = false;
         self.toggleFormulaCosto152 = false;
         self.cot = {
+            tipo: 'ARQ',
             flete: _.findWhere(self.parametros, {clave: 'flete'}).valor,
             instalacion_m2: _.findWhere(self.parametros, {clave: 'instalacion'}).valor,
             dolar: _.findWhere(self.parametros, {clave: 'dolar'}).valor,
             intro: _.findWhere(self.parametros, {clave: 'intro'}).texto,
             notas: _.findWhere(self.parametros, {clave: 'notas'}).texto,
-            cuenta: _.findWhere(self.parametros, {clave: 'cuenta'}).texto
+            cuenta: _.findWhere(self.parametros, {clave: 'cuenta'}).texto,
+            autor: SesionSrv.get_nombre_usuario(),
+            autor_cargo: SesionSrv.get_cargo_usuario()
         };
         self.get_pdf = function () {
             console.log("crear documento PDF");
@@ -36,6 +40,7 @@
                 //$window.open("data:application/pdf;base64," + response.data.pdfbase64, "_blank");
 
                 $window.open("/defenderglass_api/public/" + response.data.filename, "_blank");
+
 
 //                
 
@@ -75,7 +80,7 @@
 
             var blob = new Blob(byteArrays, {type: contentType});
             return blob;
-        }
+        };
 
         self.cotizar = function () {
             self.cot.flete_m2 = Math.ceil(self.cot.flete / (46.45 * 10)) * 10;
@@ -84,6 +89,22 @@
             self.cot.precio_merma_152 = Math.ceil((parseFloat(self.cot.costo_152) + parseFloat(self.cot.flete_m2) + 50) / 10) * 10;
             self.cot.total_efectivo_152 = Math.ceil((self.cot.precio_efectivo_152 * self.cot.efectivo_m2) / 10) * 10;
             self.cot.total_merma_152 = Math.ceil((self.cot.precio_merma_152 * self.cot.merma_m2) / 10) * 10;
+
+            var gastos_m = _.chain(self.gastos).where({tipo: 'M', selected: true}).reduce(function (sum, item) {
+                return sum + item.precio;
+            }, 0).value();
+
+            var gastos_d = _.chain(self.gastos).where({tipo: 'D', selected: true}).reduce(function (sum, item) {
+                return sum + item.precio;
+            }, 0).value();
+
+
+            self.cot.gastos_extras_m = gastos_m;
+            self.cot.gastos_extras_d = gastos_d;
+            self.cot.total_gastos_extras = Math.ceil((self.cot.efectivo_m2 * self.cot.gastos_extras_m + self.cot.dias_instalacion * self.cot.gastos_extras_d) / 10) * 10;
+
+            self.cot.total_pesos = (self.cot.total_efectivo_152 + self.cot.total_merma_152 + self.cot.total_gastos_extras);
+            self.cot.total_dolares = Math.round((self.cot.total_pesos / self.cot.dolar) * 100) / 100;
         };
         self.costo_152 = function () {
             if (self.cot.rollo_152 && self.cot.rollo_152.precio && self.cot.dolar) {
@@ -120,6 +141,11 @@
             //self.cot.total_merma_152 = Math.ceil((self.cot.precio_merma_152 * self.cot.merma_m2) / 10) * 10;
             return Math.round(self.cot.precio_merma_152 * self.cot.merma_m2 * 100) / 100;
         };
+
+        self.total_gastos_extras = function () {
+
+            return Math.ceil((self.cot.efectivo_m2 * self.cot.gastos_extras_m + self.cot.dias_instalacion * self.cot.gastos_extras_d) * 100) / 100;
+        };
         self.costo_80 = function () {
             if (self.cot.rollo_80 && self.cot.rollo_80.precio && self.cot.dolar) {
 
@@ -134,6 +160,11 @@
                 return Math.round((self.cot.flete / 46.45) * 100) / 100;
             }
         };
+//        self.dias_instalacion=function(){
+//            var count=0;
+//            count= self.cot.efectivo_m2/self.rendimiento;
+//            return count;
+//        };
         self.piezas = [
             {
                 cantidad: 2,
@@ -516,6 +547,10 @@
                 sum += procesadas[i].efectivo;
             }
             self.cot.efectivo_m2 = Math.floor(sum * 10000) / 10000;
+
+            //calculamos el numero de dias necesarios para instalar
+            self.cot.dias_instalacion = Math.ceil(self.cot.efectivo_m2 / self.rendimiento);
+
             return self.cot.efectivo_m2;
         };
         self.sum_merma = function (procesadas, op) {
@@ -549,6 +584,15 @@
                 return self.cot.merma_optimo;
             }
             //return Math.floor(sum * 10000) / 10000;
+        };
+
+        self.guardar_cotizacion = function () {
+            CotizacionSrv.add_cotizacion(self.cot).then(function (response) {
+                //console.log("response", response.data);
+                toaster.pop('success', '', 'La cotización se ha guardado correctamente');
+            }).catch(function () {
+                toaster.pop('error', '', 'Ha ocurrido un error. Inténtelo más tarde');
+            });
         };
     }
 })();

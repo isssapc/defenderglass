@@ -89,7 +89,7 @@
     'use strict';
 
     angular
-        .module('app.logic',['satellizer','underscore','cfp.loadingBar']);
+        .module('app.logic',['satellizer','underscore','cfp.loadingBar','angular-cache']);
 })();
 (function () {
     'use strict';
@@ -614,62 +614,6 @@
             .find('input[type="text"]').blur() // remove focus
             // .val('') // Empty input
             ;
-        }
-    }
-})();
-
-/**=========================================================
- * Module: access-login.js
- * Demo for login api
- =========================================================*/
-
-(function () {
-    'use strict';
-
-    angular
-            .module('app.logic')
-            .controller('LoginCtrl', LoginCtrl);
-
-    LoginCtrl.$inject = ['$http', '$state', '$auth'];
-    function LoginCtrl($http, $state, $auth) {
-        var vm = this;
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-            // bind here all data from the form
-            vm.account = {};
-            // place the message if something goes wrong
-            vm.authMsg = '';
-
-            vm.login = function () {
-                vm.authMsg = '';
-
-                if (vm.loginForm.$valid) {
-
-
-                    $auth.login(vm.account).then(function (response) {
-                        console.log("response", JSON.stringify(response.data));
-
-                        $state.go('app.cotizar_arquitectonico');
-                    }).catch(function (response) {
-                        if (response.data.error) {
-                            vm.authMsg = response.data.error.message;
-                        } else {
-                            vm.authMsg="Error de conexión";
-                        }
-                    });
-
-                }
-                else {
-                    // set as dirty if the user click directly to login so we show the validation messages
-                    /*jshint -W106*/
-                    vm.loginForm.account_email.$dirty = true;
-                    vm.loginForm.account_password.$dirty = true;
-                }
-            };
         }
     }
 })();
@@ -1342,6 +1286,18 @@
                             }]
                     }
                 })
+                .state('app.cliente_nuevo', {
+                    url: '/nuevo_cliente',
+                    title: 'Clientes',
+                    controller: 'ClienteCtrl as ctrl',
+                    templateUrl: helper.basepath('cliente_nuevo.html'),
+                    resolve: {
+//                        clientes: ['ClienteSrv', function (ClienteSrv) {
+//                                return ClienteSrv.get_clientes();
+//                            }]
+                    }
+                })
+
                 .state('app.parametros', {
                     url: '/parametros',
                     title: 'Parámetros',
@@ -1375,7 +1331,7 @@
                     title: 'Productos',
                     controller: 'ImportarProductosCtrl as ctrl',
                     templateUrl: helper.basepath('productos_importar.html'),
-                    resolve: angular.extend( helper.resolveFor('angularFileUpload','filestyle'), {
+                    resolve: angular.extend(helper.resolveFor('angularFileUpload', 'filestyle'), {
                         niveles_seguridad: ['ProductoSrv', function (ProductoSrv) {
                                 return ProductoSrv.get_niveles_seguridad();
                             }],
@@ -1436,6 +1392,17 @@
                     title: 'Cotización',
                     controller: 'CotizacionCtrl as ctrl',
                     templateUrl: helper.basepath('cotizacion_automotriz.html')
+                })
+                .state('app.cotizaciones', {
+                    url: '/cotizaciones',
+                    title: 'Cotizacines',
+                    controller: 'CotizacionesCtrl as ctrl',
+                    templateUrl: helper.basepath('cotizaciones.html'),
+                    resolve: {
+                        cotizaciones: ['CotizacionSrv', function (CotizacionSrv) {
+                                return CotizacionSrv.get_cotizaciones();
+                            }]
+                    }
                 })
                 .state('page', {
                     url: '/page',
@@ -2471,6 +2438,39 @@
 
     angular
             .module('app.logic')
+            .controller('ClienteCtrl', Controller);
+
+    Controller.$inject = ['$log', 'ClienteSrv', 'toaster', '$scope'];
+    function Controller($log, ClienteSrv, toaster, $scope) {
+        console.log("ClienteController");
+        var self = this;
+
+        self.cliente = {persona: 'F'};
+
+        self.add_cliente = function () {
+            ClienteSrv.add_cliente(self.cliente).then(function (response) {
+                self.cliente = {persona: 'F'};
+                $scope.form.$setPristine();
+                $scope.form.$setUntouched();
+            }).catch(function () {
+                console.log("error");
+            });
+
+        };
+
+    }
+})();
+
+
+// To run this code, edit file index.html or index.jade and change
+// html data-ng-app attribute from angle to myAppName
+// ----------------------------------------------------------------------
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
             .controller('ClientesCtrl', Controller);
 
     Controller.$inject = ['$log', 'ClienteSrv', 'clientes'];
@@ -2479,14 +2479,6 @@
         var self = this;
 
         self.clientes = clientes.data;
-
-//        UsuarioSrv.get_usuarios().then(function (response) {
-//            console.log("usuarios", JSON.stringify(response.data));
-//            self.usuarios = response.data;
-//        });
-
-
-
 
     }
 })();
@@ -2553,13 +2545,166 @@
 })();
 
 
+// To run this code, edit file index.html or index.jade and change
+// html data-ng-app attribute from angle to myAppName
+// ----------------------------------------------------------------------
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .controller('CotizacionesCtrl', Controller);
+
+    Controller.$inject = ['CotizacionSrv', '$uibModal', 'toaster', 'cotizaciones'];
+    function Controller(CotizacionSrv, $uibModal, toaster, cotizaciones ) {
+
+        var self = this;
+
+        self.cotizaciones = cotizaciones.data;       
+
+
+        self.pre_edit_cotizacion = function (u) {
+
+            var copia_cotizacion = angular.copy(u);
+            var modalInstance = $uibModal.open({
+                templateUrl: editar_cotizacion_tpl,
+                controller: function ($scope, cotizacion, roles) {
+
+                    $scope.cotizacion = cotizacion;
+                    $scope.roles = roles;
+
+                    $scope.ok = function () {
+                        $scope.$close($scope.cotizacion);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    cotizacion: function () {
+                        return copia_cotizacion;
+                    },
+                    roles: function () {
+                        return self.roles;
+                    }
+                }
+            });
+
+
+            modalInstance.result.then(function (copia) {
+                self.edit_cotizacion(copia, u);
+            }, function () {
+                console.log("cancel edit");
+            });
+        };
+
+        self.edit_cotizacion = function (cotizacion, original) {
+
+            var i = self.cotizaciones.indexOf(original);
+
+            var cambiar_password = cotizacion.cambiar_password;
+            delete cotizacion.cambiar_password;
+            if (!cambiar_password) {
+                delete cotizacion.password;
+            }
+
+            var id_cotizacion = cotizacion.id_cotizacion;
+            delete cotizacion.id_cotizacion;
+            delete cotizacion.rol;
+
+            for (var key in cotizacion) {
+                if (cotizacion[key] === original[key]) {
+                    delete cotizacion[key];
+                }
+            }
+
+            console.log("propiedades para actualizar", JSON.stringify(cotizacion));
+
+            if (!_.isEmpty(cotizacion)) {
+
+                UsuarioSrv.update_cotizacion(id_cotizacion, cotizacion).then(function (response) {
+
+                    self.cotizaciones[i] = response.data;
+                    toaster.pop('success', '', 'Los datos se han actualizado correctamente');
+
+                }).catch(function (response) {
+                    toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+                }).finally(function (response) {
+
+                });
+            }
+
+        };
+
+        self.pre_del_cotizacion = function (u) {
+
+            var modalInstance = $uibModal.open({
+                templateUrl: 'confirmar.html',
+                controller: function ($scope, cotizacion) {
+
+                    $scope.cotizacion = cotizacion;
+
+
+                    $scope.ok = function () {
+                        $scope.$close(true);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    cotizacion: function () {
+                        return u;
+                    }
+                }
+            });
+
+
+            modalInstance.result.then(function (result) {
+                self.del_cotizacion(u);
+            }, function () {
+                console.log("cancel delete");
+            });
+        };
+
+        self.del_cotizacion = function (cotizacion) {
+
+            var i = self.cotizacions.indexOf(cotizacion);
+
+            UsuarioSrv.del_cotizacion(cotizacion.id_cotizacion).then(function (response) {
+                console.log("response delete", response);
+
+                if (response.data === 1) {
+                    self.cotizaciones.splice(i, 1);
+                    toaster.pop('success', '', 'Los datos se han actualizado correctamente');
+                } else {
+                    toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+                }
+
+            }).catch(function (response) {
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+            }).finally(function () {
+
+            });
+
+
+        };
+
+
+    }
+})();
+
+
 (function () {
     'use strict';
     angular
             .module('app.logic')
             .controller('CotizacionArqCtrl', Controller);
-    Controller.$inject = ['CotizacionSrv', '$window', 'productos', 'garantias', 'parametros', 'gastos'];
-    function Controller(CotizacionSrv, $window, productos, garantias, parametros, gastos) {
+    Controller.$inject = ['CotizacionSrv', 'toaster', '$window', 'productos', 'garantias', 'parametros', 'gastos', 'SesionSrv'];
+    function Controller(CotizacionSrv, toaster, $window, productos, garantias, parametros, gastos, SesionSrv) {
 
         var self = this;
         //self.pieza_selected={};
@@ -2569,18 +2714,22 @@
         self.garantias = garantias.data;
         self.parametros = parametros.data;
         self.gastos = gastos.data;
-        self.rollo = null;
+        self.rendimiento = _.findWhere(self.parametros, {clave: 'rendimiento'}).valor,
+                self.rollo = null;
         self.toggleFormulaPrecio182 = false;
         self.toggleFormulaPrecio152 = false;
         self.toggleFormulaCosto182 = false;
         self.toggleFormulaCosto152 = false;
         self.cot = {
+            tipo: 'ARQ',
             flete: _.findWhere(self.parametros, {clave: 'flete'}).valor,
             instalacion_m2: _.findWhere(self.parametros, {clave: 'instalacion'}).valor,
             dolar: _.findWhere(self.parametros, {clave: 'dolar'}).valor,
             intro: _.findWhere(self.parametros, {clave: 'intro'}).texto,
             notas: _.findWhere(self.parametros, {clave: 'notas'}).texto,
-            cuenta: _.findWhere(self.parametros, {clave: 'cuenta'}).texto
+            cuenta: _.findWhere(self.parametros, {clave: 'cuenta'}).texto,
+            autor: SesionSrv.get_nombre_usuario(),
+            autor_cargo: SesionSrv.get_cargo_usuario()
         };
         self.get_pdf = function () {
             console.log("crear documento PDF");
@@ -2590,6 +2739,7 @@
                 //$window.open("data:application/pdf;base64," + response.data.pdfbase64, "_blank");
 
                 $window.open("/defenderglass_api/public/" + response.data.filename, "_blank");
+
 
 //                
 
@@ -2629,7 +2779,7 @@
 
             var blob = new Blob(byteArrays, {type: contentType});
             return blob;
-        }
+        };
 
         self.cotizar = function () {
             self.cot.flete_m2 = Math.ceil(self.cot.flete / (46.45 * 10)) * 10;
@@ -2638,6 +2788,22 @@
             self.cot.precio_merma_152 = Math.ceil((parseFloat(self.cot.costo_152) + parseFloat(self.cot.flete_m2) + 50) / 10) * 10;
             self.cot.total_efectivo_152 = Math.ceil((self.cot.precio_efectivo_152 * self.cot.efectivo_m2) / 10) * 10;
             self.cot.total_merma_152 = Math.ceil((self.cot.precio_merma_152 * self.cot.merma_m2) / 10) * 10;
+
+            var gastos_m = _.chain(self.gastos).where({tipo: 'M', selected: true}).reduce(function (sum, item) {
+                return sum + item.precio;
+            }, 0).value();
+
+            var gastos_d = _.chain(self.gastos).where({tipo: 'D', selected: true}).reduce(function (sum, item) {
+                return sum + item.precio;
+            }, 0).value();
+
+
+            self.cot.gastos_extras_m = gastos_m;
+            self.cot.gastos_extras_d = gastos_d;
+            self.cot.total_gastos_extras = Math.ceil((self.cot.efectivo_m2 * self.cot.gastos_extras_m + self.cot.dias_instalacion * self.cot.gastos_extras_d) / 10) * 10;
+
+            self.cot.total_pesos = (self.cot.total_efectivo_152 + self.cot.total_merma_152 + self.cot.total_gastos_extras);
+            self.cot.total_dolares = Math.round((self.cot.total_pesos / self.cot.dolar) * 100) / 100;
         };
         self.costo_152 = function () {
             if (self.cot.rollo_152 && self.cot.rollo_152.precio && self.cot.dolar) {
@@ -2674,6 +2840,11 @@
             //self.cot.total_merma_152 = Math.ceil((self.cot.precio_merma_152 * self.cot.merma_m2) / 10) * 10;
             return Math.round(self.cot.precio_merma_152 * self.cot.merma_m2 * 100) / 100;
         };
+
+        self.total_gastos_extras = function () {
+
+            return Math.ceil((self.cot.efectivo_m2 * self.cot.gastos_extras_m + self.cot.dias_instalacion * self.cot.gastos_extras_d) * 100) / 100;
+        };
         self.costo_80 = function () {
             if (self.cot.rollo_80 && self.cot.rollo_80.precio && self.cot.dolar) {
 
@@ -2688,6 +2859,11 @@
                 return Math.round((self.cot.flete / 46.45) * 100) / 100;
             }
         };
+//        self.dias_instalacion=function(){
+//            var count=0;
+//            count= self.cot.efectivo_m2/self.rendimiento;
+//            return count;
+//        };
         self.piezas = [
             {
                 cantidad: 2,
@@ -3070,6 +3246,10 @@
                 sum += procesadas[i].efectivo;
             }
             self.cot.efectivo_m2 = Math.floor(sum * 10000) / 10000;
+
+            //calculamos el numero de dias necesarios para instalar
+            self.cot.dias_instalacion = Math.ceil(self.cot.efectivo_m2 / self.rendimiento);
+
             return self.cot.efectivo_m2;
         };
         self.sum_merma = function (procesadas, op) {
@@ -3103,6 +3283,15 @@
                 return self.cot.merma_optimo;
             }
             //return Math.floor(sum * 10000) / 10000;
+        };
+
+        self.guardar_cotizacion = function () {
+            CotizacionSrv.add_cotizacion(self.cot).then(function (response) {
+                //console.log("response", response.data);
+                toaster.pop('success', '', 'La cotización se ha guardado correctamente');
+            }).catch(function () {
+                toaster.pop('error', '', 'Ha ocurrido un error. Inténtelo más tarde');
+            });
         };
     }
 })();
@@ -3808,7 +3997,7 @@
 
             ProductoSrv.add_productos(self.productos).then(function (response) {
                 //console.log("inserciones: " + response.data);
-                toaster.pop('success', '', 'Se han agregado ' + response.data + ' productos a laa base de datos');
+                toaster.pop('success', '', 'Se han agregado ' + response.data + ' productos a la base de datos');
                 self.productos = [];
             }).catch(function (response) {
                 toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
@@ -3954,7 +4143,8 @@
     function Controller($log, ProductoSrv, productos, $uibModal, nuevoproducto_tpl) {
 
         var self = this;
-        self.segmento=0;
+        //inicialmente seleccionado el segmento 1= Arquitectonico, 0= Automotriz
+        self.segmento=1;
         self.productos = productos.data;
        
 
@@ -4068,6 +4258,179 @@
                 return $http.delete(url + 'productos/' + id_producto);
             }
         };
+    }
+
+})();
+
+/**=========================================================
+ * Module: access-login.js
+ * Demo for login api
+ =========================================================*/
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .controller('LoginCtrl', LoginCtrl);
+
+    LoginCtrl.$inject = ['$http', '$state', '$auth', 'SesionSrv'];
+    function LoginCtrl($http, $state, $auth, SesionSrv) {
+        var vm = this;
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+            // bind here all data from the form
+            vm.account = {};
+            // place the message if something goes wrong
+            vm.authMsg = '';
+
+            vm.login = function () {
+                vm.authMsg = '';
+
+                if (vm.loginForm.$valid) {
+
+
+                    $auth.login(vm.account).then(function (response) {
+                        console.log("response", JSON.stringify(response.data));
+                        //guardamos el usuario en localstorage
+                        SesionSrv.put_usuario(response.data.usuario);
+                        //dependiendo del rol de usuario lo dirigimos al estado default
+                        $state.go('app.cotizar_arquitectonico');
+                    }).catch(function (response) {
+                        if (response.data.error) {
+                            vm.authMsg = response.data.error.message;
+                        } else {
+                            vm.authMsg = "Error de conexión";
+                        }
+                    });
+
+                }
+                else {
+                    // set as dirty if the user click directly to login so we show the validation messages
+                    /*jshint -W106*/
+                    vm.loginForm.account_email.$dirty = true;
+                    vm.loginForm.account_password.$dirty = true;
+                }
+            };
+        }
+    }
+})();
+
+/**=========================================================
+ * Module: browser.js
+ * Browser detection
+ =========================================================*/
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .service('SesionSrv', Sesion);
+
+    Sesion.$inject = ['CacheFactory'];
+    function Sesion(CacheFactory) {
+        var self = this;
+
+        // obtenemos el usuario de la cache o creamos la cache
+        if (!CacheFactory.get('loggedin')) {
+            // or CacheFactory('loggedin', { ... });
+            //el tiempo de sesion lo especifica el servidor en el token
+            CacheFactory.createCache('loggedin', {
+                storageMode: 'localStorage'
+            });
+        }
+
+        //obtenemos de la cache
+        self.usuarioCache = CacheFactory.get("loggedin");
+
+        function put_usuario(usuario) {
+            self.usuarioCache.put('usuario', usuario);
+        }
+
+        function get_usuario() {
+            var usuario = null;
+            if (self.usuarioCache) {
+                usuario = self.usuarioCache.get('usuario');
+            }
+            return usuario;
+        }
+
+        function get_id_usuario() {
+
+            var usuario = null;
+            var id = null;
+
+            if (self.usuarioCache) {
+                usuario = self.usuarioCache.get('usuario');
+
+                if (usuario) {
+                    id = usuario.id_usuario;
+                }
+            }
+            return id;
+
+        }
+
+        function get_nombre_usuario() {
+
+            var usuario = null;
+            var nombre = null;
+
+            if (self.usuarioCache) {
+                usuario = self.usuarioCache.get('usuario');
+
+                if (usuario) {
+                    nombre = usuario.nombre;
+                }
+            }
+            return nombre;
+        }
+
+        function get_cargo_usuario() {
+
+            var usuario = null;
+            var cargo = null;
+
+            if (self.usuarioCache) {
+                usuario = self.usuarioCache.get('usuario');
+
+                if (usuario) {
+                    cargo = usuario.cargo;
+                }
+            }
+            return cargo;
+        }
+
+        function get_rol_usuario() {
+            var usuario = null;
+            var rol = null;
+
+            if (self.usuarioCache) {
+                usuario = self.usuarioCache.get('usuario');
+
+                if (usuario) {
+                    rol = usuario.id_rol;
+                }
+            }
+            return rol;
+        }
+
+
+        return {
+            get_usuario: get_usuario,
+            put_usuario: put_usuario,
+            get_id_usuario: get_id_usuario,
+            get_nombre_usuario: get_nombre_usuario,
+            get_rol_usuario: get_rol_usuario,
+            get_cargo_usuario: get_cargo_usuario
+        };
+
+
     }
 
 })();

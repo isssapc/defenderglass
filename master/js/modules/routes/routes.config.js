@@ -97,6 +97,18 @@
                             }]
                     }
                 })
+                .state('app.cliente_nuevo', {
+                    url: '/nuevo_cliente',
+                    title: 'Clientes',
+                    controller: 'ClienteCtrl as ctrl',
+                    templateUrl: helper.basepath('cliente_nuevo.html'),
+                    resolve: {
+//                        clientes: ['ClienteSrv', function (ClienteSrv) {
+//                                return ClienteSrv.get_clientes();
+//                            }]
+                    }
+                })
+
                 .state('app.parametros', {
                     url: '/parametros',
                     title: 'Parámetros',
@@ -130,7 +142,7 @@
                     title: 'Productos',
                     controller: 'ImportarProductosCtrl as ctrl',
                     templateUrl: helper.basepath('productos_importar.html'),
-                    resolve: angular.extend( helper.resolveFor('angularFileUpload','filestyle'), {
+                    resolve: angular.extend(helper.resolveFor('angularFileUpload', 'filestyle'), {
                         niveles_seguridad: ['ProductoSrv', function (ProductoSrv) {
                                 return ProductoSrv.get_niveles_seguridad();
                             }],
@@ -191,6 +203,17 @@
                     title: 'Cotización',
                     controller: 'CotizacionCtrl as ctrl',
                     templateUrl: helper.basepath('cotizacion_automotriz.html')
+                })
+                .state('app.cotizaciones', {
+                    url: '/cotizaciones',
+                    title: 'Cotizacines',
+                    controller: 'CotizacionesCtrl as ctrl',
+                    templateUrl: helper.basepath('cotizaciones.html'),
+                    resolve: {
+                        cotizaciones: ['CotizacionSrv', function (CotizacionSrv) {
+                                return CotizacionSrv.get_cotizaciones();
+                            }]
+                    }
                 })
                 .state('page', {
                     url: '/page',

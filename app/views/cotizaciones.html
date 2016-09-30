@@ -1,0 +1,54 @@
+<h3>Cotizaciones</h3>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Tipo</th>
+                                <th>Total Pesos</th>
+                                <th>Total Dólares</th>
+                                <th style="width: 87px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="c in ctrl.cotizaciones">
+                                <td>{{c.id_cotizacion}}</td>
+                                <td>{{c.fecha|date:'mediumDate'}}</td>
+                                <td>{{c.cliente}}</td>
+                                <td>{{c.tipo}}</td>
+                                <td>{{c.total_pesos|currency}}</td>
+                                <td>{{c.total_dolares|currency}}</td>
+                                <td>
+                                    <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_edit_cotizacion(c)"><i class="fa fa-edit"></i></button>
+                                    <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_del_cotizacion(c)"><i class="fa fa-remove"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="confirmar.html">
+    <div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="modal-title">Eliminar Cotización</h3>
+    </div>
+    <div class="modal-body" id="modal-body">
+    <p>¿Desea eliminar la cotización <strong>{{cot.id_cotizacion}}</strong> de fecha <strong>{{cot.fecha}}</strong>?</p>   
+    </div>
+    <div class="modal-footer">
+    <button class="btn btn-default" type="button" ng-click="cancel()">Cancelar</button>
+    <button class="btn btn-danger" type="button" ng-click="ok()" >Eliminar</button>
+    </div>
+</script>
+

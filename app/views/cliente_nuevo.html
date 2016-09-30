@@ -1,0 +1,117 @@
+<h3>Nuevo Cliente</h3>
+<div class="row">
+    <div class="col-xs-12 col-md-8 col-md-offset-2">
+        <div class="panel panel-default info">
+            <!--            <div class="panel-heading">
+                            <h4 class="panel-title">Datos Generales</h4>
+                        </div>-->
+            <div class="panel-body">  
+
+                <form name="form" class="form-horizontal" ng-submit="form.$valid && ctrl.add_cliente()">
+                    <fieldset class="b0">
+                        <legend>Datos Generales</legend>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Persona</label>
+                            <div class="col-md-10">
+                                <label class="radio-inline c-radio">
+                                    <input type="radio" name="persona" value="F" ng-model="ctrl.cliente.persona">
+                                    <span class="fa fa-circle"></span>Física</label>
+                                <label class="radio-inline c-radio">
+                                    <input type="radio" name="persona" value="M" ng-model="ctrl.cliente.persona">
+                                    <span class="fa fa-circle"></span>Moral</label>                               
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Nombre</label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" ng-model="ctrl.cliente.nombre">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">RFC</label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" ng-model="ctrl.cliente.rfc">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Contacto</label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" ng-model="ctrl.cliente.contacto">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Teléfono</label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" ng-model="ctrl.cliente.telefono">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Email</label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" ng-model="ctrl.cliente.email">
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset class="last-child">
+                        <legend>Domicilio</legend>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Calle</label>
+                            <div class="col-md-10">
+                                <input class="form-control" ng-model="ctrl.cliente.calle">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Colonia</label>
+                            <div class="col-md-10">
+                                <input class="form-control" ng-model="ctrl.cliente.colonia">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Núm. Exterior</label>
+                            <div class="col-md-10">
+                                <input class="form-control" ng-model="ctrl.cliente.num_exterior">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Núm. Interior</label>
+                            <div class="col-md-10">
+                                <input class="form-control" ng-model="ctrl.cliente.num_interior">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">C.P.</label>
+                            <div class="col-md-10">
+                                <input class="form-control" ng-model="ctrl.cliente.cp">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Localidad</label>
+                            <div class="col-md-10">
+                                <input class="form-control" ng-model="ctrl.cliente.localidad">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Municipio</label>
+                            <div class="col-md-10">
+                                <input class="form-control" ng-model="ctrl.cliente.municipio">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Estado</label>
+                            <div class="col-md-10">
+                                <input class="form-control" ng-model="ctrl.cliente.estado">
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div>{{ctrl.cliente|json}}</div>
+                    <div class="form-group">
+                        <div class="col-md-10 col-md-offset-2">
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

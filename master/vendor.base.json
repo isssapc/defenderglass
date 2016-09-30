@@ -30,7 +30,9 @@
     "bower_components/whirl/dist/whirl.css",
     "bower_components/underscore/underscore.js",
     "bower_components/angularjs-toaster/toaster.js",
-    "bower_components/angularjs-toaster/toaster.css"
+    "bower_components/angularjs-toaster/toaster.css",
+    "bower_components/angular-cache/dist/angular-cache.js"
+    
 
 
 ]

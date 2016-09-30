@@ -115,7 +115,7 @@
 
             ProductoSrv.add_productos(self.productos).then(function (response) {
                 //console.log("inserciones: " + response.data);
-                toaster.pop('success', '', 'Se han agregado ' + response.data + ' productos a laa base de datos');
+                toaster.pop('success', '', 'Se han agregado ' + response.data + ' productos a la base de datos');
                 self.productos = [];
             }).catch(function (response) {
                 toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');

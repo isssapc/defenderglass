@@ -17,13 +17,5 @@
 
         self.clientes = clientes.data;
 
-//        UsuarioSrv.get_usuarios().then(function (response) {
-//            console.log("usuarios", JSON.stringify(response.data));
-//            self.usuarios = response.data;
-//        });
-
-
-
-
     }
 })();

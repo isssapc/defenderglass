@@ -1,70 +1,65 @@
 <h3>Nuevo Usuario</h3>
 
-<div class="row">
-    <div class="col-xs-12">
-        <div class="col-xs-12 col-md-8 col-md-offset-2">
+<div class="row">  
+    <div class="col-xs-12 col-md-8 col-md-offset-2">
 
-            <div class="panel panel-default info">
-                <div class="panel-heading">
-                    <h4 class="panel-title">Datos Generales</h4>
-                </div>
-                <form name="formNuevoUsuario" ng-submit="formNuevoUsuario.$valid && ctrl.add_usuario(formNuevoUsuario, ctrl.usuario)" novalidate>
-
-                    <div class="panel-body">
-                        <div class="row">                   
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="form-group" ng-class="{'has-error':(formNuevoUsuario.$submitted || formNuevoUsuario.nombre.$touched) && formNuevoUsuario.nombre.$error.required}">
-                                    <label class="control-label">Nombre</label>
-                                    <input type="text" name="nombre" class="form-control" ng-model="ctrl.usuario.nombre" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="form-group" ng-class="{'has-error':(formNuevoUsuario.$submitted || formNuevoUsuario.rol.$touched) && formNuevoUsuario.rol.$error.required}">
-                                    <label class="control-label">Rol</label>
-                                    <select class="form-control" name="rol" ng-options="r.id_rol as r.rol for r in ctrl.roles" ng-model="ctrl.usuario.id_rol" required>
-                                        <option value="">Seleccionar</option>                                           
-                                    </select>
-                                </div>
-                            </div>		
-                        </div>
-
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="form-group" ng-class="{'has-error':(formNuevoUsuario.$submitted || formNuevoUsuario.email.$touched) && formNuevoUsuario.email.$error.required}">
-                                    <label class="control-label">Email</label>
-                                    <input type="email" name="email" class="form-control" ng-model="ctrl.usuario.email" required>
-                                </div>
-                            </div>		
-                        </div>
-
-                        <div class="row">			
-                            <div class="col-xs-12 col-sm-6">
-                                <div class="form-group" ng-class="{'has-error':(formNuevoUsuario.$submitted || formNuevoUsuario.password.$touched) && formNuevoUsuario.password.$error.required}">
-                                    <label class="control-label">Contraseña</label>
-                                    <input type="password" name="password" class="form-control" ng-model=" ctrl.usuario.password" required>
-                                </div>
-                            </div>
-
-                            <div class="col-xs-12 col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">Confirmar</label>
-                                    <input type="password" class="form-control" ng-model="ctrl.confirmar">
-                                </div>
-                            </div>
-                        </div>
-                        <!--<div>{{ctrl.usuario|json}}</div>-->
-                    </div>
-
-                    <div class="panel-footer">                        
-                        <button type="submit" class="btn btn-primary">Guardar</button>
-                    </div>
-                </form>
+        <div class="panel panel-default info">
+            <div class="panel-heading">
+                <h4 class="panel-title">Datos Generales</h4>
             </div>
-        </div>  
+            <form name="formNuevoUsuario" ng-submit="formNuevoUsuario.$valid && ctrl.add_usuario(formNuevoUsuario, ctrl.usuario)" novalidate>
 
+                <div class="panel-body">
+                    <div class="row">                   
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group" ng-class="{'has-error':(formNuevoUsuario.$submitted || formNuevoUsuario.nombre.$touched) && formNuevoUsuario.nombre.$error.required}">
+                                <label class="control-label">Nombre</label>
+                                <input type="text" name="nombre" class="form-control" ng-model="ctrl.usuario.nombre" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group" ng-class="{'has-error':(formNuevoUsuario.$submitted || formNuevoUsuario.rol.$touched) && formNuevoUsuario.rol.$error.required}">
+                                <label class="control-label">Rol</label>
+                                <select class="form-control" name="rol" ng-options="r.id_rol as r.rol for r in ctrl.roles" ng-model="ctrl.usuario.id_rol" required>
+                                    <option value="">Seleccionar</option>                                           
+                                </select>
+                            </div>
+                        </div>		
+                    </div>
 
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group" ng-class="{'has-error':(formNuevoUsuario.$submitted || formNuevoUsuario.email.$touched) && formNuevoUsuario.email.$error.required}">
+                                <label class="control-label">Email</label>
+                                <input type="email" name="email" class="form-control" ng-model="ctrl.usuario.email" required>
+                            </div>
+                        </div>		
+                    </div>
 
-    </div>
+                    <div class="row">			
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group" ng-class="{'has-error':(formNuevoUsuario.$submitted || formNuevoUsuario.password.$touched) && formNuevoUsuario.password.$error.required}">
+                                <label class="control-label">Contraseña</label>
+                                <input type="password" name="password" class="form-control" ng-model=" ctrl.usuario.password" required>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Confirmar</label>
+                                <input type="password" class="form-control" ng-model="ctrl.confirmar">
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div>{{ctrl.usuario|json}}</div>-->
+                </div>
+
+                <div class="panel-footer">                        
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>      
 </div>

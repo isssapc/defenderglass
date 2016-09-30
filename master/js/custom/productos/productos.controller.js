@@ -14,7 +14,8 @@
     function Controller($log, ProductoSrv, productos, $uibModal, nuevoproducto_tpl) {
 
         var self = this;
-        self.segmento=0;
+        //inicialmente seleccionado el segmento 1= Arquitectonico, 0= Automotriz
+        self.segmento=1;
         self.productos = productos.data;
        
 

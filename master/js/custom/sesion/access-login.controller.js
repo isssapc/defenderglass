@@ -10,8 +10,8 @@
             .module('app.logic')
             .controller('LoginCtrl', LoginCtrl);
 
-    LoginCtrl.$inject = ['$http', '$state', '$auth'];
-    function LoginCtrl($http, $state, $auth) {
+    LoginCtrl.$inject = ['$http', '$state', '$auth', 'SesionSrv'];
+    function LoginCtrl($http, $state, $auth, SesionSrv) {
         var vm = this;
 
         activate();
@@ -32,13 +32,15 @@
 
                     $auth.login(vm.account).then(function (response) {
                         console.log("response", JSON.stringify(response.data));
-
+                        //guardamos el usuario en localstorage
+                        SesionSrv.put_usuario(response.data.usuario);
+                        //dependiendo del rol de usuario lo dirigimos al estado default
                         $state.go('app.cotizar_arquitectonico');
                     }).catch(function (response) {
                         if (response.data.error) {
                             vm.authMsg = response.data.error.message;
                         } else {
-                            vm.authMsg="Error de conexión";
+                            vm.authMsg = "Error de conexión";
                         }
                     });
 
