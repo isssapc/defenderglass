@@ -158,6 +158,27 @@
                     })
 
                 })
+                .state('app.importar_auto', {
+                    url: '/importar_autos',
+                    title: 'Importar',
+                    controller: 'ImportarAutomotrizCtrl as ctrl',
+                    templateUrl: helper.basepath('productos_importar_auto.html'),
+                    resolve: angular.extend(helper.resolveFor('angularFileUpload', 'filestyle'), {
+                        niveles_seguridad: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_niveles_seguridad();
+                            }],
+                        segmentos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_segmentos();
+                            }],
+                        categorias: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_categorias();
+                            }],
+                        anchos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_anchos();
+                            }]
+                    })
+
+                })
                 .state('app.nuevo_producto', {
                     url: '/nuevo_producto',
                     title: 'Nuevo Producto',
@@ -201,8 +222,13 @@
                 .state('app.cotizar_automotriz', {
                     url: '/cotizacion/automotriz',
                     title: 'Cotización',
-                    controller: 'CotizacionCtrl as ctrl',
-                    templateUrl: helper.basepath('cotizacion_automotriz.html')
+                    controller: 'CotizacionAutoCtrl as ctrl',
+                    templateUrl: helper.basepath('cotizacion_automotriz.html'),
+                    resolve: {
+                        productos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_lista_precios_automotriz();
+                            }]
+                    }
                 })
                 .state('app.cotizaciones', {
                     url: '/cotizaciones',

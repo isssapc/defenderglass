@@ -1347,6 +1347,27 @@
                     })
 
                 })
+                .state('app.importar_auto', {
+                    url: '/importar_autos',
+                    title: 'Importar',
+                    controller: 'ImportarAutomotrizCtrl as ctrl',
+                    templateUrl: helper.basepath('productos_importar_auto.html'),
+                    resolve: angular.extend(helper.resolveFor('angularFileUpload', 'filestyle'), {
+                        niveles_seguridad: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_niveles_seguridad();
+                            }],
+                        segmentos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_segmentos();
+                            }],
+                        categorias: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_categorias();
+                            }],
+                        anchos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_anchos();
+                            }]
+                    })
+
+                })
                 .state('app.nuevo_producto', {
                     url: '/nuevo_producto',
                     title: 'Nuevo Producto',
@@ -1390,8 +1411,13 @@
                 .state('app.cotizar_automotriz', {
                     url: '/cotizacion/automotriz',
                     title: 'Cotización',
-                    controller: 'CotizacionCtrl as ctrl',
-                    templateUrl: helper.basepath('cotizacion_automotriz.html')
+                    controller: 'CotizacionAutoCtrl as ctrl',
+                    templateUrl: helper.basepath('cotizacion_automotriz.html'),
+                    resolve: {
+                        productos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_lista_precios_automotriz();
+                            }]
+                    }
                 })
                 .state('app.cotizaciones', {
                     url: '/cotizaciones',
@@ -2444,6 +2470,7 @@
     function Controller($log, ClienteSrv, toaster, $scope) {
         console.log("ClienteController");
         var self = this;
+        self.show=true;
 
         self.cliente = {persona: 'F'};
 
@@ -2703,13 +2730,14 @@
     angular
             .module('app.logic')
             .controller('CotizacionArqCtrl', Controller);
-    Controller.$inject = ['CotizacionSrv', 'toaster', '$window', 'productos', 'garantias', 'parametros', 'gastos', 'SesionSrv'];
-    function Controller(CotizacionSrv, toaster, $window, productos, garantias, parametros, gastos, SesionSrv) {
+    Controller.$inject = ['CotizacionSrv', 'ClienteSrv', 'toaster', '$window', 'productos', 'garantias', 'parametros', 'gastos', 'SesionSrv'];
+    function Controller(CotizacionSrv, ClienteSrv, toaster, $window, productos, garantias, parametros, gastos, SesionSrv) {
 
         var self = this;
         //self.pieza_selected={};
         self.show_resto = false;
         self.procesadas = [];
+        self.clinete = {};
         self.productos = productos.data;
         self.garantias = garantias.data;
         self.parametros = parametros.data;
@@ -3293,6 +3321,171 @@
                 toaster.pop('error', '', 'Ha ocurrido un error. Inténtelo más tarde');
             });
         };
+
+        self.add_cliente = function () {
+            ClienteSrv.add_cliente(self.cliente).then(function (response) {
+                self.cot.id_cliente = response.data.id_cliente;
+                self.cot.dirigido = response.data.nombre;
+
+                self.cliente = {};
+
+            }).catch(function () {
+
+            });
+        };
+    }
+})();
+
+
+// To run this code, edit file index.html or index.jade and change
+// html data-ng-app attribute from angle to myAppName
+// ----------------------------------------------------------------------
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .controller('CotizacionAutoCtrl', Controller);
+
+    Controller.$inject = ['CotizacionSrv','ProductoSrv', '$uibModal', 'toaster', 'productos'];
+    function Controller(CotizacionSrv,ProductoSrv, $uibModal, toaster, productos ) {
+
+        var self = this;
+
+        self.productos = productos.data;       
+
+
+        self.pre_edit_producto = function (p) {
+
+            var copia_cotizacion = angular.copy(p);
+            var modalInstance = $uibModal.open({
+                templateUrl: editar_cotizacion_tpl,
+                controller: function ($scope, cotizacion, roles) {
+
+                    $scope.cotizacion = cotizacion;
+                    $scope.roles = roles;
+
+                    $scope.ok = function () {
+                        $scope.$close($scope.cotizacion);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    cotizacion: function () {
+                        return copia_cotizacion;
+                    },
+                    roles: function () {
+                        return self.roles;
+                    }
+                }
+            });
+
+
+            modalInstance.result.then(function (copia) {
+                self.edit_cotizacion(copia, u);
+            }, function () {
+                console.log("cancel edit");
+            });
+        };
+
+        self.edit_producto = function (producto, original) {
+
+            var i = self.cotizaciones.indexOf(original);
+
+            var cambiar_password = producto.cambiar_password;
+            delete producto.cambiar_password;
+            if (!cambiar_password) {
+                delete producto.password;
+            }
+
+            var id_cotizacion = producto.id_cotizacion;
+            delete producto.id_cotizacion;
+            delete producto.rol;
+
+            for (var key in producto) {
+                if (producto[key] === original[key]) {
+                    delete producto[key];
+                }
+            }
+
+            console.log("propiedades para actualizar", JSON.stringify(producto));
+
+            if (!_.isEmpty(producto)) {
+
+                UsuarioSrv.update_cotizacion(id_cotizacion, producto).then(function (response) {
+
+                    self.cotizaciones[i] = response.data;
+                    toaster.pop('success', '', 'Los datos se han actualizado correctamente');
+
+                }).catch(function (response) {
+                    toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+                }).finally(function (response) {
+
+                });
+            }
+
+        };
+
+        self.pre_del_producto = function (p) {
+
+            var modalInstance = $uibModal.open({
+                templateUrl: 'confirmar.html',
+                controller: function ($scope, producto) {
+
+                    $scope.producto = producto;
+
+
+                    $scope.ok = function () {
+                        $scope.$close(true);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    producto: function () {
+                        return p;
+                    }
+                }
+            });
+
+
+            modalInstance.result.then(function (result) {
+                self.del_producto(p);
+            }, function () {
+                console.log("cancel delete");
+            });
+        };
+
+        self.del_producto = function (producto) {
+
+            var i = self.productos.indexOf(producto);
+
+            ProductoSrv.del_precio_automotriz(producto.id_modelo).then(function (response) {
+                console.log("response delete", response);
+
+                if (response.data === 1) {
+                    self.productos.splice(i, 1);
+                    toaster.pop('success', '', 'Los datos se han actualizado correctamente');
+                } else {
+                    toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+                }
+
+            }).catch(function (response) {
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+            }).finally(function () {
+
+            });
+
+
+        };
+
+
     }
 })();
 
@@ -4039,6 +4232,146 @@
     }
 })();
 
+
+// To run this code, edit file index.html or index.jade and change
+// html data-ng-app attribute from angle to myAppName
+// ----------------------------------------------------------------------
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .controller('ImportarAutomotrizCtrl', Controller);
+
+    Controller.$inject = ['$scope', 'toaster', 'ProductoSrv', 'niveles_seguridad', 'segmentos', 'categorias', 'anchos', 'FileUploader', 'URL_API'];
+    function Controller($scope, toaster, ProductoSrv, niveles_seguridad, segmentos, categorias, anchos, FileUploader, URL_API) {
+
+        var self = this;
+        self.checkall = false;
+
+        self.niveles_seguridad = niveles_seguridad.data;
+        self.segmentos = segmentos.data;
+        self.categorias = categorias.data;
+        self.anchos = anchos.data;
+
+        self.productos = [];
+
+        self.columnas = {
+            sedan: {
+                nombre: 'Sedán',
+                visible: true
+            },
+            suv: {
+                nombre: 'SUV',
+                visible: true
+            },
+            familiar: {
+                nombre: 'Familiar',
+                visible: true
+            },
+            regular: {
+                nombre: 'Pickup Cab. Regular',
+                visible: true
+            },
+            doble: {
+                nombre: 'Pickup Doble Cab.',
+                visible: true
+            }
+
+        };
+
+        self.uploader = new FileUploader({
+            url: URL_API + 'productos/upload_automotriz'
+        });
+
+        self.uploader.filters.push({
+            name: 'queueFilter',
+            fn: function (/*item, options*/) {
+                return this.queue.length < 1;
+            }
+        });
+
+        self.uploader.filters.push({
+            name: 'excelFilter',
+            fn: function (item /*{File|FileLikeObject}*/, options) {
+                //var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+                //console.log("type", type);
+                //console.log("file", item.name.split('.').pop());
+                var extension = item.name.split('.').pop();
+                return '|xls|xlsx|'.indexOf(extension) !== -1;
+            }
+        });
+
+        self.remove_file = function (item) {
+            item.remove();
+            $('#archivo').filestyle("clear");
+        };
+
+        self.check_all = function () {
+            _.each(self.productos, function (item) {
+                item.checked = self.checkall;
+            });
+        };
+
+        self.delete = function () {
+            self.productos = _.filter(self.productos, function (item) {
+                return !item.checked;
+            });
+        };
+
+        self.save = function () {
+
+            _.each(self.productos, function (item) {
+                delete item.checked;
+            });
+
+            //console.log("productos a insertar", JSON.stringify(self.productos));
+
+            ProductoSrv.add_lista_precios_automotriz(self.productos).then(function (response) {
+                //console.log("inserciones: " + response.data);
+                toaster.pop('success', '', 'Se han agregado ' + response.data + ' productos a la base de datos');
+                self.productos = [];
+            }).catch(function (response) {
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+            });
+
+        };
+
+
+        self.uploader.onWhenAddingFileFailed = function (item /*{File|FileLikeObject}*/, filter, options) {
+            //console.info('onWhenAddingFileFailed', item, filter, options);
+            if (filter.name === 'excelFilter') {
+                toaster.pop('error', '', 'Sólo se adminten archivos de Excel en formato XLS ó XLSX');
+            } else if (filter.name === 'queueFilter') {
+                toaster.pop('error', '', 'Sólo puede subir un archivo a la vez');
+            }
+            $('#archivo').filestyle("clear");
+        };
+
+        self.uploader.onSuccessItem = function (fileItem, response, status, headers) {
+            //console.info('onSuccessItem', fileItem, response, status, headers);
+        };
+
+        self.uploader.onCompleteItem = function (fileItem, response, status, headers) {
+            //console.info('onCompleteItem', fileItem, response, status, headers);
+            //console.log("response", JSON.stringify(response));
+            self.productos = response.productos;
+            toaster.pop('success', '', 'Los datos se han cargado correctamente');
+        };
+
+        self.uploader.onCompleteAll = function () {
+            //console.info('onCompleteAll');
+            $('#archivo').filestyle("clear");
+        };
+
+
+
+
+
+    }
+})();
+
 (function () {
     'use strict';
 
@@ -4248,14 +4581,23 @@
             get_productos: function () {
                 return $http.get(url + 'productos');
             },
+            get_lista_precios_automotriz: function () {
+                return $http.get(url + 'productos/precios_automotriz');
+            },
             add_producto: function (producto) {
                 return $http.post(url + 'productos', {producto: producto});
             },
             add_productos: function (productos) {
                 return $http.post(url + 'productos/add', {productos: productos});
             },
+            add_lista_precios_automotriz: function (productos) {
+                return $http.post(url + 'productos/add_precios_automotriz', {productos: productos});
+            },
             del_producto: function (id_producto) {
                 return $http.delete(url + 'productos/' + id_producto);
+            },
+            del_precio_automotriz: function (id_modelo) {
+                return $http.delete(url + 'productos/del_precio_automotriz/' + id_modelo);
             }
         };
     }

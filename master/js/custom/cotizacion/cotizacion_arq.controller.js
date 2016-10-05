@@ -4,13 +4,14 @@
     angular
             .module('app.logic')
             .controller('CotizacionArqCtrl', Controller);
-    Controller.$inject = ['CotizacionSrv', 'toaster', '$window', 'productos', 'garantias', 'parametros', 'gastos', 'SesionSrv'];
-    function Controller(CotizacionSrv, toaster, $window, productos, garantias, parametros, gastos, SesionSrv) {
+    Controller.$inject = ['CotizacionSrv', 'ClienteSrv', 'toaster', '$window', 'productos', 'garantias', 'parametros', 'gastos', 'SesionSrv'];
+    function Controller(CotizacionSrv, ClienteSrv, toaster, $window, productos, garantias, parametros, gastos, SesionSrv) {
 
         var self = this;
         //self.pieza_selected={};
         self.show_resto = false;
         self.procesadas = [];
+        self.clinete = {};
         self.productos = productos.data;
         self.garantias = garantias.data;
         self.parametros = parametros.data;
@@ -592,6 +593,18 @@
                 toaster.pop('success', '', 'La cotización se ha guardado correctamente');
             }).catch(function () {
                 toaster.pop('error', '', 'Ha ocurrido un error. Inténtelo más tarde');
+            });
+        };
+
+        self.add_cliente = function () {
+            ClienteSrv.add_cliente(self.cliente).then(function (response) {
+                self.cot.id_cliente = response.data.id_cliente;
+                self.cot.dirigido = response.data.nombre;
+
+                self.cliente = {};
+
+            }).catch(function () {
+
             });
         };
     }

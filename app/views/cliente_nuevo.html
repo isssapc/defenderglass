@@ -53,57 +53,59 @@
                         </div>
                     </fieldset>
                     <fieldset class="last-child">
-                        <legend>Domicilio</legend>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">Calle</label>
-                            <div class="col-md-10">
-                                <input class="form-control" ng-model="ctrl.cliente.calle">
+                        <legend ng-click="ctrl.show = !ctrl.show">Domicilio <span class="pull-right" style="font-size: 14px; padding-top: 8px; padding-right: 4px;" ng-class="{'fa fa-chevron-down':ctrl.show, 'fa fa-chevron-up':!ctrl.show}"></span></legend>
+                        <div uib-collapse="ctrl.show">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Calle</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" ng-model="ctrl.cliente.calle">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">Colonia</label>
-                            <div class="col-md-10">
-                                <input class="form-control" ng-model="ctrl.cliente.colonia">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Colonia</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" ng-model="ctrl.cliente.colonia">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">Núm. Exterior</label>
-                            <div class="col-md-10">
-                                <input class="form-control" ng-model="ctrl.cliente.num_exterior">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Núm. Exterior</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" ng-model="ctrl.cliente.num_exterior">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">Núm. Interior</label>
-                            <div class="col-md-10">
-                                <input class="form-control" ng-model="ctrl.cliente.num_interior">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Núm. Interior</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" ng-model="ctrl.cliente.num_interior">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">C.P.</label>
-                            <div class="col-md-10">
-                                <input class="form-control" ng-model="ctrl.cliente.cp">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">C.P.</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" ng-model="ctrl.cliente.cp">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">Localidad</label>
-                            <div class="col-md-10">
-                                <input class="form-control" ng-model="ctrl.cliente.localidad">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Localidad</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" ng-model="ctrl.cliente.localidad">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">Municipio</label>
-                            <div class="col-md-10">
-                                <input class="form-control" ng-model="ctrl.cliente.municipio">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Municipio</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" ng-model="ctrl.cliente.municipio">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">Estado</label>
-                            <div class="col-md-10">
-                                <input class="form-control" ng-model="ctrl.cliente.estado">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Estado</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" ng-model="ctrl.cliente.estado">
+                                </div>
                             </div>
                         </div>
                     </fieldset>
-                    <div>{{ctrl.cliente|json}}</div>
+<!--                    <div>{{ctrl.cliente|json}}</div>-->
                     <div class="form-group">
                         <div class="col-md-10 col-md-offset-2">
                             <button type="submit" class="btn btn-primary">Guardar</button>

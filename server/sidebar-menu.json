@@ -61,8 +61,13 @@
         "icon": "fa fa-cubes",
         "submenu": [
             {
-                "text": "Catálogo",
+                "text": "Catálogo Arquitectónico",
                 "sref": "app.productos"
+
+            },
+            {
+                "text": "Catálogo Automotriz",
+                "sref": "app.productos_automotriz"
 
             },
             {
@@ -71,8 +76,13 @@
 
             },
             {
-                "text": "Importar",
+                "text": "Importar Arquitectónico",
                 "sref": "app.importar_productos"
+
+            },
+            {
+                "text": "Importar Automotriz",
+                "sref": "app.importar_auto"
 
             }
 

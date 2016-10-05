@@ -14,6 +14,12 @@
                             <input type="text" class="form-control" ng-model="ctrl.producto.clave" />
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Marca</label>
+                        <div class="col-lg-10">
+                            <input type="text" class="form-control" ng-model="ctrl.producto.marca" />
+                        </div>
+                    </div>
                     <div class="form-group" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.modelo.$touched) && formNuevoProducto.modelo.$error.required}">
                         <label class="col-lg-2 control-label">Modelo</label>
                         <div class="col-lg-10">
@@ -97,7 +103,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group" ng-model="ctrl.producto.id_seguridad" ng-if="ctrl.producto.id_categoria==1" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.seguridad.$touched) && formNuevoProducto.seguridad.$error.required}">
+                    <div class="form-group" ng-model="ctrl.producto.id_seguridad" ng-if="ctrl.producto.id_categoria == 1" ng-class="{'has-error':(formNuevoProducto.$submitted || formNuevoProducto.seguridad.$touched) && formNuevoProducto.seguridad.$error.required}">
                         <label class="col-lg-2 control-label">Seguridad</label>
                         <div class="col-lg-10">
                             <select class="form-control" name="seguridad" ng-options="s.id_seguridad as s.nombre for s in ctrl.niveles_seguridad" ng-model="ctrl.producto.id_seguridad" ng-required="ctrl.producto.id_categoria==1">
@@ -159,14 +165,7 @@
                                 <span class="input-group-addon">%</span>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">Marca</label>
-                        <div class="col-lg-10">
-                            <input type="text" class="form-control" ng-model="ctrl.producto.marca" />
-                        </div>
-                    </div>
+                    </div>                  
 
                     <div>{{ctrl.producto|json}}</div>
                 </form>

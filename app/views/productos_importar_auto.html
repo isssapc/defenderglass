@@ -1,0 +1,169 @@
+<h3>Importar Productos</h3>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default info">
+            <div class="panel-heading">Seleccionar archivo de Excel xls ó xlsx</div>
+            <div class="panel-body">
+                <div class="form-horizontal">
+
+                    <fieldset>
+                        <div class="form-group">                          
+                            <div class="col-sm-12">
+                                <input filestyle type="file" accept=".xls,.xlsx" id="archivo" data-buttonName="btn btn-default" data-icon="true" data-buttonText="Seleccionar" nv-file-select options="{removeAfterUpload:true}" uploader="ctrl.uploader" />
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="last-child">
+                        <div class="table-responsive">
+                            <table ng-if="ctrl.uploader.queue.length" class="table">
+                                <thead>
+                                    <tr>
+                                        <th width="40%">Nombre</th>
+                                        <th width="80px">Tamaño</th>
+                                        <th>Progreso</th>
+                                        <th width="55px">Status</th>
+                                        <th width="113px">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>            
+                                    <tr ng-repeat="item in ctrl.uploader.queue">
+                                        <td> 
+                                            <strong>{{item.file.name}}</strong>
+                                        </td>
+                                        <td nowrap>{{ item.file.size / 1024 / 1024|number:2 }} MB</td>
+                                        <td>
+                                            <div style="margin-bottom: 0;" class="progress progress-xs">
+                                                <div role="progressbar" ng-style="{
+                                                            'width': item.progress + '%' }" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span ng-show="item.isSuccess">
+                                                <em class="fa fa-check fa-fw text-success"></em>
+                                            </span>
+                                            <span ng-show="item.isCancel">
+                                                <em class="fa fa-ban-circle fa-fw"></em>
+                                            </span>
+                                            <span ng-show="item.isError">
+                                                <em class="fa fa-times fa-fw"></em>
+                                            </span>
+                                        </td>
+                                        <td nowrap>   
+                                            <button type="button" class="btn btn-info" uib-tooltip="Subir" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                                <span class="icon-cloud-upload"></span></button>
+                                            <button type="button" ng-click="ctrl.remove_file(item)" class="btn btn-danger" uib-tooltip="Eliminar">
+                                                <span class="icon-trash"></span></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </fieldset>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default" ng-show="ctrl.productos.length">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="pull-right">
+                            <div uib-dropdown auto-close="disabled " class="btn-group">
+                                <button type="button" uib-dropdown-toggle class="btn btn-default">Columnas
+                                    <span class="caret"></span>
+                                </button>
+                                <ul role="menu" uib-dropdown-menu class="dropdown-menu dropdown-menu-right">
+                                    <li  role="menuitem" ng-repeat="col in ctrl.columnas">
+                                        <div class="pv-sm ph-lg">
+                                            <div class="checkbox c-checkbox mv0">
+                                                <label>
+                                                    <input type="checkbox" ng-model="col.visible">
+                                                    <span class="fa fa-check"></span>
+                                                    {{col.nombre}}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <!--                            <li  role="menuitem">
+                                                                    <a href="#">
+                                                                        <div class="checkbox c-checkbox">
+                                                                            <label>
+                                                                                <input type="checkbox">
+                                                                                <span class="fa fa-check"></span>
+                                                                                Columna 2
+                                                                            </label>
+                                                                        </div>
+                                                                    </a>
+                                                                </li>-->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>  
+                </div> 
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th width="36px">
+                        <div class="checkbox c-checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="ctrl.checkall" ng-change="ctrl.check_all()" />
+                                <span class="fa fa-check"></span>
+                            </label>
+                        </div>
+                        </th>
+                        <th>Modelo</th>
+                        <th ng-show="ctrl.columnas.sedan.visible">Sedán</th>
+                        <th ng-show="ctrl.columnas.suv.visible">SUV</th>
+                        <th ng-show="ctrl.columnas.familiar.visible">Familiar</th> 
+                        <th ng-show="ctrl.columnas.regular.visible">Pickup Cab. Regular</th>
+                        <th ng-show="ctrl.columnas.doble.visible">Pickup Doble Cab.</th>
+
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="p in ctrl.productos">
+                                <td>
+                                    <div class="checkbox c-checkbox">
+                                        <label>
+                                            <input type="checkbox" ng-model="p.checked" />
+                                            <span class="fa fa-check"></span>
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" ng-model="p.modelo">
+                                </td>
+                                <td ng-show="ctrl.columnas.sedan.visible">
+                                    <input type="text" class="form-control" ng-model="p.sedan">
+                                </td>
+                                <td ng-show="ctrl.columnas.suv.visible">
+                                    <input type="text" class="form-control" ng-model="p.suv">
+                                </td>
+                                <td ng-show="ctrl.columnas.familiar.visible">
+                                    <input type="text" class="form-control" ng-model="p.familiar">
+                                </td>
+                                <td ng-show="ctrl.columnas.regular.visible">
+                                    <input type="text" class="form-control" ng-model="p.pickup_regular">
+                                </td>
+                                <td ng-show="ctrl.columnas.doble.visible">
+                                    <input type="text" class="form-control" ng-model="p.pickup_doble">
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--<div>{{ctrl.productos|json}}</div>-->
+            </div>
+
+            <div class="panel-footer">
+                <button type="button" class="btn btn-default" ng-click="ctrl.delete()">Eliminar</button>
+                <button type="button" class="btn btn-primary" ng-click="ctrl.save()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>

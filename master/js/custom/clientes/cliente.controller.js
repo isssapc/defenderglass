@@ -14,6 +14,7 @@
     function Controller($log, ClienteSrv, toaster, $scope) {
         console.log("ClienteController");
         var self = this;
+        self.show=true;
 
         self.cliente = {persona: 'F'};
 

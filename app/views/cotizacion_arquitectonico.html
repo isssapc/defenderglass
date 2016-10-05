@@ -291,7 +291,7 @@
                 <button class="btn btn-primary" ng-click="ctrl.cotizar()">Cotizar</button>
             </div>
         </div>
-        <!-- Analisis formato formulario-->
+        <!-- Analisis formato modo formulario-->
         <div class="panel panel-default hidden">
             <div class="panel-heading">Parámetros Cotización</div>
             <div class="panel-body">
@@ -460,7 +460,7 @@
                 </form>
             </div>
         </div>
-        <!-- Analisis formato tabla -->
+        <!-- Analisis formato modo tabla -->
         <div class="panel panel-default">
             <div class="panel-heading">Cotización</div>
             <div class="panel-body">
@@ -719,36 +719,36 @@
                             <div class="form-group">
                                 <label class="col-lg-2 control-label">Nombre</label>
                                 <div class="col-lg-10">
-                                    <input type="text" class="form-control">
+                                    <input type="text" class="form-control" ng-model="ctrl.cliente.nombre">
                                 </div>
                             </div>
-                            <div class="form-group">
+<!--                            <div class="form-group">
                                 <label class="col-lg-2 control-label">Atención</label>
                                 <div class="col-lg-10">
-                                    <input type="text" class="form-control">
+                                    <input type="text" class="form-control" ng-model="ctrl.cliente.contacto">
                                 </div>
-                            </div>
-                            <div class="form-group">
+                            </div>-->
+<!--                            <div class="form-group">
                                 <label class="col-lg-2 control-label">Teléfono</label>
                                 <div class="col-lg-10">
-                                    <input type="text" class="form-control">
+                                    <input type="text" class="form-control" ng-model="ctrl.cliente.nombre">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-lg-2 control-label">Email</label>
                                 <div class="col-lg-10">
-                                    <input type="text" class="form-control">
+                                    <input type="text" class="form-control" ng-model="ctrl.cliente.nombre">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-lg-2 control-label">Domicilio</label>
                                 <div class="col-lg-10">
-                                    <textarea rows="3" class="form-control"></textarea>
+                                    <textarea rows="3" class="form-control" ng-model="ctrl.cliente.nombre"></textarea>
                                 </div>
-                            </div>
+                            </div>-->
                             <div class="form-group">
                                 <div class="col-lg-10 col-lg-offset-2">
-                                    <button class="btn btn-default">Guardar</button>
+                                    <button class="btn btn-default" ng-click="ctrl.add_cliente()">Guardar</button>
                                 </div>
                             </div>
 
