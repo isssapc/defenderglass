@@ -128,12 +128,41 @@
                     title: 'Productos',
                     controller: 'ProductosCtrl as ctrl',
                     templateUrl: helper.basepath('productos.html'),
-                    resolve: {
+                    resolve: angular.extend(helper.resolveFor('angularFileUpload', 'filestyle'), {
                         productos: ['ProductoSrv', function (ProductoSrv) {
                                 return ProductoSrv.get_productos();
                             }],
-                        nuevoproducto_tpl: function () {
-                            return  helper.basepath('producto_nuevo_modal.html');
+                        niveles_seguridad: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_niveles_seguridad();
+                            }],
+                        segmentos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_segmentos();
+                            }],
+                        categorias: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_categorias();
+                            }],
+                        anchos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_anchos();
+                            }],
+                        editar_producto_modal_tpl: function () {
+                            return  helper.basepath('producto_editar_modal.html');
+                        },
+                        upload_ficha_tpl: function () {
+                            return  helper.basepath('producto_upload_ficha_modal.html');
+                        }
+                    })
+                })
+                .state('app.productos_automotriz', {
+                    url: '/productos/automotriz',
+                    title: 'Productos',
+                    controller: 'ProductosAutoCtrl as ctrl',
+                    templateUrl: helper.basepath('productos_automotriz.html'),
+                    resolve: {
+                        productos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_productos_automotriz();
+                            }],
+                        editar_producto_auto_tpl: function () {
+                            return  helper.basepath('producto_editar_auto_modal.html');
                         }
                     }
                 })
@@ -216,7 +245,10 @@
                             }],
                         gastos: ['GastoSrv', function (GastoSrv) {
                                 return GastoSrv.get_gastos();
-                            }]
+                            }],
+                        cliente_nuevo_tpl: function () {
+                            return  helper.basepath('cliente_nuevo_modal.html');
+                        }
                     }
                 })
                 .state('app.cotizar_automotriz', {
@@ -224,11 +256,11 @@
                     title: 'Cotización',
                     controller: 'CotizacionAutoCtrl as ctrl',
                     templateUrl: helper.basepath('cotizacion_automotriz.html'),
-                    resolve: {
+                    resolve: angular.extend(helper.resolveFor('ui.select'), {
                         productos: ['ProductoSrv', function (ProductoSrv) {
-                                return ProductoSrv.get_lista_precios_automotriz();
+                                return ProductoSrv.get_productos_automotriz();
                             }]
-                    }
+                    })
                 })
                 .state('app.cotizaciones', {
                     url: '/cotizaciones',

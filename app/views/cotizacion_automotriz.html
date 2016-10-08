@@ -1,50 +1,50 @@
-<h3>Cotización Automotriz</h3>
+<h3>Cotización <small>Automotriz</small></h3>
 
 <div class="row">
     <div class="col-lg-12">
 
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Modelo</th>
-                                <th>Sedán</th>
-                                <th>SUV</th>
-                                <th>Familiar</th>
-                                <th>Pickup Cab. Regular</th>
-                                <th>Pickup Doble Cab.</th>
-                                <th style="width: 87px;"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="p in ctrl.productos">
-                                <td>
-                                    <div class="checkbox c-checkbox">
-                                        <label>
-                                            <input type="checkbox" ng-model="p.checked" />
-                                            <span class="fa fa-check"></span>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>{{p.modelo}}</td>
-                                <td>{{p.sedan}}</td>
-                                <td>{{p.suv}}</td>
-                                <td>{{p.familiar}}</td>
-                                <td>{{p.pickup_regular}}</td>
-                                <td>{{p.pickup_doble}}</td>
-                                <td>
-                                    <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_edit_producto(p)"><i class="fa fa-edit"></i></button>
-                                    <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_del_producto(p)"><i class="fa fa-remove"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        <!--        <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Modelo</th>
+                                        <th>Sedán</th>
+                                        <th>SUV</th>
+                                        <th>Familiar</th>
+                                        <th>Pickup Cab. Regular</th>
+                                        <th>Pickup Doble Cab.</th>
+                                        <th style="width: 87px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="p in ctrl.productos">
+                                        <td>
+                                            <div class="checkbox c-checkbox">
+                                                <label>
+                                                    <input type="checkbox" ng-model="p.checked" />
+                                                    <span class="fa fa-check"></span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>{{p.modelo}}</td>
+                                        <td>{{p.sedan}}</td>
+                                        <td>{{p.suv}}</td>
+                                        <td>{{p.familiar}}</td>
+                                        <td>{{p.pickup_regular}}</td>
+                                        <td>{{p.pickup_doble}}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_edit_producto(p)"><i class="fa fa-edit"></i></button>
+                                            <button type="button" class="btn btn-default btn-sm" ng-click="ctrl.pre_del_producto(p)"><i class="fa fa-remove"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>-->
 
         <div class="panel panel-default">
             <div class="panel-heading">Cotización</div>
@@ -54,66 +54,96 @@
                         <form>
                             <div class="form-group">
                                 <label>Modelo Película</label>
-                                <select class="form-control" ng-model="ctrl.cot.id_modelo" ng-options="item.id_modelo as item.modelo for item in ctrl.productos">
+                                <select class="form-control" ng-model="ctrl.modelo" ng-options="item.modelo for item in ctrl.productos">
                                     <option value="">Seleccionar...</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Tipo Vehículo</label>
-                                <select class="form-control">
-                                    <option value="">Seleccionar...</option>
-                                    <option value="S">Sedán</option>
-                                    <option value="V">SUV</option>
-                                    <option value="F">Familiar/Suburban</option>
-                                    <option value="R">Pickup Cabina Regular</option>
-                                    <option value="D">Pickup Doble Cabina</option>
+                                <select class="form-control" ng-model="ctrl.tipo_vehiculo" ng-options="item.id as item.valor for item in ctrl.tipos">
+                                    <option value="">Seleccionar...</option>                 
                                 </select>
                             </div>
                             <div class="form-group">
                                 <div class="text-center text-bold">Inversión Total</div>
-                                <div class="form-control-static text-center text-lg">$15000,00</div>
+                                <div class="form-control-static text-center text-lg">{{ctrl.modelo[ctrl.tipo_vehiculo]|currency}}</div>
                             </div>
                         </form>
                     </uib-tab>
 
                     <uib-tab heading="Cliente">
                         <div class="form-horizontal">
+
+
+                            <!--                            <div class="form-group">
+                                                            <label class="col-lg-2 control-label">Buscar</label>
+                                                            <div class="col-lg-10">
+                                                                <div class="input-group">
+                                                                    <ui-select ng-model="ctrl.cliente_sele" theme="bootstrap" reset-search-input="false">
+                                                                        <ui-select-match placeholder="nombre" >{{$select.selected.nombre}}</ui-select-match>
+                                                                        <ui-select-choices repeat="cliente in ctrl.clientes | filter: $select.search track by cliente.id_cliente" minimum-input-length="0" refresh="ctrl.buscar_clientes($select.search)" refresh-delay="200">
+                                                                            <div ng-bind-html="cliente.nombre | highlight: $select.search"></div>
+                                                                        </ui-select-choices>                                           
+                                                                    </ui-select>
+                                                                    <span class="input-group-btn">
+                                                                        <button class="btn btn-default" ng-click="ctrl.cliente_selected = undefined"><span class="fa fa-remove"></span></button>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>-->
+
+
+                            <div class="form-group"> 
+                                <label class="col-lg-2 control-label">Buscar</label>
+                                <div class="col-lg-10">
+                                    <div class="input-group">
+                                        <input type="text" ng-model="ctrl.cliente_selected" placeholder="nombre" uib-typeahead="cliente as cliente.nombre for cliente in ctrl.buscar_clientes($viewValue)" 
+                                               typeahead-no-results="noResults"
+                                               class="form-control" typeahead-template-url="customTemplate.html" />
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" ng-click="ctrl.cliente_selected = undefined"><span class="fa fa-remove"></span></button>
+                                        </span>
+                                    </div>
+                                    <span class="help-block" ng-show="noResults">
+                                        No se encontraron clientes
+                                    </span>
+                                </div>
+                            </div>
+                            
                             <div class="form-group">
                                 <label class="col-lg-2 control-label">Nombre</label>
                                 <div class="col-lg-10">
-                                    <input type="text" class="form-control" ng-model="ctrl.cliente.nombre">
+                                    <input type="text" class="form-control" ng-model="ctrl.cliente_selected.nombre" disabled>
                                 </div>
                             </div>
-                            <!--                            <div class="form-group">
-                                                            <label class="col-lg-2 control-label">Atención</label>
-                                                            <div class="col-lg-10">
-                                                                <input type="text" class="form-control" ng-model="ctrl.cliente.contacto">
-                                                            </div>
-                                                        </div>-->
-                            <!--                            <div class="form-group">
-                                                            <label class="col-lg-2 control-label">Teléfono</label>
-                                                            <div class="col-lg-10">
-                                                                <input type="text" class="form-control" ng-model="ctrl.cliente.nombre">
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="col-lg-2 control-label">Email</label>
-                                                            <div class="col-lg-10">
-                                                                <input type="text" class="form-control" ng-model="ctrl.cliente.nombre">
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="col-lg-2 control-label">Domicilio</label>
-                                                            <div class="col-lg-10">
-                                                                <textarea rows="3" class="form-control" ng-model="ctrl.cliente.nombre"></textarea>
-                                                            </div>
-                                                        </div>-->
+                            
                             <div class="form-group">
-                                <div class="col-lg-10 col-lg-offset-2">
-                                    <button class="btn btn-default" ng-click="ctrl.add_cliente()">Guardar</button>
+                                <label class="col-lg-2 control-label">RFC</label>
+                                <div class="col-lg-10">
+                                    <input type="text" class="form-control" ng-model="ctrl.cliente_selected.rfc" disabled>
                                 </div>
                             </div>
-
+                            
+                            <div class="form-group" ng-if="ctrl.cliente_selected.persona == 'M'">
+                                <label class="col-lg-2 control-label">Contacto</label>
+                                <div class="col-lg-10">
+                                    <input type="text" class="form-control" ng-model="ctrl.cliente_selected.contacto" disabled>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Teléfono</label>
+                                <div class="col-lg-10">
+                                    <input type="text" class="form-control" ng-model="ctrl.cliente_selected.telefono" disabled>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Email</label>
+                                <div class="col-lg-10">
+                                    <input type="text" class="form-control" ng-model="ctrl.cliente_selected.email" disabled>
+                                </div>
+                            </div> 
                         </div>
                     </uib-tab>
 
@@ -192,5 +222,12 @@
     <button class="btn btn-default" type="button" ng-click="cancel()">Cancelar</button>
     <button class="btn btn-danger" type="button" ng-click="ok()" >Eliminar</button>
     </div>
+</script>
+
+<script type="text/ng-template" id="customTemplate.html">
+    <a>
+    <span ng-bind-html="match.model.nombre | uibTypeaheadHighlight:query"></span><br>
+    <small ng-if="match.model.rfc"><span ng-bind-html="match.model.rfc"></span></small>
+    </a>
 </script>
 

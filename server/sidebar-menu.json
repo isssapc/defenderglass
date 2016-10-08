@@ -90,6 +90,30 @@
 
     },
     {
+        "text": "Almacén",
+        "sref": "#",
+        "icon": "fa fa-pie-chart",
+        "submenu": [
+            {
+                "text": "Inventario",
+                "sref": "app.inventario"
+
+            },
+            {
+                "text": "Entrada",
+                "sref": "app.entrada_almacen"
+
+            },
+            {
+                "text": "Salida",
+                "sref": "app.salida_almacen"
+
+            }
+
+        ]
+
+    },
+    {
         "text": "Clientes",
         "sref": "#",
         "icon": "fa fa-users",

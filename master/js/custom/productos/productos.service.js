@@ -32,23 +32,29 @@
             get_productos: function () {
                 return $http.get(url + 'productos');
             },
-            get_lista_precios_automotriz: function () {
-                return $http.get(url + 'productos/precios_automotriz');
+            get_productos_automotriz: function () {
+                return $http.get(url + 'productos/productos_automotriz');
             },
             add_producto: function (producto) {
                 return $http.post(url + 'productos', {producto: producto});
             },
+            update_producto: function (id_producto, producto) {
+                return $http.put(url + 'productos/' + id_producto, {producto: producto});
+            },
             add_productos: function (productos) {
                 return $http.post(url + 'productos/add', {productos: productos});
             },
-            add_lista_precios_automotriz: function (productos) {
-                return $http.post(url + 'productos/add_precios_automotriz', {productos: productos});
+            add_productos_automotriz: function (productos) {
+                return $http.post(url + 'productos/add_productos_automotriz', {productos: productos});
+            },
+            update_producto_automotriz:function(id_modelo, producto){
+                return $http.put(url + 'productos/update_automotriz/' + id_modelo, {producto: producto});
             },
             del_producto: function (id_producto) {
                 return $http.delete(url + 'productos/' + id_producto);
             },
-            del_precio_automotriz: function (id_modelo) {
-                return $http.delete(url + 'productos/del_precio_automotriz/' + id_modelo);
+            del_producto_automotriz: function (id_modelo) {
+                return $http.delete(url + 'productos/del_producto_automotriz/' + id_modelo);
             }
         };
     }

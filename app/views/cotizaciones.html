@@ -20,7 +20,7 @@
                         <tbody>
                             <tr ng-repeat="c in ctrl.cotizaciones">
                                 <td>{{c.id_cotizacion}}</td>
-                                <td>{{c.fecha|date:'mediumDate'}}</td>
+                                <td>{{c.fecha|date:'longDate'}}</td>
                                 <td>{{c.cliente|uppercase}}</td>
                                 <td>{{c.tipo}}</td>
                                 <td>{{c.total_pesos|currency}}</td>

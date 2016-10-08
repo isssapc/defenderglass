@@ -31,8 +31,9 @@
     "bower_components/underscore/underscore.js",
     "bower_components/angularjs-toaster/toaster.js",
     "bower_components/angularjs-toaster/toaster.css",
-    "bower_components/angular-cache/dist/angular-cache.js"
-    
+    "bower_components/angular-cache/dist/angular-cache.js",
+    "bower_components/angular-i18n/angular-locale_es-mx.js"
+
 
 
 ]

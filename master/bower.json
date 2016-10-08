@@ -52,7 +52,9 @@
     "bootstrap-filestyle": "^1.2.1",
     "angular-file-upload": "^2.3.4",
     "angular-toastr": "^2.1.1",
-    "angular-cache": "^4.6.0"
+    "angular-cache": "^4.6.0",
+    "angular-ui-select": "^0.19.4",
+    "angular-i18n": "^1.5.8"
   },
   "resolutions": {
     "angular": "1.5.0",

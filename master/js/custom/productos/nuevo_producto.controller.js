@@ -22,7 +22,7 @@
 
         self.default_options =
                 {
-                    marca: "DefenderGlass",
+                    marca: "SolarGard",
                     proteccion_uv: 99
                 };
 

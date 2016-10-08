@@ -4,20 +4,21 @@
     angular
             .module('app.logic')
             .controller('CotizacionArqCtrl', Controller);
-    Controller.$inject = ['CotizacionSrv', 'ClienteSrv', 'toaster', '$window', 'productos', 'garantias', 'parametros', 'gastos', 'SesionSrv'];
-    function Controller(CotizacionSrv, ClienteSrv, toaster, $window, productos, garantias, parametros, gastos, SesionSrv) {
+    Controller.$inject = ['$uibModal', 'CotizacionSrv', 'ClienteSrv', 'toaster', '$window', 'productos', 'garantias', 'parametros', 'gastos', 'SesionSrv', 'cliente_nuevo_tpl'];
+    function Controller($uibModal, CotizacionSrv, ClienteSrv, toaster, $window, productos, garantias, parametros, gastos, SesionSrv, cliente_nuevo_tpl) {
 
         var self = this;
         //self.pieza_selected={};
         self.show_resto = false;
         self.procesadas = [];
-        self.clinete = {};
+        self.cliente = {};
+
         self.productos = productos.data;
         self.garantias = garantias.data;
         self.parametros = parametros.data;
         self.gastos = gastos.data;
-        self.rendimiento = _.findWhere(self.parametros, {clave: 'rendimiento'}).valor,
-                self.rollo = null;
+        self.rendimiento = _.findWhere(self.parametros, {clave: 'rendimiento'}).valor;
+        self.rollo = null;
         self.toggleFormulaPrecio182 = false;
         self.toggleFormulaPrecio152 = false;
         self.toggleFormulaCosto182 = false;
@@ -308,12 +309,10 @@
             console.log("rollo de ancho " + A + " m");
             console.log("----------------");
             for (var k = 0; k < piezas.length; k++) {
-
                 var l = piezas[k].largo;
                 var a = piezas[k].ancho;
                 var n = piezas[k].cantidad;
-                var mc = 0, mr = 0;
-                // 1. Cuantos caben a lo ancho
+                var mc = 0, mr = 0;                 // 1. Cuantos caben a lo ancho
                 var na = Math.floor(A / a);
                 console.log("cuantos caben a lo ancho", na);
                 if (na > 0) {
@@ -324,14 +323,12 @@
                     var r = n - (na * c);
                     console.log("resto", r);
                     //4 calcular merma cociente
-                    var Hc = {h1: 0, h2: 0, h3: l, h4: A};
-                    //console.log("Hc", JSON.stringify(Hc));
+                    var Hc = {h1: 0, h2: 0, h3: l, h4: A};                     //console.log("Hc", JSON.stringify(Hc));
                     var Bc = [];
                     var aux = 0;
                     // ancho en mm
                     var am = a * 1000;
                     if (c > 0) {
-
                         for (var i = 0; i < na; i++) {
                             // (i+1)*a
                             aux = Math.floor((i * am) + am) / 1000;
@@ -391,12 +388,10 @@
             self.procesadas = angular.copy(self.piezas);
             var A = 1.52;
             for (var i = 0; i < self.procesadas.length; i++) {
-
                 var l = self.procesadas[i].largo;
                 var a = self.procesadas[i].ancho;
                 var mo, mr = 0;
-                if (l <= A && a <= A) {
-                    //posicion original
+                if (l <= A && a <= A) {                     //posicion original
                     mo = Math.round(l * (A - a) * 10000) / 10000;
                     //rotar
                     mr = Math.round(a * (A - l) * 10000) / 10000;
@@ -429,7 +424,6 @@
             var dibujo = $("#dibujo");
             dibujo.empty();
             if (pieza.bc.length > 0) {
-
                 for (var i = 0; i < pieza.bc.length; i++) {
                     var w = Math.floor((pieza.bc[i].b3) * 1000);
                     var h = Math.floor((pieza.bc[i].b4 - pieza.bc[i].b2) * 1000);
@@ -471,7 +465,6 @@
             console.log("pieza", JSON.stringify(pieza));
             //tiene piezas en el cociente?
             if (pieza.bc.length > 0) {
-
                 B = pieza.bc;
                 H = pieza.hc;
             } else {
@@ -548,7 +541,6 @@
                 sum += procesadas[i].efectivo;
             }
             self.cot.efectivo_m2 = Math.floor(sum * 10000) / 10000;
-
             //calculamos el numero de dias necesarios para instalar
             self.cot.dias_instalacion = Math.ceil(self.cot.efectivo_m2 / self.rendimiento);
 
@@ -596,16 +588,62 @@
             });
         };
 
-        self.add_cliente = function () {
-            ClienteSrv.add_cliente(self.cliente).then(function (response) {
-                self.cot.id_cliente = response.data.id_cliente;
-                self.cot.dirigido = response.data.nombre;
 
-                self.cliente = {};
-
+        self.buscar_clientes = function (search) {
+            return ClienteSrv.search_clientes(search).then(function (response) {
+                return response.data;
             }).catch(function () {
 
             });
+
+        };
+
+        self.pre_nuevo_cliente = function () {
+
+            var modalInstance = $uibModal.open({
+                templateUrl: cliente_nuevo_tpl,
+                controller: function ($scope) {
+                    $scope.cliente = {persona: 'F'};
+                    $scope.show = true;
+                    $scope.ok = function () {
+                        $scope.$close($scope.cliente);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                }
+
+            });
+
+
+            modalInstance.result.then(function (cliente) {
+                self.nuevo_cliente(cliente);
+            }, function (response) {
+                //console.log("response", response);
+            });
+        };
+
+        self.nuevo_cliente = function (cliente) {
+            ClienteSrv.add_cliente(cliente).then(function (response) {
+                self.cliente_selected = response.data;
+                self.cot.id_cliente = response.data.id_cliente;
+                self.cot.dirigido = response.data.nombre;
+            }).catch(function () {
+
+            });
+        };
+
+        self.on_select_cliente = function ($item, $model, $label, $event) {
+            //console.log("onSelect", $item, $model, $label, $event);
+            self.cliente_selected = $model;
+            self.cot.id_cliente = $model.id_cliente;
+            self.cot.dirigido = $model.nombre;
+        };
+
+        self.eliminar_asignacion_cliente = function () {
+            self.cliente_selected = {};
+            self.cot.id_cliente = undefined;
         };
     }
 })();

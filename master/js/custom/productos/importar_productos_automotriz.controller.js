@@ -94,7 +94,7 @@
 
             //console.log("productos a insertar", JSON.stringify(self.productos));
 
-            ProductoSrv.add_lista_precios_automotriz(self.productos).then(function (response) {
+            ProductoSrv.add_productos_automotriz(self.productos).then(function (response) {
                 //console.log("inserciones: " + response.data);
                 toaster.pop('success', '', 'Se han agregado ' + response.data + ' productos a la base de datos');
                 self.productos = [];

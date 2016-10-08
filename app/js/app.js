@@ -412,6 +412,8 @@
                 },
                 // Angular based script (use the right module name)
                 modules: [
+                    {name: 'ui.select', files: ['vendor/angular-ui-select/dist/select.js',
+                            'vendor/angular-ui-select/dist/select.css']},
                     //{name: 'toaster', files: ['vendor/angularjs-toaster/toaster.js', 'vendor/angularjs-toaster/toaster.css']},
                     {name: 'toastr', files: ['vendor/angular-toastr/dist/angular-toastr.tpls.js', 'vendor/angular-toastr/dist/angular-toastr.css']},
                     {name: 'angularFileUpload', files: ['vendor/angular-file-upload/dist/angular-file-upload.js']}
@@ -1317,12 +1319,41 @@
                     title: 'Productos',
                     controller: 'ProductosCtrl as ctrl',
                     templateUrl: helper.basepath('productos.html'),
-                    resolve: {
+                    resolve: angular.extend(helper.resolveFor('angularFileUpload', 'filestyle'), {
                         productos: ['ProductoSrv', function (ProductoSrv) {
                                 return ProductoSrv.get_productos();
                             }],
-                        nuevoproducto_tpl: function () {
-                            return  helper.basepath('producto_nuevo_modal.html');
+                        niveles_seguridad: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_niveles_seguridad();
+                            }],
+                        segmentos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_segmentos();
+                            }],
+                        categorias: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_categorias();
+                            }],
+                        anchos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_anchos();
+                            }],
+                        editar_producto_modal_tpl: function () {
+                            return  helper.basepath('producto_editar_modal.html');
+                        },
+                        upload_ficha_tpl: function () {
+                            return  helper.basepath('producto_upload_ficha_modal.html');
+                        }
+                    })
+                })
+                .state('app.productos_automotriz', {
+                    url: '/productos/automotriz',
+                    title: 'Productos',
+                    controller: 'ProductosAutoCtrl as ctrl',
+                    templateUrl: helper.basepath('productos_automotriz.html'),
+                    resolve: {
+                        productos: ['ProductoSrv', function (ProductoSrv) {
+                                return ProductoSrv.get_productos_automotriz();
+                            }],
+                        editar_producto_auto_tpl: function () {
+                            return  helper.basepath('producto_editar_auto_modal.html');
                         }
                     }
                 })
@@ -1405,7 +1436,10 @@
                             }],
                         gastos: ['GastoSrv', function (GastoSrv) {
                                 return GastoSrv.get_gastos();
-                            }]
+                            }],
+                        cliente_nuevo_tpl: function () {
+                            return  helper.basepath('cliente_nuevo_modal.html');
+                        }
                     }
                 })
                 .state('app.cotizar_automotriz', {
@@ -1413,11 +1447,11 @@
                     title: 'Cotización',
                     controller: 'CotizacionAutoCtrl as ctrl',
                     templateUrl: helper.basepath('cotizacion_automotriz.html'),
-                    resolve: {
+                    resolve: angular.extend(helper.resolveFor('ui.select'), {
                         productos: ['ProductoSrv', function (ProductoSrv) {
-                                return ProductoSrv.get_lista_precios_automotriz();
+                                return ProductoSrv.get_productos_automotriz();
                             }]
-                    }
+                    })
                 })
                 .state('app.cotizaciones', {
                     url: '/cotizaciones',
@@ -2517,17 +2551,18 @@
 
 (function () {
     'use strict';
-
     angular
             .module('app.logic')
             .service('ClienteSrv', Cliente);
-
     Cliente.$inject = ['$http', 'URL_API'];
     function Cliente($http, URL_API) {
         var url = URL_API;
         return {
             get_clientes: function () {
                 return $http.get(url + 'clientes');
+            },
+            search_clientes: function (search) {
+                return $http.post(url + 'clientes/search', {search: search});
             },
             add_cliente: function (cliente) {
                 return $http.post(url + 'clientes', {cliente: cliente});
@@ -2730,20 +2765,21 @@
     angular
             .module('app.logic')
             .controller('CotizacionArqCtrl', Controller);
-    Controller.$inject = ['CotizacionSrv', 'ClienteSrv', 'toaster', '$window', 'productos', 'garantias', 'parametros', 'gastos', 'SesionSrv'];
-    function Controller(CotizacionSrv, ClienteSrv, toaster, $window, productos, garantias, parametros, gastos, SesionSrv) {
+    Controller.$inject = ['$uibModal', 'CotizacionSrv', 'ClienteSrv', 'toaster', '$window', 'productos', 'garantias', 'parametros', 'gastos', 'SesionSrv', 'cliente_nuevo_tpl'];
+    function Controller($uibModal, CotizacionSrv, ClienteSrv, toaster, $window, productos, garantias, parametros, gastos, SesionSrv, cliente_nuevo_tpl) {
 
         var self = this;
         //self.pieza_selected={};
         self.show_resto = false;
         self.procesadas = [];
-        self.clinete = {};
+        self.cliente = {};
+
         self.productos = productos.data;
         self.garantias = garantias.data;
         self.parametros = parametros.data;
         self.gastos = gastos.data;
-        self.rendimiento = _.findWhere(self.parametros, {clave: 'rendimiento'}).valor,
-                self.rollo = null;
+        self.rendimiento = _.findWhere(self.parametros, {clave: 'rendimiento'}).valor;
+        self.rollo = null;
         self.toggleFormulaPrecio182 = false;
         self.toggleFormulaPrecio152 = false;
         self.toggleFormulaCosto182 = false;
@@ -3034,12 +3070,10 @@
             console.log("rollo de ancho " + A + " m");
             console.log("----------------");
             for (var k = 0; k < piezas.length; k++) {
-
                 var l = piezas[k].largo;
                 var a = piezas[k].ancho;
                 var n = piezas[k].cantidad;
-                var mc = 0, mr = 0;
-                // 1. Cuantos caben a lo ancho
+                var mc = 0, mr = 0;                 // 1. Cuantos caben a lo ancho
                 var na = Math.floor(A / a);
                 console.log("cuantos caben a lo ancho", na);
                 if (na > 0) {
@@ -3050,14 +3084,12 @@
                     var r = n - (na * c);
                     console.log("resto", r);
                     //4 calcular merma cociente
-                    var Hc = {h1: 0, h2: 0, h3: l, h4: A};
-                    //console.log("Hc", JSON.stringify(Hc));
+                    var Hc = {h1: 0, h2: 0, h3: l, h4: A};                     //console.log("Hc", JSON.stringify(Hc));
                     var Bc = [];
                     var aux = 0;
                     // ancho en mm
                     var am = a * 1000;
                     if (c > 0) {
-
                         for (var i = 0; i < na; i++) {
                             // (i+1)*a
                             aux = Math.floor((i * am) + am) / 1000;
@@ -3117,12 +3149,10 @@
             self.procesadas = angular.copy(self.piezas);
             var A = 1.52;
             for (var i = 0; i < self.procesadas.length; i++) {
-
                 var l = self.procesadas[i].largo;
                 var a = self.procesadas[i].ancho;
                 var mo, mr = 0;
-                if (l <= A && a <= A) {
-                    //posicion original
+                if (l <= A && a <= A) {                     //posicion original
                     mo = Math.round(l * (A - a) * 10000) / 10000;
                     //rotar
                     mr = Math.round(a * (A - l) * 10000) / 10000;
@@ -3155,7 +3185,6 @@
             var dibujo = $("#dibujo");
             dibujo.empty();
             if (pieza.bc.length > 0) {
-
                 for (var i = 0; i < pieza.bc.length; i++) {
                     var w = Math.floor((pieza.bc[i].b3) * 1000);
                     var h = Math.floor((pieza.bc[i].b4 - pieza.bc[i].b2) * 1000);
@@ -3197,7 +3226,6 @@
             console.log("pieza", JSON.stringify(pieza));
             //tiene piezas en el cociente?
             if (pieza.bc.length > 0) {
-
                 B = pieza.bc;
                 H = pieza.hc;
             } else {
@@ -3274,7 +3302,6 @@
                 sum += procesadas[i].efectivo;
             }
             self.cot.efectivo_m2 = Math.floor(sum * 10000) / 10000;
-
             //calculamos el numero de dias necesarios para instalar
             self.cot.dias_instalacion = Math.ceil(self.cot.efectivo_m2 / self.rendimiento);
 
@@ -3322,16 +3349,62 @@
             });
         };
 
-        self.add_cliente = function () {
-            ClienteSrv.add_cliente(self.cliente).then(function (response) {
-                self.cot.id_cliente = response.data.id_cliente;
-                self.cot.dirigido = response.data.nombre;
 
-                self.cliente = {};
-
+        self.buscar_clientes = function (search) {
+            return ClienteSrv.search_clientes(search).then(function (response) {
+                return response.data;
             }).catch(function () {
 
             });
+
+        };
+
+        self.pre_nuevo_cliente = function () {
+
+            var modalInstance = $uibModal.open({
+                templateUrl: cliente_nuevo_tpl,
+                controller: function ($scope) {
+                    $scope.cliente = {persona: 'F'};
+                    $scope.show = true;
+                    $scope.ok = function () {
+                        $scope.$close($scope.cliente);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                }
+
+            });
+
+
+            modalInstance.result.then(function (cliente) {
+                self.nuevo_cliente(cliente);
+            }, function (response) {
+                //console.log("response", response);
+            });
+        };
+
+        self.nuevo_cliente = function (cliente) {
+            ClienteSrv.add_cliente(cliente).then(function (response) {
+                self.cliente_selected = response.data;
+                self.cot.id_cliente = response.data.id_cliente;
+                self.cot.dirigido = response.data.nombre;
+            }).catch(function () {
+
+            });
+        };
+
+        self.on_select_cliente = function ($item, $model, $label, $event) {
+            //console.log("onSelect", $item, $model, $label, $event);
+            self.cliente_selected = $model;
+            self.cot.id_cliente = $model.id_cliente;
+            self.cot.dirigido = $model.nombre;
+        };
+
+        self.eliminar_asignacion_cliente = function () {
+            self.cliente_selected = {};
+            self.cot.id_cliente = undefined;
         };
     }
 })();
@@ -3348,12 +3421,41 @@
             .module('app.logic')
             .controller('CotizacionAutoCtrl', Controller);
 
-    Controller.$inject = ['CotizacionSrv','ProductoSrv', '$uibModal', 'toaster', 'productos'];
-    function Controller(CotizacionSrv,ProductoSrv, $uibModal, toaster, productos ) {
+    Controller.$inject = ['CotizacionSrv', 'ProductoSrv', 'ClienteSrv', '$uibModal', 'toaster', 'productos'];
+    function Controller(CotizacionSrv, ProductoSrv, ClienteSrv, $uibModal, toaster, productos) {
 
         var self = this;
 
-        self.productos = productos.data;       
+        self.productos = productos.data;
+        self.clientes = [];
+
+//        self.tipos = [
+//            {id: "S", valor: "Sedán"},
+//            {id: "V", valor: "SUV"},
+//            {id: "F", valor: "Familiar/Suburban"},
+//            {id: "R", valor: "Pickup Cabina Regular"},
+//            {id: "D", valor: "Pickup Doble Cabina"}
+//        ];
+
+        self.tipos = [
+            {id: "sedan", valor: "Sedán"},
+            {id: "suv", valor: "SUV"},
+            {id: "familiar", valor: "Familiar/Suburban"},
+            {id: "pickup_regular", valor: "Pickup Cabina Regular"},
+            {id: "pickup_doble", valor: "Pickup Doble Cabina"}
+        ];
+
+
+        self.buscar_clientes = function (search) {
+            return ClienteSrv.search_clientes(search).then(function (response) {
+                return response.data;
+            }).catch(function () {
+
+            });
+
+        };
+
+
 
 
         self.pre_edit_producto = function (p) {
@@ -3466,7 +3568,7 @@
 
             var i = self.productos.indexOf(producto);
 
-            ProductoSrv.del_precio_automotriz(producto.id_modelo).then(function (response) {
+            ProductoSrv.del_producto_automotriz(producto.id_modelo).then(function (response) {
                 console.log("response delete", response);
 
                 if (response.data === 1) {
@@ -4328,7 +4430,7 @@
 
             //console.log("productos a insertar", JSON.stringify(self.productos));
 
-            ProductoSrv.add_lista_precios_automotriz(self.productos).then(function (response) {
+            ProductoSrv.add_productos_automotriz(self.productos).then(function (response) {
                 //console.log("inserciones: " + response.data);
                 toaster.pop('success', '', 'Se han agregado ' + response.data + ' productos a la base de datos');
                 self.productos = [];
@@ -4379,27 +4481,32 @@
             .module('app.logic')
             .controller('ModalNuevoProductoCtrl', Controller);
 
-    Controller.$inject = ['GastoSrv', '$scope', '$uibModalInstance', 'producto'];
-    function Controller(GastoSrv, $scope, $uibModalInstance, producto) {
+    Controller.$inject = ['ProductoSrv', '$scope', '$uibModalInstance', 'producto', 'niveles_seguridad', 'segmentos', 'categorias', 'anchos'];
+    function Controller(ProductoSrv, $scope, $uibModalInstance, producto, niveles_seguridad, segmentos, categorias, anchos) {
 
         var self = this;
         self.producto = producto;
+        self.niveles_seguridad = niveles_seguridad;
+        self.anchos = anchos;
+        self.segmentos = segmentos;
+        self.categorias = categorias;
 
         self.cancelar = function () {
-            $uibModalInstance.dismiss('close');
-        };        
+            $uibModalInstance.dismiss(false);
+        };
 
         self.add_producto = function () {
-            
-            GastoSrv.add_gasto(self.gasto).then(function (response) {
-                self.gasto = {};
+            var copia = angular.copy(self.producto);
+            delete copia.id_producto;
+            ProductoSrv.update_producto(self.producto.id_producto, copia).then(function (response) {
+                self.producto = {};
                 $scope.form.$setPristine();
                 $scope.form.$setUntouched();
                 $uibModalInstance.close(response.data);
             }).catch(function (response) {
-                $uibModalInstance.dismiss('error');
-            }).finally(function (response) {
-               
+                $uibModalInstance.dismiss(false);
+            }).finally(function () {
+
             });
         };
 
@@ -4430,7 +4537,7 @@
 
         self.default_options =
                 {
-                    marca: "DefenderGlass",
+                    marca: "SolarGard",
                     proteccion_uv: 99
                 };
 
@@ -4461,10 +4568,6 @@
 })();
 
 
-// To run this code, edit file index.html or index.jade and change
-// html data-ng-app attribute from angle to myAppName
-// ----------------------------------------------------------------------
-
 (function () {
     'use strict';
 
@@ -4472,33 +4575,87 @@
             .module('app.logic')
             .controller('ProductosCtrl', Controller);
 
-    Controller.$inject = ['$log', 'ProductoSrv', 'productos', '$uibModal', 'nuevoproducto_tpl'];
-    function Controller($log, ProductoSrv, productos, $uibModal, nuevoproducto_tpl) {
+    Controller.$inject = ['URL_API', 'toaster', 'FileUploader', 'ProductoSrv', 'productos', 'niveles_seguridad', 'segmentos', 'categorias', 'anchos', '$uibModal', 'editar_producto_modal_tpl', 'upload_ficha_tpl'];
+    function Controller(URL_API, toaster, FileUploader, ProductoSrv, productos, niveles_seguridad, segmentos, categorias, anchos, $uibModal, editar_producto_modal_tpl, upload_ficha_tpl) {
 
         var self = this;
         //inicialmente seleccionado el segmento 1= Arquitectonico, 0= Automotriz
-        self.segmento=1;
+        self.segmento = 1;
+        //inicialmente seleccionado la categoria 0= Solar, 1= Seguridad, 2= Decorativa
+        self.categoria = 0;
         self.productos = productos.data;
-       
+        self.niveles_seguridad = niveles_seguridad.data;
+        self.anchos = anchos.data;
+        self.segmentos = segmentos.data;
+        self.categorias = categorias.data;
+        self.producto_selected = {};
+
+
+        self.uploader = new FileUploader({
+            url: URL_API + 'productos/upload_ficha_tecnica',
+            queueLimit: 2
+
+        });
 
         self.pre_edit_producto = function (p) {
             var modalInstance = $uibModal.open({
-                templateUrl: nuevoproducto_tpl,
-                controller: 'ModalNuevoProductoCtrl',
-                controllerAs: 'ctrl',
+                templateUrl: editar_producto_modal_tpl,
+                controller: function ($scope, producto, niveles_seguridad, segmentos, anchos, categorias) {
+                    $scope.producto = producto;
+                    $scope.niveles_seguridad = niveles_seguridad;
+                    $scope.segmentos = segmentos;
+                    $scope.anchos = anchos;
+                    $scope.categorias = categorias;
+
+                    $scope.ok = function () {
+                        $scope.$close($scope.producto);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
                 resolve: {
                     producto: function () {
-                        return p;
+                        return angular.copy(p);
+                    },
+                    niveles_seguridad: function () {
+                        return self.niveles_seguridad;
+                    },
+                    segmentos: function () {
+                        return self.segmentos;
+                    },
+                    anchos: function () {
+                        return self.anchos;
+                    },
+                    categorias: function () {
+                        return self.categorias;
                     }
                 }
             });
 
 
-            modalInstance.result.then(function (nuevo_gasto) {
-                console.log("response", nuevo_gasto);
-                self.gastos.push(nuevo_gasto);
+            modalInstance.result.then(function (producto_editado) {
+                //console.log("response", producto_editado);
+
+                delete producto_editado.id_producto;
+                delete producto_editado.ancho;
+                delete producto_editado.seguridad;
+                delete producto_editado.segmento;
+                delete producto_editado.categoria;
+                delete producto_editado.ficha_tecnica;
+
+                console.log("producto editado", producto_editado);
+                ProductoSrv.update_producto(p.id_producto, producto_editado).then(function (response) {
+                    var i = self.productos.indexOf(p);
+                    self.productos[i] = response.data;
+
+                    toaster.pop('success', '', 'Los datos se han actualizado correctamente');
+                }).catch(function () {
+                    toaster.pop('error', '', 'Los datos no se han actualizado. Inténtelo más tarde');
+                });
             }, function (response) {
-                console.log("response", response);
+                //console.log("response", response);
             });
         };
 
@@ -4525,23 +4682,106 @@
 
 
             modalInstance.result.then(function (result) {
-                console.log("response", result);
-         
+                //console.log("response", result);
+
                 ProductoSrv.del_producto(p.id_producto).then(function (response) {
 
                     var i = self.productos.indexOf(p);
                     self.productos.splice(i, 1);
+                    toaster.pop('success', '', 'Los datos se han actualizado correctamente');
 
                 }).catch(function (response) {
-                    console.log("error");
+                    toaster.pop('error', '', 'Los datos no se han actualizado. Inténtelo más tarde');
                 }).finally(function (response) {
-                   
+
                 });
             }, function (response) {
-                console.log("response", response);
+                //console.log("response", response);
             });
         };
 
+        self.pre_upload_ficha = function (p) {
+            self.producto_selected = p;
+            var modalInstance = $uibModal.open({
+                templateUrl: upload_ficha_tpl,
+                controller: function ($scope, producto, uploader) {
+                    $scope.producto = producto;
+                    $scope.uploader = uploader;
+
+                    $scope.ok = function () {
+                        $scope.$close(true);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    producto: function () {
+                        return p;
+                    },
+                    uploader: function () {
+                        return self.uploader;
+                    }
+                }
+            });
+
+
+            modalInstance.result.then(function (response) {
+                //console.log("response", response);
+
+                var files = self.uploader.queue;
+                var file = files[0];
+                file.formData = [{id_producto: p.id_producto}];
+                file.upload();
+            }, function (response) {
+                //console.log("response", response);
+
+                if (self.uploader.queue.length > 0) {
+                    console.log("remove items si existen");
+//                    var files = self.uploader.queue;
+//                    var file = files[0];
+//                    file.remove();
+                    self.uploader.clearQueue();
+                }
+
+            });
+        };
+
+        self.uploader.onAfterAddingFile = function (fileItem) {
+            //console.info('onAfterAddingFile', fileItem);
+            if (self.uploader.queue.length === 2) {
+                self.uploader.queue[0].remove();
+            }
+        };
+
+        self.uploader.onWhenAddingFileFailed = function (item /*{File|FileLikeObject}*/, filter, options) {
+            //console.info('onWhenAddingFileFailed', item, filter, options);
+            //$('#archivo').filestyle("clear");
+        };
+
+        self.uploader.onSuccessItem = function (fileItem, response, status, headers) {
+            //console.info('onSuccessItem', fileItem, response, status, headers);
+
+            self.producto_selected.ficha_tecnica = response;
+            toaster.pop('success', '', 'Los datos se han cargado correctamente');
+        };
+
+        self.uploader.onCompleteItem = function (fileItem, response, status, headers) {
+            //console.info('onCompleteItem status', status);
+            //console.info('onCompleteItem response', response);                 
+
+        };
+
+        self.uploader.onCompleteAll = function () {
+            //console.info('onCompleteAll');
+            $('#archivo').filestyle("clear");
+        };
+
+        self.uploader.onErrorItem = function (fileItem, response, status, headers) {
+            //console.info('onErrorItem', fileItem, response, status, headers);            
+            toaster.pop('error', '', response.error[0]);
+        };
 
 
     }
@@ -4581,27 +4821,173 @@
             get_productos: function () {
                 return $http.get(url + 'productos');
             },
-            get_lista_precios_automotriz: function () {
-                return $http.get(url + 'productos/precios_automotriz');
+            get_productos_automotriz: function () {
+                return $http.get(url + 'productos/productos_automotriz');
             },
             add_producto: function (producto) {
                 return $http.post(url + 'productos', {producto: producto});
             },
+            update_producto: function (id_producto, producto) {
+                return $http.put(url + 'productos/' + id_producto, {producto: producto});
+            },
             add_productos: function (productos) {
                 return $http.post(url + 'productos/add', {productos: productos});
             },
-            add_lista_precios_automotriz: function (productos) {
-                return $http.post(url + 'productos/add_precios_automotriz', {productos: productos});
+            add_productos_automotriz: function (productos) {
+                return $http.post(url + 'productos/add_productos_automotriz', {productos: productos});
+            },
+            update_producto_automotriz:function(id_modelo, producto){
+                return $http.put(url + 'productos/update_automotriz/' + id_modelo, {producto: producto});
             },
             del_producto: function (id_producto) {
                 return $http.delete(url + 'productos/' + id_producto);
             },
-            del_precio_automotriz: function (id_modelo) {
-                return $http.delete(url + 'productos/del_precio_automotriz/' + id_modelo);
+            del_producto_automotriz: function (id_modelo) {
+                return $http.delete(url + 'productos/del_producto_automotriz/' + id_modelo);
             }
         };
     }
 
+})();
+
+
+// To run this code, edit file index.html or index.jade and change
+// html data-ng-app attribute from angle to myAppName
+// ----------------------------------------------------------------------
+
+(function () {
+    'use strict';
+
+    angular
+            .module('app.logic')
+            .controller('ProductosAutoCtrl', Controller);
+
+    Controller.$inject = ['ProductoSrv', '$uibModal', 'toaster', 'productos', 'editar_producto_auto_tpl'];
+    function Controller(ProductoSrv, $uibModal, toaster, productos, editar_producto_auto_tpl) {
+
+        var self = this;
+
+        self.productos = productos.data;
+
+
+        self.pre_edit_producto = function (p) {
+
+
+            var modalInstance = $uibModal.open({
+                templateUrl: editar_producto_auto_tpl,
+                controller: function ($scope, producto) {
+
+                    $scope.producto = producto;
+
+
+                    $scope.ok = function () {
+                        $scope.$close($scope.producto);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    producto: function () {
+                        return angular.copy(p);
+                    }
+                }
+            });
+
+
+            modalInstance.result.then(function (copia) {
+                self.edit_producto(p, copia);
+            }, function () {
+                console.log("cancel edit");
+            });
+        };
+
+        self.edit_producto = function (original, copia) {
+
+            var i = self.productos.indexOf(original);
+
+            for (var key in copia) {
+                if (copia[key] === original[key]) {
+                    delete copia[key];
+                }
+            }
+
+            console.log("propiedades para actualizar", JSON.stringify(copia));
+
+            if (!_.isEmpty(copia)) {
+
+                ProductoSrv.update_producto_automotriz(original.id_modelo, copia).then(function (response) {
+
+                    self.productos[i] = response.data;
+                    toaster.pop('success', '', 'Los datos se han actualizado correctamente');
+
+                }).catch(function () {
+                    toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+                }).finally(function () {
+
+                });
+            }
+
+        };
+
+        self.pre_del_producto = function (p) {
+
+            var modalInstance = $uibModal.open({
+                templateUrl: 'confirmar.html',
+                controller: function ($scope, producto) {
+
+                    $scope.producto = producto;
+
+
+                    $scope.ok = function () {
+                        $scope.$close(true);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                },
+                resolve: {
+                    producto: function () {
+                        return p;
+                    }
+                }
+            });
+
+
+            modalInstance.result.then(function (result) {
+                self.del_producto(p);
+            }, function () {
+                console.log("cancel delete");
+            });
+        };
+
+        self.del_producto = function (producto) {
+
+            var i = self.productos.indexOf(producto);
+
+            ProductoSrv.del_producto_automotriz(producto.id_modelo).then(function (response) {
+                console.log("response delete", response);
+
+                if (response.data === 1) {
+                    self.productos.splice(i, 1);
+                    toaster.pop('success', '', 'Los datos se han actualizado correctamente');
+                } else {
+                    toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+                }
+
+            }).catch(function () {
+                toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
+            }).finally(function () {
+
+            });
+
+
+        };
+
+
+    }
 })();
 
 /**=========================================================

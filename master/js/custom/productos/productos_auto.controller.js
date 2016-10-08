@@ -8,57 +8,28 @@
 
     angular
             .module('app.logic')
-            .controller('CotizacionAutoCtrl', Controller);
+            .controller('ProductosAutoCtrl', Controller);
 
-    Controller.$inject = ['CotizacionSrv', 'ProductoSrv', 'ClienteSrv', '$uibModal', 'toaster', 'productos'];
-    function Controller(CotizacionSrv, ProductoSrv, ClienteSrv, $uibModal, toaster, productos) {
+    Controller.$inject = ['ProductoSrv', '$uibModal', 'toaster', 'productos', 'editar_producto_auto_tpl'];
+    function Controller(ProductoSrv, $uibModal, toaster, productos, editar_producto_auto_tpl) {
 
         var self = this;
 
         self.productos = productos.data;
-        self.clientes = [];
-
-//        self.tipos = [
-//            {id: "S", valor: "Sedán"},
-//            {id: "V", valor: "SUV"},
-//            {id: "F", valor: "Familiar/Suburban"},
-//            {id: "R", valor: "Pickup Cabina Regular"},
-//            {id: "D", valor: "Pickup Doble Cabina"}
-//        ];
-
-        self.tipos = [
-            {id: "sedan", valor: "Sedán"},
-            {id: "suv", valor: "SUV"},
-            {id: "familiar", valor: "Familiar/Suburban"},
-            {id: "pickup_regular", valor: "Pickup Cabina Regular"},
-            {id: "pickup_doble", valor: "Pickup Doble Cabina"}
-        ];
-
-
-        self.buscar_clientes = function (search) {
-            return ClienteSrv.search_clientes(search).then(function (response) {
-                return response.data;
-            }).catch(function () {
-
-            });
-
-        };
-
-
 
 
         self.pre_edit_producto = function (p) {
 
-            var copia_cotizacion = angular.copy(p);
-            var modalInstance = $uibModal.open({
-                templateUrl: editar_cotizacion_tpl,
-                controller: function ($scope, cotizacion, roles) {
 
-                    $scope.cotizacion = cotizacion;
-                    $scope.roles = roles;
+            var modalInstance = $uibModal.open({
+                templateUrl: editar_producto_auto_tpl,
+                controller: function ($scope, producto) {
+
+                    $scope.producto = producto;
+
 
                     $scope.ok = function () {
-                        $scope.$close($scope.cotizacion);
+                        $scope.$close($scope.producto);
                     };
 
                     $scope.cancel = function () {
@@ -66,55 +37,42 @@
                     };
                 },
                 resolve: {
-                    cotizacion: function () {
-                        return copia_cotizacion;
-                    },
-                    roles: function () {
-                        return self.roles;
+                    producto: function () {
+                        return angular.copy(p);
                     }
                 }
             });
 
 
             modalInstance.result.then(function (copia) {
-                self.edit_cotizacion(copia, u);
+                self.edit_producto(p, copia);
             }, function () {
                 console.log("cancel edit");
             });
         };
 
-        self.edit_producto = function (producto, original) {
+        self.edit_producto = function (original, copia) {
 
-            var i = self.cotizaciones.indexOf(original);
+            var i = self.productos.indexOf(original);
 
-            var cambiar_password = producto.cambiar_password;
-            delete producto.cambiar_password;
-            if (!cambiar_password) {
-                delete producto.password;
-            }
-
-            var id_cotizacion = producto.id_cotizacion;
-            delete producto.id_cotizacion;
-            delete producto.rol;
-
-            for (var key in producto) {
-                if (producto[key] === original[key]) {
-                    delete producto[key];
+            for (var key in copia) {
+                if (copia[key] === original[key]) {
+                    delete copia[key];
                 }
             }
 
-            console.log("propiedades para actualizar", JSON.stringify(producto));
+            console.log("propiedades para actualizar", JSON.stringify(copia));
 
-            if (!_.isEmpty(producto)) {
+            if (!_.isEmpty(copia)) {
 
-                UsuarioSrv.update_cotizacion(id_cotizacion, producto).then(function (response) {
+                ProductoSrv.update_producto_automotriz(original.id_modelo, copia).then(function (response) {
 
-                    self.cotizaciones[i] = response.data;
+                    self.productos[i] = response.data;
                     toaster.pop('success', '', 'Los datos se han actualizado correctamente');
 
-                }).catch(function (response) {
+                }).catch(function () {
                     toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
-                }).finally(function (response) {
+                }).finally(function () {
 
                 });
             }
@@ -167,7 +125,7 @@
                     toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
                 }
 
-            }).catch(function (response) {
+            }).catch(function () {
                 toaster.pop('error', '', 'Los datos no has sido actualizados. Inténtelo más tarde');
             }).finally(function () {
 

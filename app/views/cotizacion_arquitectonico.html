@@ -661,6 +661,145 @@
                         </div>
                     </uib-tab>
 
+                    <uib-tab heading="Cliente">
+                        <div class="form-horizontal">
+
+                            <!--                            <fieldset class="pb0">
+                                                            <div class="form-group">                               
+                                                                <div class="col-lg-12">
+                                                                    <label class="radio-inline c-radio">
+                                                                        <input id="inlineradio1" type="radio" name="asignacion" value="B" ng-model="ctrl.asignar_cliente" />
+                                                                        <span class="fa fa-check"></span>Búsqueda</label>
+                                                                    <label class="radio-inline c-radio">
+                                                                        <input id="inlineradio2" type="radio" name="asignacion" value="N" ng-model="ctrl.asignar_cliente" />
+                                                                        <span class="fa fa-check"></span>Nuevo</label>
+                                                                </div>                               
+                                                            </div>
+                                                        </fieldset>-->
+                            <div class="form-group"> 
+                                <button class="btn btn-link pull-right" ng-click="ctrl.eliminar_asignacion_cliente()">Eliminar Asignación</button>
+                                <button class="btn btn-link pull-right" ng-click="ctrl.pre_nuevo_cliente()">Nuevo Cliente</button>
+                            </div>
+
+                            <!--<div ng-if="ctrl.asignar_cliente == 'B'">-->                   
+
+                            <div class="form-group"> 
+                                <label class="col-md-2 control-label">Buscar</label>
+                                <div class="col-md-10">
+                                    <div class="input-group">
+                                        <input type="text" ng-model="ctrl.cliente_busqueda" placeholder="cliente" uib-typeahead="cliente as cliente.nombre for cliente in ctrl.buscar_clientes($viewValue)" 
+                                               typeahead-no-results="noResults" typeahead-on-select="ctrl.on_select_cliente($item, $model, $label, $event)"
+                                               class="form-control" typeahead-template-url="customTemplate.html" />
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" ng-click="ctrl.cliente_busqueda= undefined"><span class="fa fa-remove"></span></button>
+                                        </span>
+                                    </div>
+                                    <span class="help-block" ng-show="noResults">
+                                        No se encontraron clientes
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Nombre</label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" ng-model="ctrl.cliente_selected.nombre" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">RFC</label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" ng-model="ctrl.cliente_selected.rfc" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group" ng-if="ctrl.cliente_selected.persona == 'M'">
+                                <label class="col-md-2 control-label">Contacto</label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" ng-model="ctrl.cliente_selected.contacto" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Teléfono</label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" ng-model="ctrl.cliente_selected.telefono" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Email</label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" ng-model="ctrl.cliente_selected.email" disabled>
+                                </div>
+                            </div> 
+                            <!--</div>-->
+
+                            <!--                            <div ng-if="ctrl.asignar_cliente == 'N'"> 
+                            
+                                                            <fieldset class="last-child mb0" ng-disabled="ctrl.cliente.id_cliente"> 
+                            
+                                                                <div class="form-group">
+                                                                    <label class="col-md-2 control-label">Persona</label>
+                                                                    <div class="col-md-10">
+                                                                        <label class="radio-inline c-radio">
+                                                                            <input type="radio" name="persona" value="F" ng-model="ctrl.cliente.persona">
+                                                                            <span class="fa fa-circle"></span>Física</label>
+                                                                        <label class="radio-inline c-radio">
+                                                                            <input type="radio" name="persona" value="M" ng-model="ctrl.cliente.persona">
+                                                                            <span class="fa fa-circle"></span>Moral</label>                               
+                                                                    </div>
+                                                                </div>
+                            
+                                                                <div class="form-group">
+                                                                    <label class="col-md-2 control-label">Nombre</label>
+                                                                    <div class="col-md-10">
+                                                                        <input type="text" class="form-control" ng-model="ctrl.cliente.nombre">
+                                                                    </div>
+                                                                </div>
+                            
+                                                                <div class="form-group">
+                                                                    <label class="col-md-2 control-label">RFC</label>
+                                                                    <div class="col-md-10">
+                                                                        <input type="text" class="form-control" ng-model="ctrl.cliente.rfc">
+                                                                    </div>
+                                                                </div>
+                            
+                                                                <div class="form-group">
+                                                                    <label class="col-md-2 control-label">Contacto</label>
+                                                                    <div class="col-md-10">
+                                                                        <input type="text" class="form-control" ng-model="ctrl.cliente.contacto">
+                                                                    </div>
+                                                                </div>
+                            
+                                                                <div class="form-group">
+                                                                    <label class="col-md-2 control-label">Teléfono</label>
+                                                                    <div class="col-md-10">
+                                                                        <input type="text" class="form-control" ng-model="ctrl.cliente.telefono">
+                                                                    </div>
+                                                                </div>
+                            
+                                                                <div class="form-group">
+                                                                    <label class="col-md-2 control-label">Email</label>
+                                                                    <div class="col-md-10">
+                                                                        <input type="text" class="form-control" ng-model="ctrl.cliente.email">
+                                                                    </div>
+                                                                </div>
+                            
+                                                            </fieldset>
+                            
+                                                            <div class="form-group">
+                                                                <div class="col-md-10 col-md-offset-2">
+                                                                    <button class="btn btn-default" ng-show="ctrl.cliente.id_cliente" ng-click="ctrl.eliminar_asignacion_cliente()">Eliminar Asignaciòn</button>
+                                                                    <button class="btn btn-default" ng-hide="ctrl.cliente.id_cliente" ng-click="ctrl.add_cliente()">Guardar</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>-->
+
+                        </div>
+                    </uib-tab>
+
                     <uib-tab heading="PDF">
                         <div class="form-horizontal">
                             <div class="form-group">
@@ -714,46 +853,6 @@
                         </div>
                     </uib-tab>
 
-                    <uib-tab heading="Cliente">
-                        <div class="form-horizontal">
-                            <div class="form-group">
-                                <label class="col-lg-2 control-label">Nombre</label>
-                                <div class="col-lg-10">
-                                    <input type="text" class="form-control" ng-model="ctrl.cliente.nombre">
-                                </div>
-                            </div>
-<!--                            <div class="form-group">
-                                <label class="col-lg-2 control-label">Atención</label>
-                                <div class="col-lg-10">
-                                    <input type="text" class="form-control" ng-model="ctrl.cliente.contacto">
-                                </div>
-                            </div>-->
-<!--                            <div class="form-group">
-                                <label class="col-lg-2 control-label">Teléfono</label>
-                                <div class="col-lg-10">
-                                    <input type="text" class="form-control" ng-model="ctrl.cliente.nombre">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-2 control-label">Email</label>
-                                <div class="col-lg-10">
-                                    <input type="text" class="form-control" ng-model="ctrl.cliente.nombre">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-2 control-label">Domicilio</label>
-                                <div class="col-lg-10">
-                                    <textarea rows="3" class="form-control" ng-model="ctrl.cliente.nombre"></textarea>
-                                </div>
-                            </div>-->
-                            <div class="form-group">
-                                <div class="col-lg-10 col-lg-offset-2">
-                                    <button class="btn btn-default" ng-click="ctrl.add_cliente()">Guardar</button>
-                                </div>
-                            </div>
-
-                        </div>
-                    </uib-tab>
                 </uib-tabset>
             </div>
             <div class="panel-footer">
@@ -764,3 +863,10 @@
 
     </div>
 </div>
+
+<script type="text/ng-template" id="customTemplate.html">
+    <a>
+    <span ng-bind-html="match.model.nombre | uibTypeaheadHighlight:query"></span><br>
+    <small ng-if="match.model.rfc"><span ng-bind-html="match.model.rfc"></span></small>
+    </a>
+</script>

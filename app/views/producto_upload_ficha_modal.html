@@ -1,0 +1,19 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="modal-title">Ficha Técnica</h3>
+</div>
+<div class="modal-body" id="modal-body">
+    <form name="form" class="form-horizontal" id="form" novalidate>    
+        <div class="form-group" ng-class="{'has-error':(form.$submitted || form.file.$touched) && form.file.$error.required}">
+            <label class="control-label col-sm-2">Concepto</label>
+            <div class="col-sm-10">
+                <input filestyle type="file" name="file" id="archivo" data-buttonName="btn btn-default" data-icon="true" data-buttonText="Seleccionar" nv-file-select options="{removeAfterUpload:true}" uploader="uploader">
+            </div>
+        </div>
+        <!--<div>{{uploader.queue.length|json}}</div>-->         
+    </form>   
+</div>
+<div class="modal-footer">       
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+    <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="!uploader.queue.length">Guardar</button>
+</div>
