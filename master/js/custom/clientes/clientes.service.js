@@ -20,6 +20,9 @@
             },
             add_cliente: function (cliente) {
                 return $http.post(url + 'clientes', {cliente: cliente});
+            },
+            get_page: function (start, number, params) {
+                return $http.post(url + 'clientes/page', {start: start, number: number, params: params});
             }
         };
     }

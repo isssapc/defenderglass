@@ -44,7 +44,7 @@
     <h3 class="modal-title" id="modal-title">Eliminar Cotización</h3>
     </div>
     <div class="modal-body" id="modal-body">
-    <p>¿Desea eliminar la cotización <strong>{{cot.id_cotizacion}}</strong> de fecha <strong>{{cot.fecha}}</strong>?</p>   
+    <p>¿Desea eliminar la cotización <strong>{{cot.id_cotizacion}}</strong> de fecha <strong>{{cot.fecha|date:'longDate'}}</strong>?</p>   
     </div>
     <div class="modal-footer">
     <button class="btn btn-default" type="button" ng-click="cancel()">Cancelar</button>

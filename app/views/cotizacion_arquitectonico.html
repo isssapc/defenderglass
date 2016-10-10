@@ -808,12 +808,29 @@
                                     <textarea class="form-control" rows="2" ng-model="ctrl.cot.dirigido" ></textarea>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <!--<div class="form-group">
                                 <label class="col-lg-2 control-label">Fecha</label>
                                 <div class="col-lg-10">
                                     <input type="text" class="form-control"  ng-model="ctrl.cot.fecha" >
                                 </div>
+                            </div>-->
+                            
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Fecha</label>
+                                <div class="col-lg-10">
+                                    <div class="input-group">
+                                        <input type="text" disabled uib-datepicker-popup="longDate" ng-model="ctrl.cot.fecha" is-open="ctrl.opened" ng-required="true"
+                                               close-text="Cerrar" class="form-control" current-text="Hoy" clear-text="Borrar" datepicker-options="ctrl.datepicker_options" />
+                                        <span class="input-group-btn">
+                                            <button type="button" ng-click="ctrl.open_datepicker($event)" class="btn btn-default">
+                                                <em class="fa fa-calendar"></em>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
+                            <div>{{ctrl.cot.fecha}}</div>
+                            
                             <div class="form-group">
                                 <label class="col-lg-2 control-label">Introducción</label>
                                 <div class="col-lg-10">

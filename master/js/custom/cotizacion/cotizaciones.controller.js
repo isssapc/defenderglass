@@ -11,11 +11,11 @@
             .controller('CotizacionesCtrl', Controller);
 
     Controller.$inject = ['CotizacionSrv', '$uibModal', 'toaster', 'cotizaciones'];
-    function Controller(CotizacionSrv, $uibModal, toaster, cotizaciones ) {
+    function Controller(CotizacionSrv, $uibModal, toaster, cotizaciones) {
 
         var self = this;
 
-        self.cotizaciones = cotizaciones.data;       
+        self.cotizaciones = cotizaciones.data;
 
 
         self.pre_edit_cotizacion = function (u) {
@@ -92,13 +92,13 @@
 
         };
 
-        self.pre_del_cotizacion = function (u) {
+        self.pre_del_cotizacion = function (cot) {
 
             var modalInstance = $uibModal.open({
                 templateUrl: 'confirmar.html',
                 controller: function ($scope, cotizacion) {
 
-                    $scope.cotizacion = cotizacion;
+                    $scope.cot = cotizacion;
 
 
                     $scope.ok = function () {
@@ -111,14 +111,14 @@
                 },
                 resolve: {
                     cotizacion: function () {
-                        return u;
+                        return cot;
                     }
                 }
             });
 
 
             modalInstance.result.then(function (result) {
-                self.del_cotizacion(u);
+                self.del_cotizacion(cot);
             }, function () {
                 console.log("cancel delete");
             });
@@ -128,7 +128,7 @@
 
             var i = self.cotizacions.indexOf(cotizacion);
 
-            UsuarioSrv.del_cotizacion(cotizacion.id_cotizacion).then(function (response) {
+            CotizacionSrv.del_cotizacion(cotizacion.id_cotizacion).then(function (response) {
                 console.log("response delete", response);
 
                 if (response.data === 1) {

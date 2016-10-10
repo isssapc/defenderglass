@@ -10,13 +10,25 @@
             .module('app.logic')
             .controller('CotizacionAutoCtrl', Controller);
 
-    Controller.$inject = ['CotizacionSrv', 'ProductoSrv', 'ClienteSrv', '$uibModal', 'toaster', 'productos'];
-    function Controller(CotizacionSrv, ProductoSrv, ClienteSrv, $uibModal, toaster, productos) {
+    Controller.$inject = ['CotizacionSrv', 'ProductoSrv', 'ClienteSrv', 'SesionSrv', '$uibModal', 'toaster', 'productos', 'parametros', 'cliente_nuevo_tpl'];
+    function Controller(CotizacionSrv, ProductoSrv, ClienteSrv, SesionSrv, $uibModal, toaster, productos, parametros, cliente_nuevo_tpl) {
 
         var self = this;
-
+        self.parametros = parametros.data;
         self.productos = productos.data;
         self.clientes = [];
+
+
+        self.cot = {
+            tipo: 'AUT',
+            fecha: new Date(),
+            dolar: _.findWhere(self.parametros, {clave: 'dolar'}).valor,
+            intro: _.findWhere(self.parametros, {clave: 'intro'}).texto,
+            notas: _.findWhere(self.parametros, {clave: 'notas'}).texto,
+            cuenta: _.findWhere(self.parametros, {clave: 'cuenta'}).texto,
+            autor: SesionSrv.get_nombre_usuario(),
+            autor_cargo: SesionSrv.get_cargo_usuario()
+        };
 
 //        self.tipos = [
 //            {id: "S", valor: "Sedán"},
@@ -34,16 +46,17 @@
             {id: "pickup_doble", valor: "Pickup Doble Cabina"}
         ];
 
+        self.open_datepicker = function ($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
 
-        self.buscar_clientes = function (search) {
-            return ClienteSrv.search_clientes(search).then(function (response) {
-                return response.data;
-            }).catch(function () {
-
-            });
-
+            self.opened = true;
         };
 
+        self.datepicker_options = {
+            showWeeks: false,
+            startingDay: 1
+        };
 
 
 
@@ -174,6 +187,63 @@
             });
 
 
+        };
+
+        self.buscar_clientes = function (search) {
+            return ClienteSrv.search_clientes(search).then(function (response) {
+                return response.data;
+            }).catch(function () {
+
+            });
+
+        };
+
+        self.pre_nuevo_cliente = function () {
+
+            var modalInstance = $uibModal.open({
+                templateUrl: cliente_nuevo_tpl,
+                controller: function ($scope) {
+                    $scope.cliente = {persona: 'F'};
+                    $scope.show = true;
+                    $scope.ok = function () {
+                        $scope.$close($scope.cliente);
+                    };
+
+                    $scope.cancel = function () {
+                        $scope.$dismiss(false);
+                    };
+                }
+
+            });
+
+
+            modalInstance.result.then(function (cliente) {
+                self.nuevo_cliente(cliente);
+            }, function (response) {
+                //console.log("response", response);
+            });
+        };
+
+        self.nuevo_cliente = function (cliente) {
+            ClienteSrv.add_cliente(cliente).then(function (response) {
+                self.cliente_selected = response.data;
+                self.cot.id_cliente = response.data.id_cliente;
+                self.cot.dirigido = response.data.nombre;
+            }).catch(function () {
+
+            });
+        };
+
+        self.on_select_cliente = function ($item, $model, $label, $event) {
+            //console.log("onSelect", $item, $model, $label, $event);
+            self.cliente_selected = $model;
+            self.cot.id_cliente = $model.id_cliente;
+            self.cot.dirigido = $model.nombre;
+        };
+
+        self.eliminar_asignacion_cliente = function () {
+            self.cliente_selected = {};
+            self.cot.id_cliente = undefined;
         };
 
 

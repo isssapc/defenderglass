@@ -25,6 +25,7 @@
         self.toggleFormulaCosto152 = false;
         self.cot = {
             tipo: 'ARQ',
+            fecha: new Date(),
             flete: _.findWhere(self.parametros, {clave: 'flete'}).valor,
             instalacion_m2: _.findWhere(self.parametros, {clave: 'instalacion'}).valor,
             dolar: _.findWhere(self.parametros, {clave: 'dolar'}).valor,

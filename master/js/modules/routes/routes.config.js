@@ -259,7 +259,13 @@
                     resolve: angular.extend(helper.resolveFor('ui.select'), {
                         productos: ['ProductoSrv', function (ProductoSrv) {
                                 return ProductoSrv.get_productos_automotriz();
-                            }]
+                            }],
+                        parametros: ['ParametroSrv', function (ParametroSrv) {
+                                return ParametroSrv.get_parametros();
+                            }],
+                        cliente_nuevo_tpl: function () {
+                            return  helper.basepath('cliente_nuevo_modal.html');
+                        }
                     })
                 })
                 .state('app.cotizaciones', {

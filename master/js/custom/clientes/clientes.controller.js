@@ -15,7 +15,26 @@
 
         var self = this;
 
-        self.clientes = clientes.data;
+        //self.clientes = clientes.data;
+        self.clientes = [];
+
+        self.get_page = function (tableState) {
+            console.log("tableState");
+            console.log(JSON.stringify(tableState));
+
+            self.isLoading = true;
+            var pagination = tableState.pagination;
+            var start = pagination.start || 0;
+            var number = pagination.number || 10;
+
+            ClienteSrv.get_page(start, number, tableState).then(function (response) {
+                self.clientes = response.data.clientes;
+                tableState.pagination.numberOfPages = response.data.numberOfPages;
+                self.isLoading = false;
+            }).catch(function () {
+                console.log("error");
+            });
+        };
 
     }
 })();
